@@ -1,0 +1,24 @@
+//
+//  PlatformIdiomEnvironmentKey.swift
+//  ToastPlayground
+//
+//  Created by Αθανάσιος Κεφαλάς on 9/10/24.
+//
+
+import SwiftUI
+
+struct PlatformIdiomEnvironmentKey: EnvironmentKey {
+    
+    static var defaultValue: PlatformIdiom {
+        MainActor.assumeIsolated {
+            return .current
+        }
+    }
+}
+
+extension EnvironmentValues {
+    
+    var platformIdiom: PlatformIdiom {
+        get { self[PlatformIdiomEnvironmentKey.self] }
+    }
+}

@@ -1,0 +1,157 @@
+//
+//  ToastPresenterProxy.swift
+//  ToastPlayground
+//
+//  Created by Αθανάσιος Κεφαλάς on 6/10/24.
+//
+
+import SwiftUI
+import Combine
+
+/// A proxy of a toast presenter that can be used to programmatically schedule toasts.
+public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflectable {
+    private weak var toastPresenter: ToastPresenting?
+    
+    /// A value that indicates whether the toast presenter can currently present toasts.
+    public var isPresentationEnabled: Bool {
+        toastPresenter != nil
+    }
+    
+    public var customMirror: Mirror {
+        let toastPresenterID: Any
+        
+        if let toastPresenter {
+            toastPresenterID = "some(\(ObjectIdentifier(toastPresenter).hashValue))"
+        } else {
+            toastPresenterID = "none"
+        }
+        
+        return Mirror(
+            self,
+            children: [(label: "toastPresenter", value: toastPresenterID)],
+            displayStyle: .struct
+        )
+    }
+    
+    internal init() {
+        self.init(toastPresenter: nil)
+    }
+    
+    internal init(toastPresenter: ToastPresenting?) {
+        self.toastPresenter = toastPresenter
+    }
+    
+    internal func _toastPresenterIsOf<T: ToastPresenting>(
+        type: T.Type
+    ) -> Bool {
+        
+        guard let toastPresenter else {
+            return false
+        }
+        
+        return toastPresenter is T
+    }
+    
+    @MainActor
+    public func schedulePresentation(
+        toast: Toast,
+        toastAlignment: ToastAlignment,
+        toastStyle: AnyToastStyle? = nil,
+        toastTransition: ToastTransition? = nil,
+        onPresent: (@MainActor () -> Void)? = nil,
+        onDismiss: (@MainActor () -> Void)? = nil
+    ) {
+        
+        schedule(
+            presentation: ToastPresentation(
+                toast: toast,
+                toastAlignment: toastAlignment,
+                toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
+                toastTransition: toastTransition ?? .defaultTransition,
+                onPresent: onPresent,
+                onDismiss: onDismiss
+            )
+        )
+    }
+    
+    @MainActor
+    internal func schedule(
+        presentation: ToastPresentation
+    ) {
+        guard let toastScheduler = toastPresenter?.toastScheduler else {
+            return
+        }
+        
+        toastScheduler.schedulePresentation(presentation)
+    }
+    
+    @MainActor
+    public func scheduleCancellablePresentation(
+        toast: Toast,
+        toastAlignment: ToastAlignment,
+        toastStyle: AnyToastStyle? = nil,
+        toastTransition: ToastTransition? = nil,
+        onPresent: (@MainActor () -> Void)? = nil,
+        onDismiss: (@MainActor () -> Void)? = nil
+    ) -> AnyCancellable {
+        
+        scheduleCancellable(
+            presentation: ToastPresentation(
+                toast: toast,
+                toastAlignment: toastAlignment,
+                toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
+                toastTransition: toastTransition ?? .defaultTransition,
+                onPresent: onPresent,
+                onDismiss: onDismiss
+            )
+        )
+    }
+    
+    @MainActor
+    internal func scheduleCancellable(
+        presentation: ToastPresentation
+    ) -> AnyCancellable {
+        guard let toastScheduler = toastPresenter?.toastScheduler else {
+            return AnyCancellable({})
+        }
+        
+        return toastScheduler.scheduleCancellablePresentation(presentation)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(toastPresenter != nil)
+        
+        guard let toastPresenter else {
+            return
+        }
+        
+        hasher.combine(ObjectIdentifier(toastPresenter))
+    }
+    
+    public static func == (lhs: ToastPresenterProxy, rhs: ToastPresenterProxy) -> Bool {
+        lhs.toastPresenter === rhs.toastPresenter
+    }
+}
+
+extension ToastPresenterProxy {
+    
+    @MainActor
+    func _schedule(
+        presentation: ToastPresentation,
+        cancellationPolicy: ToastCancellation,
+        cancellables: inout Set<AnyCancellable>
+    ) {
+        switch cancellationPolicy {
+        case .never, .automatic:
+            schedule(presentation: presentation)
+        case .presentation:
+            scheduleCancellable(presentation: presentation)
+                .store(in: &cancellables)
+        case .always:
+            cancellables.forEach({ $0.cancel() })
+            cancellables.removeAll()
+            scheduleCancellable(presentation: presentation)
+                .store(in: &cancellables)
+        }
+    }
+}
