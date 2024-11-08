@@ -131,7 +131,8 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
     }
     
     init(
-        handlerID: ObjectIdentifier,
+        presenterID: ObjectIdentifier,
+        presenterPhasePublisher: AnyPublisher<PresenterPhaseObserver.PresenterPhase, Never>? = nil,
         handler: @escaping @MainActor (ToastPresentation) async -> Void
     ) {
         self.handler = handler
@@ -140,7 +141,10 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
         self.toastStreamContinuation = streamContinuationPair.continuation
         
         Task(priority: .userInitiated) { @MainActor in
-            await self.startHandling(handlerID: handlerID)
+            await self.startHandling(
+                presenterID: presenterID,
+                presenterPhasePublisher: presenterPhasePublisher
+            )
         }
     }
     
@@ -150,14 +154,17 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
     }
     
     private func startHandling(
-        handlerID: ObjectIdentifier
+        presenterID: ObjectIdentifier,
+        presenterPhasePublisher: AnyPublisher<PresenterPhaseObserver.PresenterPhase, Never>?
     ) {
         
         self.handlingTask = Task(priority: .low) { @MainActor in
-            let scenePhaseObserver = ScenePhaseObserver(handlerID: handlerID)
+            let scenePhaseObserver = ScenePhaseObserver(sceneID: presenterID)
+            let presenterPhaseObserver = PresenterPhaseObserver(presenterPhasePublisher: presenterPhasePublisher)
             
             for await toastRequest in toastStream {
                 await scenePhaseObserver.appIsActive()
+                await presenterPhaseObserver.presenterIsActive()
                                 
                 guard !toastRequest.isCancelled else {
                     continue

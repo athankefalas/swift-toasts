@@ -1,11 +1,13 @@
 //
-//  Publisher+AsyncStream.swift
+//  Combine+Fallbacks.swift
 //  SwiftToasts
 //
 //  Created by Αθανάσιος Κεφαλάς on 31/10/24.
 //
 
-import Combine
+@preconcurrency import Combine
+
+extension AnyPublisher: @unchecked @retroactive Sendable {}
 
 extension Publisher where Output: Sendable, Failure == Never {
     

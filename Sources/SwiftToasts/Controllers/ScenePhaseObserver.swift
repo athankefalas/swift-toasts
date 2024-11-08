@@ -25,7 +25,7 @@ final class ScenePhaseObserver {
         case active
     }
     
-    private let handlerID: ObjectIdentifier
+    private let sceneID: ObjectIdentifier
     private let scenePhaseValueSubject: CurrentValueSubject<ScenePhase, Never>
     private var subscriptions: Set<AnyCancellable> = []
     
@@ -34,9 +34,9 @@ final class ScenePhaseObserver {
     }
     
     init(
-        handlerID: ObjectIdentifier
+        sceneID: ObjectIdentifier
     ) {
-        self.handlerID = handlerID
+        self.sceneID = sceneID
         self.scenePhaseValueSubject = CurrentValueSubject(.active)
         beginObservingScenePhase()
     }
@@ -97,7 +97,7 @@ final class ScenePhaseObserver {
             .publisher(for: NSWindow.willCloseNotification)
             .compactMap({ $0.object as? NSWindow })
             .sink { [weak self] window in
-                guard self?.handlerID == ObjectIdentifier(window) else {
+                guard self?.sceneID == ObjectIdentifier(window) else {
                     return
                 }
                 
@@ -109,7 +109,7 @@ final class ScenePhaseObserver {
             .publisher(for: NSWindow.didMiniaturizeNotification)
             .compactMap({ $0.object as? NSWindow })
             .sink { [weak self] window in
-                guard self?.handlerID == ObjectIdentifier(window) else {
+                guard self?.sceneID == ObjectIdentifier(window) else {
                     return
                 }
                 
@@ -121,7 +121,7 @@ final class ScenePhaseObserver {
             .publisher(for: NSWindow.didBecomeMainNotification)
             .compactMap({ $0.object as? NSWindow })
             .sink { [weak self] window in
-                guard self?.handlerID == ObjectIdentifier(window) else {
+                guard self?.sceneID == ObjectIdentifier(window) else {
                     return
                 }
                 

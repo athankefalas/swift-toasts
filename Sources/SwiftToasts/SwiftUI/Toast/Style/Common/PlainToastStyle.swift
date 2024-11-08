@@ -100,7 +100,7 @@ public struct PlainToastStyle: ToastStyle {
                     toastDismiss?()
                 }
                 .background(
-                    ToastBackground(
+                    PlainToastBackground(
                         accentColor: accentColor,
                         cornerRadius: 12,
                         borderWidth: borderWidth
@@ -120,28 +120,6 @@ public struct PlainToastStyle: ToastStyle {
                 .accessibilityElement(children: .contain)
                 .fallbackAccessibilityAddTraits([.isModal, .updatesFrequently])
                 .fallbackAccessibilityIdentifier("Toast")
-        }
-    }
-}
-
-private struct ToastBackground: View {
-    let accentColor: Color
-    let cornerRadius: CGFloat
-    let borderWidth: CGFloat
-    
-    var body: some View {
-        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .foregroundStyle(Material.regularMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(
-                            accentColor.opacity(0.2),
-                            lineWidth: borderWidth
-                        )
-                )
-        } else {
-            Color.gray
         }
     }
 }
@@ -320,5 +298,46 @@ extension ToastStyle where Self == PlainToastStyle {
     
     static var plain: PlainToastStyle {
         PlainToastStyle()
+    }
+}
+
+#Preview {
+    ScrollView {
+        VStack(alignment: .center, spacing: 16) {
+            
+            if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+                ForEach(ToastRole.allCases, id: \.self) { role in
+                    Toast("Title", value: "Subtitle", systemImage: "square.fill", role: role)
+                }
+            }
+            
+            Divider()
+            
+            if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+                ForEach(ToastRole.allCases, id: \.self) { role in
+                    Toast(role: role) {
+                        LabeledContent("Title", value: "Subtitle")
+                    }
+                }
+            }
+            
+            Divider()
+            
+            if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+                ForEach(ToastRole.allCases, id: \.self) { role in
+                    Toast("Title", systemImage: "square.fill", role: role)
+                }
+            }
+            
+            Divider()
+            
+            ForEach(ToastRole.allCases, id: \.self) { role in
+                Toast("Title", role: role)
+            }
+            
+            Divider()
+            
+        }
+        .frame(maxWidth: .infinity)
     }
 }

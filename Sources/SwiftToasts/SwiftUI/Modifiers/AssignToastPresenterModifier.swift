@@ -23,7 +23,7 @@ extension View {
 }
 
 @MainActor
-internal func _getDefaultToastPresenter() -> ToastPresenting? {
+func _getDefaultToastPresenter() -> ToastPresenting? {
 #if canImport(UIKit) && !os(watchOS)
     return _getDefaultUIWindowToastPresenter()
 #elseif canImport(Cocoa)

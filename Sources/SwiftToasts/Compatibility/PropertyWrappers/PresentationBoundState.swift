@@ -14,6 +14,11 @@
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable {
     
+    private enum ViewMode: String {
+        case view
+        case presented
+    }
+    
     @MainActor
     private final class ObservableObjectChangedBrigde: ObservableObject {}
     
@@ -25,8 +30,15 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
         private var observationCallback: @MainActor () -> Void
         private let wrappedValueProvider: () -> Value
         
-        var holdsValue: Bool {
-            latestValue != nil
+        private var viewMode: ViewMode = .view
+        private var isPresented: Bool = false {
+            didSet {
+                guard isPresented else {
+                    return
+                }
+                
+                viewMode = .presented
+            }
         }
         
         init(
@@ -51,7 +63,10 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             self.observationCallback = action
         }
         
-        func get() -> Value {
+        func get(
+            isPresented: Bool
+        ) -> Value {
+            self.isPresented = isPresented
             
             if let latestValue = latestValue {
                 return latestValue
@@ -68,18 +83,39 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
         }
         
         func update(
-            namespace: UUID
+            namespace: UUID,
+            isPresented: Bool
         ) {
+            self.isPresented = isPresented
             
             guard namespace != self.namespace else {
-                return initIfNeeded()
+                return initOrDeallocateIfNeeded()
             }
             
             self.namespace = namespace
             self.latestValue = makeNewValue()
         }
         
-        private func initIfNeeded() {
+        private func initOrDeallocateIfNeeded() {
+            if viewMode == .presented && !isPresented {
+                dismantleValue()
+            } else {
+                initValue()
+            }
+        }
+        
+        private func dismantleValue() {
+            guard latestValue != nil else {
+                return
+            }
+            
+            Task { @MainActor [weak self] in
+                await Task.yield()
+                self?.dismantle()
+            }
+        }
+        
+        private func initValue() {
             guard latestValue == nil else {
                 return
             }
@@ -114,7 +150,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
     @MainActor
     var wrappedValue: Value {
         get {
-            storage.get()
+            storage.get(isPresented: isPresented)
         }
         
         nonmutating set {
@@ -143,7 +179,9 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
         }
     }
     
-    init(wrappedValue: @escaping @autoclosure () -> Value) {
+    init(
+        wrappedValue: @escaping @autoclosure () -> Value
+    ) {
         let namespace = UUID()
         self._namespace = State(
             initialValue: namespace
@@ -163,18 +201,10 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             observableObjectChangedBrigde?.objectWillChange.send()
         }
         
-        guard isPresented else {
-            if storage.holdsValue {
-                Task { @MainActor [weak storage] in
-                    await Task.yield()
-                    storage?.dismantle()
-                }
-            }
-            
-            return
-        }
-        
-        storage.update(namespace: namespace)
+        storage.update(
+            namespace: namespace,
+            isPresented: isPresented
+        )
     }
 }
 

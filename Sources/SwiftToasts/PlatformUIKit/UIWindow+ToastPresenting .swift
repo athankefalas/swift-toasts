@@ -31,7 +31,7 @@ extension UIWindow: ToastPresenting {
     }
     
     private func makeScheduler() -> ToastScheduler {
-        return ToastScheduler(handlerID: ObjectIdentifier(self)) { [weak self] toastPresentation in
+        return ToastScheduler(presenterID: ObjectIdentifier(self)) { [weak self] toastPresentation in
             await self?.handleToastPresentation(toastPresentation)
         }
     }

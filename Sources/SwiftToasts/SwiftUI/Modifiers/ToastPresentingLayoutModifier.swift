@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 private struct ToastPresentingLayoutModifier: ViewModifier {
     
@@ -15,6 +16,12 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
         @Published
         private(set) var toastPresentation: ToastPresentation?
         
+        var hasAppeared: Bool = false {
+            didSet {
+                _presenterPhaseSubject?.send(hasAppeared ? .active : .inactive)
+            }
+        }
+        
         var accessibilityReduceMotion: Bool = false
         var accessibilityReduceTransparency: Bool = false
         
@@ -23,10 +30,15 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
         }
         
         private var _toastScheduler: ToastScheduler?
+        private var _presenterPhaseSubject: CurrentValueSubject<PresenterPhaseObserver.PresenterPhase, Never>?
         private var presentationTask: Task<Void, Never>?
         
         init() {
-            _toastScheduler = ToastScheduler(handlerID: ObjectIdentifier(self)) { [weak self] toastPresentation in
+            _presenterPhaseSubject = CurrentValueSubject(.inactive)
+            _toastScheduler = ToastScheduler(
+                presenterID: ObjectIdentifier(self),
+                presenterPhasePublisher: _presenterPhaseSubject?.eraseToAnyPublisher()
+            ) { [weak self] toastPresentation in
                 self?.handle(toastPresentation: toastPresentation)
             }
         }
@@ -119,7 +131,14 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
     @FallbackStateObject
     private var toastPresenter = ToastPresenter()
     
+    let layoutPresentationEnabled: Bool
+    
     private var innerToastPresenter: ToastPresenterProxy {
+        
+        guard layoutPresentationEnabled else {
+            return outterToastPresenter
+        }
+        
         guard !outterToastPresenter._toastPresenterIsOf(type: ToastPresenter.self) else {
             return outterToastPresenter
         }
@@ -171,8 +190,12 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
             toastPresenter.accessibilityReduceTransparency = newValue
         }
         .onAppear {
+            toastPresenter.hasAppeared = true
             toastPresenter.accessibilityReduceMotion = accessibilityReduceMotion
             toastPresenter.accessibilityReduceTransparency = accessibilityReduceTransparency
+        }
+        .onDisappear {
+            toastPresenter.hasAppeared = false
         }
     }
     
@@ -205,15 +228,18 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     
     /// Presents toasts as overlays of this view instead of being presented at the scene level.
     /// - Note: In platforms that do not allow for dynamic layouts, such as watchOS, using
     /// this modifier is *required* to present toasts.
+    /// - Parameter enabled: Controls whether layout level toast presentation is enabled.
     /// - Returns: A modified view.
-    func toastPresentingLayout() -> some View {
+    func toastPresentingLayout(_ enabled: Bool = true) -> some View {
         self.modifier(
-            ToastPresentingLayoutModifier()
+            ToastPresentingLayoutModifier(
+                layoutPresentationEnabled: enabled
+            )
         )
     }
 }
@@ -222,29 +248,34 @@ extension View {
 
 #if DEBUG
 
-#Preview("Simple Button") {
-    VStack {
-        Spacer()
-        
-        ToastButton { proxy in
-            proxy.schedule(
-                toast: Toast("Hello Toast!"),
-                alignment: .top
+#Preview {
+    PresentedPreview {
+        VStack {
+            Spacer()
+            
+            ToastButton { proxy in
+                proxy.schedule(
+                    toast: Toast("Hello Toast!"),
+                    alignment: .top
+                )
+            } label: {
+                Text("Show Toast")
+            }
+            .toastTransition(
+                ToastTransition.opacity
+                    .curve(.easeInOut)
+                    .duration(1)
             )
-        } label: {
-            Text("Toast")
+            
+            NavigationLink("Details") {
+                Text("Details")
+            }
+            
+            Spacer()
         }
-        .toastTransition(
-            ToastTransition.opacity
-                .curve(.easeInOut)
-                .duration(1)
-        )
-        
-        Spacer()
+        .frame(maxWidth: .infinity)
+        .toastPresentingLayout()
     }
-    .frame(maxWidth: .infinity)
-    .background(Color.red)
-    .toastPresentingLayout()
 }
 
 #endif

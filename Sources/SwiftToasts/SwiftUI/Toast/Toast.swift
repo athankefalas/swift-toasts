@@ -506,46 +506,47 @@ extension Toast {
     }
 }
 
+// MARK: Previews
 
-/*
 #Preview {
-    PreviewContent {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .center, spacing: 16) {
-                    
+    PresentedPreview {
+        ScrollView {
+            VStack(alignment: .center, spacing: 16) {
+                
+                if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                     ForEach(ToastRole.allCases, id: \.self) { role in
                         Toast("Title", value: "Subtitle", systemImage: "square.fill", role: role)
                     }
-                    
-                    Divider()
-                    
+                }
+                
+                Divider()
+                
+                if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                     ForEach(ToastRole.allCases, id: \.self) { role in
                         Toast(role: role) {
                             LabeledContent("Title", value: "Subtitle")
                         }
                     }
-                    
-                    Divider()
-                    
+                }
+                
+                Divider()
+                
+                if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
                     ForEach(ToastRole.allCases, id: \.self) { role in
                         Toast("Title", systemImage: "square.fill", role: role)
                     }
-                    
-                    Divider()
-                    
-                    ForEach(ToastRole.allCases, id: \.self) { role in
-                        Toast("Title", role: role)
-                    }
-                    
-                    Divider()
-                    
                 }
-                .frame(maxWidth: .infinity)
+                
+                Divider()
+                
+                ForEach(ToastRole.allCases, id: \.self) { role in
+                    Toast("Title", role: role)
+                }
+                
+                Divider()
+                
             }
-            .navigationTitle("Toasts")
+            .frame(maxWidth: .infinity)
         }
     }
 }
-
-*/
