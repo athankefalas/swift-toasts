@@ -53,28 +53,28 @@ struct PlainToastBackground: View {
     }
 #endif
     
-    
     let accentColor: Color
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
     
     var body: some View {
         ZStack {
-            material.clipShape(
-                RoundedRectangle(
-                    cornerRadius: cornerRadius
-                )
-            )
+            material
+                .clipShape(shape)
             
-            RoundedRectangle(
-                cornerRadius: cornerRadius
-            )
-            .stroke(
-                accentColor.opacity(0.2),
-                lineWidth: borderWidth
-            )
-            .layoutPriority(-1)
+            shape
+                .stroke(
+                    accentColor.opacity(0.2),
+                    lineWidth: borderWidth
+                )
+                .layoutPriority(-1)
         }
+    }
+    
+    private var shape: some Shape {
+        RoundedRectangle(
+            cornerRadius: cornerRadius
+        )
     }
     
     @ViewBuilder
