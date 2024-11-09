@@ -187,8 +187,9 @@ struct PlainToastStylePreview: View {
         VStack {
             ToastPresenterReader { proxy in
                 Color.clear
+                    .frame(minWidth: 100, minHeight: 100)
                     .onAppear {
-                        if #available(iOS 16.0, *) {
+                        if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                             proxy.schedulePresentation(
                                 toast: Toast(
                                     "Toast Title",
@@ -196,7 +197,7 @@ struct PlainToastStylePreview: View {
                                     systemImage: "square.fill",
                                     duration: .indefinite
                                 ),
-                                toastAlignment: .defaultAlignment
+                                toastAlignment: .center
                             )
                         }
                     }
