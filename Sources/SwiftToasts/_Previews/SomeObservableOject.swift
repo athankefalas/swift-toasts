@@ -14,13 +14,9 @@ class SomeObservableOject: ObservableObject {
     @Published
     var count = 0
     
-    init() {
-        print("## SomeObservableOject - INIT")
-    }
+    init() {}
     
-    deinit {
-        print("## SomeObservableOject - DEINIT")
-    }
+    deinit {}
 }
 
 #endif

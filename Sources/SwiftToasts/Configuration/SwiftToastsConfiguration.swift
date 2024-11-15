@@ -35,7 +35,12 @@ public class SwiftToastsConfiguration: Sendable {
     
     public static let current = SwiftToastsConfiguration()
     
+#if DEBUG
     var timeScale: TimeScale = 1
+#else
+    let timeScale: TimeScale = 1
+#endif
+    
     public var presentationContextSelector = ToastPresentationContextSelector.scenePresentation
     
     private init() {}

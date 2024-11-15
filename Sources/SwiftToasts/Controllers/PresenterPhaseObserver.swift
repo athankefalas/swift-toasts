@@ -30,7 +30,7 @@ final class PresenterPhaseObserver {
         beginObservingPresenterPhase(by: presenterPhasePublisher)
     }
     
-    private func beginObservingPresenterPhase(
+    private final func beginObservingPresenterPhase(
         by publisher: AnyPublisher<PresenterPhase, Never>?
     ) {
         
@@ -46,7 +46,7 @@ final class PresenterPhaseObserver {
             .store(in: &subscriptions)
     }
     
-    private func transitionPresenterPhase(
+    private final func transitionPresenterPhase(
         to newValue: PresenterPhase
     ) {
         
@@ -57,7 +57,7 @@ final class PresenterPhaseObserver {
         presenterPhaseValueSubject.value = newValue
     }
     
-    func presenterIsActive() async {
+    final func presenterIsActive() async {
         guard presenterPhase != .active else {
             return
         }
@@ -70,13 +70,13 @@ final class PresenterPhaseObserver {
     }
     
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-    private func _waitSequenceUntilAppIsActive() async {
+    private final func _waitSequenceUntilAppIsActive() async {
         for await newValue in presenterPhaseValueSubject.values where newValue == .active {
             break
         }
     }
     
-    private func _waitSubjectUntilAppIsActive() async {
+    private final func _waitSubjectUntilAppIsActive() async {
         let subscriptionStreamPair = presenterPhaseValueSubject.makeFallbackAsyncPublisherStream()
         
         for await newValue in subscriptionStreamPair.stream where newValue == .active {

@@ -17,6 +17,11 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         toastPresenter != nil
     }
     
+    @MainActor
+    var presentationSpace: ToastPresentationSpace? {
+        toastPresenter?.presentationSpace
+    }
+    
     public var customMirror: Mirror {
         let toastPresenterID: Any
         
@@ -39,17 +44,6 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
     
     internal init(toastPresenter: ToastPresenting?) {
         self.toastPresenter = toastPresenter
-    }
-    
-    internal func _toastPresenterIsOf<T: ToastPresenting>(
-        type: T.Type
-    ) -> Bool {
-        
-        guard let toastPresenter else {
-            return false
-        }
-        
-        return toastPresenter is T
     }
     
     @MainActor

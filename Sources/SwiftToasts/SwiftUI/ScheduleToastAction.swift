@@ -13,8 +13,7 @@ import Combine
 /// is required, it may be preferred to use an instance of `ToastPresenterProxy` instead.
 ///
 /// - Warning: Instances of `ScheduleToastAction` are directly tied to the lifetime of the view
-/// that provided them and therefore, it is recommended that they are not retained and / or shared outside their related view
-/// hierarchy.
+/// that provided them and therefore, it is recommended that they are not retained outside of their scope.
 public struct ScheduleToastAction: CustomReflectable {
     public let toastPresenterProxy: ToastPresenterProxy
     

@@ -57,13 +57,13 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             }
         }
         
-        func onObservableObjectWillChange(
+        final func onObservableObjectWillChange(
             perform action: @escaping @MainActor () -> Void
         ) {
             self.observationCallback = action
         }
         
-        func get(
+        final func get(
             isPresented: Bool
         ) -> Value {
             self.isPresented = isPresented
@@ -78,11 +78,11 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             return newValue
         }
         
-        func set(to newValue: Value) {
+        final func set(to newValue: Value) {
             self.latestValue = newValue
         }
         
-        func update(
+        final func update(
             namespace: UUID,
             isPresented: Bool
         ) {
@@ -96,7 +96,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             self.latestValue = makeNewValue()
         }
         
-        private func initOrDeallocateIfNeeded() {
+        private final func initOrDeallocateIfNeeded() {
             if viewMode == .presented && !isPresented {
                 dismantleValue()
             } else {
@@ -104,7 +104,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             }
         }
         
-        private func dismantleValue() {
+        private final func dismantleValue() {
             guard latestValue != nil else {
                 return
             }
@@ -115,7 +115,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             }
         }
         
-        private func initValue() {
+        private final func initValue() {
             guard latestValue == nil else {
                 return
             }
@@ -123,7 +123,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             latestValue = makeNewValue()
         }
         
-        private func makeNewValue() -> Value {
+        private final func makeNewValue() -> Value {
             observation?.cancel()
             observation = nil
             
@@ -140,7 +140,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
             return newValue
         }
         
-        func dismantle() {
+        final func dismantle() {
             latestValue = nil
             observation?.cancel()
             observation = nil

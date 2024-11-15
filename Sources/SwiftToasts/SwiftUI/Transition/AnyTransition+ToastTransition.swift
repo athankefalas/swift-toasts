@@ -212,6 +212,7 @@ private struct BridgedToastTransitionModifier: ViewModifier {
         )
         
         content
+            .compositingGroup()
             .opacity(animationValues.opacity)
             .offset(animationValues.offset)
             .rotation3DEffect(

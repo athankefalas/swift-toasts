@@ -13,7 +13,7 @@ private struct NSWindowToastPresenterReaderModifier: ViewModifier {
     
     struct WindowReader: NSViewRepresentable {
         
-        class View: NSView {
+        final class View: NSView {
             private var reader: ((NSWindow?) -> Void)?
             
             convenience init(reader: @escaping (NSWindow?) -> Void) {
@@ -26,7 +26,7 @@ private struct NSWindowToastPresenterReaderModifier: ViewModifier {
                 reader?(window)
             }
             
-            func update(reader: @escaping (NSWindow?) -> Void) {
+            final func update(reader: @escaping (NSWindow?) -> Void) {
                 self.reader = reader
                 reader(window)
             }

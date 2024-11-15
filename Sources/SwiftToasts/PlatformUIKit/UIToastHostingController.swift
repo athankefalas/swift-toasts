@@ -10,9 +10,9 @@ import UIKit
 import SwiftUI
 import Combine
 
-class UIToastHostingController: UIViewController {
+final class UIToastHostingController: UIViewController {
     
-    private class UIPassthroughBackdropView: UIView {
+    private final class UIPassthroughBackdropView: UIView {
         weak var hostingView: UIView?
         
         private var hostedContentFrame: CGRect {
@@ -30,7 +30,7 @@ class UIToastHostingController: UIViewController {
             return frame
         }
         
-        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
             guard let hostingView = hostingView else {
@@ -90,7 +90,7 @@ class UIToastHostingController: UIViewController {
         hostingController.didMove(toParent: self)
     }
     
-    private func makeLayoutConstraints() {
+    private final func makeLayoutConstraints() {
         let hostedView = hostingController.view!
         view.removeConstraints(hostingControllerConstraints)
         hostedView.removeConstraints(hostingControllerConstraints)
@@ -111,7 +111,7 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    func present(
+    final func present(
         toast toastPresentation: ToastPresentation,
         inView parent: UIView
     ) {
@@ -129,7 +129,7 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func attachToParent(
+    private final func attachToParent(
         _ parent: UIView,
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
@@ -149,12 +149,12 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func attach(to parent: UIView) {
+    private final func attach(to parent: UIView) {
         parent.addSubview(self.view)
         view.frame = parent.bounds
     }
     
-    func present(
+    final func present(
         toast toastPresentation: ToastPresentation,
         inController parent: UIViewController
     ) {
@@ -172,7 +172,7 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func attachToParent(
+    private final func attachToParent(
         _ parent: UIViewController,
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
@@ -192,14 +192,14 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func attach(to parent: UIViewController) {
+    private final func attach(to parent: UIViewController) {
         parent.addChild(self)
         parent.view.addSubview(self.view)
         view.frame = parent.view.bounds
         didMove(toParent: parent)
     }
     
-    private func makeHandlingTask(
+    private final func makeHandlingTask(
         toastPresentation: ToastPresentation
     ) -> Task<Void, Never> {
         return Task {
@@ -214,11 +214,11 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func dismissToast() {
+    private final func dismissToast() {
         presentationTask?.cancel()
     }
     
-    private func detachFromParent(
+    private final func detachFromParent(
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
     ) {
@@ -236,19 +236,19 @@ class UIToastHostingController: UIViewController {
         }
     }
     
-    private func detach() {
+    private final func detach() {
         willMove(toParent: nil)
         view.removeFromSuperview()
         removeFromParent()
     }
     
-    private func layoutAndReset() {
+    private final func layoutAndReset() {
         hostingController.view.resetPresentationAnimationProperties()
         view.layoutIfNeeded()
         hostingController.view.layoutIfNeeded()
     }
     
-    private func makeAnimationContext(
+    private final func makeAnimationContext(
         phase: ToastTransition.PresentationPhase,
         toast: ToastPresentation
     ) -> ToastTransition.Context {
@@ -263,7 +263,7 @@ class UIToastHostingController: UIViewController {
         )
     }
     
-    private func makeGeometryInfo() -> CGRect {
+    private final func makeGeometryInfo() -> CGRect {
         hostingController.view.convert(hostingController.view.frame, to: nil)
     }
 }

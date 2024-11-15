@@ -200,7 +200,7 @@ private struct TaskFallbackModifier: ViewModifier {
         
         let content: Content
         let priority: TaskPriority
-        let action: @Sendable () async -> Void
+        let action: @MainActor @Sendable () async -> Void
         
         var body: some View {
             content
@@ -216,11 +216,11 @@ private struct TaskFallbackModifier: ViewModifier {
     }
     
     let priority: TaskPriority
-    let action: @Sendable () async -> Void
+    let action: @MainActor @Sendable () async -> Void
     
     init(
         priority: TaskPriority,
-        action: @escaping @Sendable () async -> Void
+        action: @escaping @MainActor @Sendable () async -> Void
     ) {
         self.priority = priority
         self.action = action
@@ -259,7 +259,7 @@ extension View {
     
     func fallbackTask(
         priority: TaskPriority = .userInitiated,
-        _ action: @escaping @Sendable () async -> Void
+        _ action: @escaping @MainActor @Sendable () async -> Void
     ) -> some View {
         self.modifier(
             TaskFallbackModifier(priority: priority) {
@@ -287,7 +287,7 @@ private struct IdentifiableTaskFallbackModifier<ID: Equatable>: ViewModifier {
         
         final func beginTask(
             priority: TaskPriority,
-            performing action: @escaping @Sendable () async -> Void
+            performing action: @escaping @MainActor @Sendable () async -> Void
         ) {
             activeTask = Task(priority: priority) { @MainActor [weak self] in
                 await action()
@@ -308,7 +308,7 @@ private struct IdentifiableTaskFallbackModifier<ID: Equatable>: ViewModifier {
         let content: Content
         let id: ID
         let priority: TaskPriority
-        let action: @Sendable () async -> Void
+        let action: @MainActor @Sendable () async -> Void
         
         var body: some View {
             content
@@ -331,12 +331,12 @@ private struct IdentifiableTaskFallbackModifier<ID: Equatable>: ViewModifier {
     
     let id: ID
     let priority: TaskPriority
-    let action: @Sendable () async -> Void
+    let action: @MainActor @Sendable () async -> Void
     
     init(
         id: ID,
         priority: TaskPriority,
-        action: @escaping @Sendable () async -> Void
+        action: @escaping @MainActor @Sendable () async -> Void
     ) {
         self.id = id
         self.priority = priority
@@ -378,7 +378,7 @@ extension View {
     func fallbackTask<ID: Equatable>(
         id: ID,
         priority: TaskPriority = .userInitiated,
-        _ action: @escaping @Sendable () async -> Void
+        _ action: @escaping @MainActor @Sendable () async -> Void
     ) -> some View {
         self.modifier(
             IdentifiableTaskFallbackModifier(id: id, priority: priority) {

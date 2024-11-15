@@ -29,6 +29,10 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
             _toastScheduler!
         }
         
+        var presentationSpace: ToastPresentationSpace {
+            .explicitLayout
+        }
+        
         private var _toastScheduler: ToastScheduler?
         private var _presenterPhaseSubject: CurrentValueSubject<PresenterPhaseObserver.PresenterPhase, Never>?
         private var presentationTask: Task<Void, Never>?
@@ -139,7 +143,7 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
             return outterToastPresenter
         }
         
-        guard !outterToastPresenter._toastPresenterIsOf(type: ToastPresenter.self) else {
+        guard outterToastPresenter.presentationSpace != .explicitLayout else {
             return outterToastPresenter
         }
         
@@ -163,18 +167,17 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
                     toastPresentingLayoutGeometry = newValue
                 }
             
-            ZStack {
+            ZStack(
+                alignment: makeAlignment(
+                    from: toastPresenter.toastPresentation?.toastAlignment ?? .center
+                )
+            ) {
+                Color.clear
+                
                 if let toastPresentation = toastPresenter.toastPresentation {
                     HostedToastContent(hosting: toastPresentation) {
                         toastPresenter.dismissToast()
                     }
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity,
-                        alignment: makeAlignment(
-                            from: toastPresentation.toastAlignment
-                        )
-                    )
                     .transition(
                         .bridgedToastTransition(toastPresentation)
                     )
@@ -230,11 +233,18 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
 
 public extension View {
     
-    /// Presents toasts as overlays of this view instead of being presented at the scene level.
-    /// - Note: In platforms that do not allow for dynamic layouts, such as watchOS, using
-    /// this modifier is *required* to present toasts.
+    /// Presents toasts in this view layout instead of being presented at the scene level.
     /// - Parameter enabled: Controls whether layout level toast presentation is enabled.
     /// - Returns: A modified view.
+    ///
+    /// The presented toasts are directly added as SwiftUI overlays of the modified view. As a result,
+    /// some of the animation properties during transition may be *slightly* different than toasts presented
+    /// at the scene level, which are presented using the platform native UI framework. Furthermore,
+    /// the safe area insets of the toast **must be explicitly handled** as using the `ignoresSafeArea`
+    /// modifier would also affect any parent layout.
+    ///
+    /// - Note: In platforms that do not allow for dynamic layouts, such as watchOS, using
+    /// this modifier is *required* to present toasts.
     func toastPresentingLayout(_ enabled: Bool = true) -> some View {
         self.modifier(
             ToastPresentingLayoutModifier(

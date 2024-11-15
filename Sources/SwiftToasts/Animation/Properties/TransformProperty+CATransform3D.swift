@@ -32,7 +32,7 @@ extension Array: IntermediateAnimatablePropertyValue where Element == TransformP
             case .translate(x: let x, y: let y, z: let z):
                 transform = CATransform3DTranslate(transform, x, y, z)
             case .rotate(angle: let angle, axes: let axes):
-                guard axes.count > 1 else {
+                guard !axes.isEmpty else {
                     continue
                 }
                 

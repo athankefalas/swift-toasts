@@ -45,13 +45,13 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
             }
         }
         
-        func onObservableObjectWillChange(
+        final func onObservableObjectWillChange(
             perform action: @escaping @MainActor () -> Void
         ) {
             self.observationCallback = action
         }
         
-        func get() -> Value {
+        final func get() -> Value {
             
             if let latestValue = latestValue {
                 return latestValue
@@ -63,11 +63,11 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
             return newValue
         }
         
-        func set(to newValue: Value) {
+        final func set(to newValue: Value) {
             self.latestValue = newValue
         }
         
-        func update(
+        final func update(
             namespace: UUID
         ) {
             
@@ -79,7 +79,7 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
             self.latestValue = makeNewValue()
         }
         
-        private func initIfNeeded() {
+        private final func initIfNeeded() {
             guard latestValue == nil else {
                 return
             }
@@ -87,7 +87,7 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
             latestValue = makeNewValue()
         }
         
-        private func makeNewValue() -> Value {
+        private final func makeNewValue() -> Value {
             let newValue = wrappedValueProvider()
             observation?.cancel()
             observation = newValue.objectWillChange
@@ -98,7 +98,7 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
             return newValue
         }
         
-        func dismantle() {
+        final func dismantle() {
             latestValue = nil
             observation?.cancel()
             observation = nil

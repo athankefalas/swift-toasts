@@ -41,7 +41,7 @@ final class ScenePhaseObserver {
         beginObservingScenePhase()
     }
     
-    private func beginObservingScenePhase() {
+    private final func beginObservingScenePhase() {
 #if canImport(UIKit) && !os(watchOS)
         beginObservingUIKitScenePhase()
 #elseif canImport(Cocoa)
@@ -50,7 +50,7 @@ final class ScenePhaseObserver {
     }
     
 #if canImport(UIKit) && !os(watchOS)
-    private func beginObservingUIKitScenePhase() {
+    private final func beginObservingUIKitScenePhase() {
         NotificationCenter.default
             .publisher(for: UIApplication.willResignActiveNotification)
             .receive(on: DispatchQueue.main)
@@ -78,7 +78,7 @@ final class ScenePhaseObserver {
 #endif
     
 #if canImport(Cocoa)
-    private func beginObservingCocoaScenePhase() {
+    private final func beginObservingCocoaScenePhase() {
         NotificationCenter.default
             .publisher(for: NSApplication.willResignActiveNotification)
             .sink { [weak self] _ in
@@ -131,7 +131,7 @@ final class ScenePhaseObserver {
     }
 #endif
     
-    private func transitionScenePhase(
+    private final func transitionScenePhase(
         to newValue: ScenePhase
     ) {
         guard newValue != scenePhaseValueSubject.value else {
@@ -141,7 +141,7 @@ final class ScenePhaseObserver {
         scenePhaseValueSubject.value = newValue
     }
     
-    func appIsActive() async {
+    final func appIsActive() async {
         guard scenePhase != .active else {
             return
         }
@@ -154,13 +154,13 @@ final class ScenePhaseObserver {
     }
     
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-    private func _waitSequenceUntilAppIsActive() async {
+    private final func _waitSequenceUntilAppIsActive() async {
         for await newValue in scenePhaseValueSubject.values where newValue == .active {
             break
         }
     }
     
-    private func _waitSubjectUntilAppIsActive() async {
+    private final func _waitSubjectUntilAppIsActive() async {
         let subscriptionStreamPair = scenePhaseValueSubject.makeFallbackAsyncPublisherStream()
         
         for await newValue in subscriptionStreamPair.stream where newValue == .active {

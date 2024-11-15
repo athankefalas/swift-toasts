@@ -508,6 +508,8 @@ extension Toast {
 
 // MARK: Previews
 
+#if DEBUG
+
 #Preview {
     PresentedPreview {
         ScrollView {
@@ -550,3 +552,5 @@ extension Toast {
         }
     }
 }
+
+#endif

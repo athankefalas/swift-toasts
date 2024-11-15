@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A visual attribute property that controls an element's opacity and can be animated.
 public struct OpacityProperty: AnimatableProperty {
     public let fromValue: CGFloat
     public let toValue: CGFloat

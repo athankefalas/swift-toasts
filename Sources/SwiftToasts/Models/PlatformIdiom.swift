@@ -15,6 +15,7 @@ import UIKit
 import Cocoa
 #endif
 
+/// A type that can used to determine the platform device idiom.
 public struct PlatformIdiom: Hashable, Sendable {
     private let rawValue: Int
     

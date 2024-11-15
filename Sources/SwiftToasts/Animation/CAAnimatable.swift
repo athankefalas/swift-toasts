@@ -95,6 +95,12 @@ extension CAAnimatable {
         animationGroup.fillMode = .both
         animationGroup.duration = animations.map(\.duration).max() ?? duration
         
+#if DEBUG
+        if isSlowAnimationsFlagEnabled() {
+            animationGroup.speed = 0.1
+        }
+#endif
+        
         // Animation
         willStartAnimation()
         CATransaction.begin()
@@ -205,5 +211,19 @@ extension CAAnimatable {
         }
     }
 }
+
+// MARK: Animation Debug Tools
+
+#if canImport(UIKit) && targetEnvironment(simulator)
+@_silgen_name("UIAnimationDragCoefficient") func UIAnimationDragCoefficient() -> Float
+
+func isSlowAnimationsFlagEnabled() -> Bool {
+    return UIAnimationDragCoefficient() != 1.0
+}
+#else
+func isSlowAnimationsFlagEnabled() -> Bool {
+    return false
+}
+#endif
 
 #endif

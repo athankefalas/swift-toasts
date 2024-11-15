@@ -206,6 +206,12 @@ struct PlainToastStylePreview: View {
     }
 }
 
+// MARK: Previews
+
+#if DEBUG
+
 #Preview {
     PlainToastStylePreview()
 }
+
+#endif

@@ -20,6 +20,11 @@ public struct ToastPresentationContextSelector {
         await selector(.current, context)
     }
     
+    /// A presentation that selects the scene as the presentation context for presenting a toast.
+    ///
+    /// - Note: In watchOS scene level presentation is not available due to the nature of how native
+    /// view hierarchies are created. Instead use the `toastPresentingLayout` modifier at the top
+    /// level of a view to show toasts at the layout level.
     public static var scenePresentation: ToastPresentationContextSelector {
         ToastPresentationContextSelector { idiom, context in
             return context.findRoot()

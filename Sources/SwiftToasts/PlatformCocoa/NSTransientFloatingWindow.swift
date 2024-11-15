@@ -31,7 +31,7 @@ final class NSTransientFloatingWindow: NSWindow {
         }
     }
     
-    private func postInit(parent: NSWindow) {
+    private final func postInit(parent: NSWindow) {
         self.level = .floating
         self.styleMask = .hudWindow
         self.isExcludedFromWindowsMenu = true
@@ -131,7 +131,7 @@ final class NSTransientFloatingWindow: NSWindow {
             .store(in: &subscriptions)
     }
     
-    func show() {
+    final func show() {
         guard let parent = presentingWindow,
               !isShown else {
             return
@@ -145,7 +145,7 @@ final class NSTransientFloatingWindow: NSWindow {
         self.contentView?.needsLayout = true
     }
     
-    func hide() {
+    final func hide() {
         guard isShown else {
             return
         }

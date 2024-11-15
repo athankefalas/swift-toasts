@@ -10,7 +10,6 @@ import Combine
 
 @MainActor
 final class CancellablesBox: ObservableObject {
-    
     final var cancellables: Set<AnyCancellable>
     
     init() {

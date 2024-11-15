@@ -14,8 +14,16 @@ import Cocoa
 import QuartzCore
 #endif
 
+/// A transition than can be used to insert and remove a toast presentation.
 public struct ToastTransition: Identifiable, Equatable, Sendable {
     
+    /// The phase of the toast transition.
+    public enum PresentationPhase: Sendable, Hashable {
+        case toastInsertion
+        case toastRemoval
+    }
+    
+    /// The curve used to animate the transition of a toast.
     public enum AnimationCurve: Sendable, Hashable {
         case `default`
         case linear
@@ -25,24 +33,24 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         case spring(mass: Double = 1, stiffness: Double, damping: Double, initialVelocity: CGFloat = 0, allowOverDamping: Bool = false)
     }
     
-    public enum PresentationPhase: Sendable, Hashable {
-        case toastInsertion
-        case toastRemoval
-    }
-    
+    /// A type that holds contextual information about the toast, platform, view hierarchy and transition phase.
+    ///
+    /// When implementing a custom toast transition the values of this type can be used to help decide different
+    /// aspects of a transition animation at runtime. For example, if the `isReduceMotionEnabled` is enabled
+    /// in the system the animation may conditionally not include motion.
     public struct Context: Sendable, Hashable {
-        let phase: PresentationPhase
-        let geometry: CGRect
-        let windowGeometry: CGRect
-        let platformIdiom: PlatformIdiom
-        let isReduceMotionEnabled: Bool
-        let isReduceTransparencyEnabled: Bool
-        let toastRole: ToastRole
-        let toastDuration: ToastDuration
-        let toastAlignment: ToastAlignment
+        public let phase: PresentationPhase
+        public let geometry: CGRect
+        public let windowGeometry: CGRect
+        public let platformIdiom: PlatformIdiom
+        public let isReduceMotionEnabled: Bool
+        public let isReduceTransparencyEnabled: Bool
+        public let toastRole: ToastRole
+        public let toastDuration: ToastDuration
+        public let toastAlignment: ToastAlignment
         
         @inlinable
-        var platformUsesFlippedCoordinateSystem: Bool {
+        public var platformUsesFlippedCoordinateSystem: Bool {
 #if os(macOS)
             return true
 #else
@@ -71,11 +79,14 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         }
     }
     
+    /// The identity of a toast transition.
+    ///
+    /// - Invariant: Two transitions that have the same identity must be, and are in fact, considered equal.
     public let id: Int
-    public private(set) var curve: @MainActor (Context) -> AnimationCurve
-    public private(set) var delay: @MainActor (Context) -> TimeInterval
-    public private(set) var duration: @MainActor (Context) -> TimeInterval
-    public private(set) var animationProperties: @MainActor (Context) -> [AnyAnimationProperty]
+    internal private(set) var curve: @MainActor (Context) -> AnimationCurve
+    internal private(set) var delay: @MainActor (Context) -> TimeInterval
+    internal private(set) var duration: @MainActor (Context) -> TimeInterval
+    internal private(set) var animationProperties: @MainActor (Context) -> [AnyAnimationProperty]
     
     public init<ID: Hashable>(
         id: ID,
@@ -105,6 +116,9 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         self.animationProperties = animationProperties
     }
     
+    /// Modifies the toast transition by applying the given curve.
+    /// - Parameter curve: The  curve this transition will use when animating.
+    /// - Returns: A modified `ToastTransition`.
     public func curve(
         _ curve: AnimationCurve
     ) -> ToastTransition {
@@ -116,6 +130,23 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         return mutableCopy
     }
     
+    /// Modifies the toast transition by applying the given delay.
+    /// - Parameter delay: The  delay this transition will use when animating.
+    /// - Returns: A modified `ToastTransition`.
+    public func delay(
+        _ delay: TimeInterval
+    ) -> ToastTransition {
+        var mutableCopy = self
+        mutableCopy.delay = { @MainActor _ in
+            delay
+        }
+        
+        return mutableCopy
+    }
+    
+    /// Modifies the toast transition by applying the given duration.
+    /// - Parameter duration: The  duration this transition will use when animating.
+    /// - Returns: A modified `ToastTransition`.
     public func duration(
         _ duration: TimeInterval
     ) -> ToastTransition {
@@ -127,6 +158,14 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         return mutableCopy
     }
     
+    public static func == (lhs: ToastTransition, rhs: ToastTransition) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    // MARK: Toast Transition Combination
+    
+    /// Returns a new `ToastTransition` by combining this transiton with the given secondary transition.
+    /// - Parameter other: The secondary transition to perform alongside this one.
     public func combined(
         with other: ToastTransition
     ) -> ToastTransition {
@@ -141,10 +180,10 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         }
     }
     
-    public static func == (lhs: ToastTransition, rhs: ToastTransition) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
+    /// Returns an asymmetric `ToastTransition` by using the given insertion and removal transitons.
+    /// - Parameters:
+    ///   - insertion: The insertion `ToastTransition` to use when animating the insertion of a toast.
+    ///   - removal: The removal `ToastTransition` to use when animating the removal of a toast.
     public static func asymmetric(
         insertion: ToastTransition,
         removal: ToastTransition
@@ -182,14 +221,18 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         }
     }
     
-    public static var none: ToastTransition {
+    // MARK: Common Toast Transitions
+    
+    /// Returns an empty transition that does not animate the toast.
+    public static var identity: ToastTransition {
         ToastTransition(
-            id: "none",
+            id: "identity",
             duration: 0,
             animationProperties: {_ in [] }
         )
     }
     
+    /// Returns a `ToastTransition` that animates the opacity of a toast.
     public static var opacity: ToastTransition {
         ToastTransition(id: "opacity") { context in
             if !context.isReduceTransparencyEnabled {
@@ -201,6 +244,8 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         }
     }
     
+    /// Returns a `ToastTransition` that animates the position of a toast relative to the given edge.
+    /// - Parameter edge: The edge to use when animating the transition of a toast.
     public static func move(
         edge: Edge
     ) -> ToastTransition {
@@ -235,6 +280,49 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         }
     }
     
+    /// Returns a `ToastTransition` that animates the scale of a toast.
+    public static var scale: ToastTransition {
+        ToastTransition.scale(scale: 0)
+    }
+    
+    /// Returns a`ToastTransition` that animates the scale of a toast relative to the given scale value.
+    /// - Parameter scale: The scale to use when animating the transition of a toast.
+    public static func scale(scale: CGFloat) -> ToastTransition {
+        ToastTransition(id: "scale(scale:\(scale))") { context in
+            TransformProperty(
+                fromValue: context.phase == .toastInsertion
+                    ? [.scale(x: scale, y: scale, z: 1)]
+                    : [],
+                toValue: context.phase == .toastInsertion
+                    ? []
+                    : [.scale(x: scale, y: scale, z: 1)]
+            )
+        }
+    }
+    
+    /// Returns a `ToastTransition` that animates the rotation of a toast by the given angle in the given axis.
+    /// - Parameters:
+    ///   - angle: The angle of rotation to use when animating the transition of a toast.
+    ///   - axes: The axes which will be rotated by the given angle.
+    public static func rotate(
+        angle: Angle,
+        axes: TransformProperty.RotationAxis
+    ) -> ToastTransition {
+        return ToastTransition(id: "rotate(angle:\(angle),axes:\(axes)") { context in
+            if !context.isReduceMotionEnabled {
+                TransformProperty(
+                    fromValue: context.phase == .toastInsertion
+                        ? [.rotate(angle: angle, axes: axes)]
+                        : [],
+                    toValue: context.phase == .toastInsertion
+                        ? []
+                        : [.rotate(angle: angle, axes: axes)]
+                )
+            }
+        }
+    }
+    
+    /// Returns the default transition used to animate the insertion and removal of a toast.
     public static var defaultTransition: ToastTransition {
         ToastTransition(id: "defaultTransition") { context in
             moveTransition(for: context.toastAlignment)?
@@ -249,6 +337,8 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
     }
 }
 
+// MARK: Helpers
+
 private func moveTransition(
     for alignment: ToastAlignment
 ) -> ToastTransition? {
@@ -257,8 +347,6 @@ private func moveTransition(
     if stickyEdges.isEmpty || stickyEdges == .all {
         return nil
     }
-    
-    // isReduceMotionEnabled
     
     if let significandEdge = stickyEdges.significandEdge {
         return .move(edge: significandEdge)

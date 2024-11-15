@@ -16,9 +16,6 @@ extension View {
         self.assignUIWindowToastPresenter(to: binding)
 #elseif canImport(Cocoa)
         self.assignNSWindowToastPresenter(to: binding)
-#elseif canImport(UIKit) && os(watchOS)
-        self.assignEnvironment(\.toastPresenter, to: binding)
-            .toastPresentingLayout()
 #else
         self
 #endif

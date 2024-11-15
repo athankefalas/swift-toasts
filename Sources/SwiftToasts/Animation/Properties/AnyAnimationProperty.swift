@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// A type erased visual attribute property that can be animated.
 public struct AnyAnimationProperty: AnimatableProperty {
     public let name: AnimatablePropertyName
     public let fromValue: Any

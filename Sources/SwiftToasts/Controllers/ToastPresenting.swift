@@ -13,5 +13,14 @@ protocol ToastPresenting: AnyObject {
     var toastScheduler: ToastScheduler { get }
     
     @MainActor
+    var presentationSpace: ToastPresentationSpace { get }
+    
+    @MainActor
     func prepareForToastPresentationIfNeeded()
+}
+
+extension ToastPresenting {
+    
+    @MainActor
+    var presentationSpace: ToastPresentationSpace { .scene }
 }

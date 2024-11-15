@@ -24,16 +24,19 @@ public struct ToastDuration: Hashable, Sendable {
     /// A longer toast presentation duration, ideal for transient messages with rich textual content.
     public static let longer = ToastDuration(rawValue: 5)
     
-    /// A toast presentation duration that never expires, ideal for transient messages that require action.
+    /// A toast presentation duration that never expires, ideal for transient messages that require user interaction.
     public static var indefinite: ToastDuration {
         ToastDuration(rawValue: 0)
     }
     
     /// A toast presentation duration that is defined in seconds.
     /// - Parameter value: The amount of seconds the toast will be presented for.
+    /// This value must be greater than or equal to **0.1** seconds.
     /// - Returns: A toast duration with the given duration in seconds.
     public static func seconds(_ value: TimeInterval) -> ToastDuration {
-        ToastDuration(rawValue: value)
+        ToastDuration(
+            rawValue: max(0.1, min(value, TimeInterval(UInt64.max - 1)))
+        )
     }
 }
 

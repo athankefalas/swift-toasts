@@ -10,11 +10,11 @@ import Cocoa
 import SwiftUI
 import Combine
 
-class NSToastHostingController: NSViewController {
+final class NSToastHostingController: NSViewController {
     
-    class NSPassthroughBackdropView: NSView {
+    final class NSPassthroughBackdropView: NSView {
         
-        override func hitTest(_ point: NSPoint) -> NSView? {
+        final override func hitTest(_ point: NSPoint) -> NSView? {
             let target = super.hitTest(point)
             
             guard let target = target,
@@ -73,7 +73,7 @@ class NSToastHostingController: NSViewController {
         makeLayoutConstraints()
     }
     
-    private func makeLayoutConstraints() {
+    private final func makeLayoutConstraints() {
         let hostedView = hostingController.view
         view.removeConstraints(hostingControllerConstraints)
         hostedView.removeConstraints(hostingControllerConstraints)
@@ -110,7 +110,7 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    func present(
+    final func present(
         toast toastPresentation: ToastPresentation,
         inWindow parent: NSWindow
     ) {
@@ -128,7 +128,7 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attachToParent(
+    private final func attachToParent(
         _ parent: NSWindow,
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
@@ -148,7 +148,7 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attach(to parent: NSWindow) {
+    private final func attach(to parent: NSWindow) {
         let toastWindow = NSTransientFloatingWindow(
             contentViewController: self,
             floatingIn: parent
@@ -158,7 +158,7 @@ class NSToastHostingController: NSViewController {
         self.toastWindow?.show()
     }
     
-    func present(
+    final func present(
         toast toastPresentation: ToastPresentation,
         inView parent: NSView
     ) {
@@ -176,7 +176,7 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attachToParent(
+    private final func attachToParent(
         _ parent: NSView,
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
@@ -196,12 +196,12 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attach(to parent: NSView) {
+    private final func attach(to parent: NSView) {
         parent.addSubview(self.view)
         view.frame = parent.bounds
     }
     
-    func present(
+    final func present(
         toast toastPresentation: ToastPresentation,
         inController parent: NSViewController
     ) {
@@ -219,7 +219,7 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attachToParent(
+    private final func attachToParent(
         _ parent: NSViewController,
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
@@ -239,13 +239,13 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func attach(to parent: NSViewController) {
+    private final func attach(to parent: NSViewController) {
         parent.addChild(self)
         parent.view.addSubview(self.view)
         view.frame = parent.view.bounds
     }
     
-    private func makeHandlingTask(
+    private final func makeHandlingTask(
         toastPresentation: ToastPresentation
     ) -> Task<Void, Never> {
         return Task {
@@ -260,11 +260,11 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func dismissToast() {
+    private final func dismissToast() {
         presentationTask?.cancel()
     }
     
-    private func detachFromParent(
+    private final func detachFromParent(
         toastPresentation: ToastPresentation,
         completion: @escaping () -> Void
     ) {
@@ -282,20 +282,20 @@ class NSToastHostingController: NSViewController {
         }
     }
     
-    private func detach() {
+    private final func detach() {
         toastWindow?.hide()
         view.removeFromSuperview()
         removeFromParent()
         toastWindow = nil
     }
     
-    private func layoutAndReset() {
+    private final func layoutAndReset() {
         hostingController.view.resetPresentationAnimationProperties()
         view.layout()
         hostingController.view.layout()
     }
     
-    private func makeAnimationContext(
+    private final func makeAnimationContext(
         phase: ToastTransition.PresentationPhase,
         toast: ToastPresentation
     ) -> ToastTransition.Context {
@@ -310,7 +310,7 @@ class NSToastHostingController: NSViewController {
         )
     }
     
-    private func makeGeometryInfo() -> CGRect {
+    private final func makeGeometryInfo() -> CGRect {
         let view = hostingController.view
         view.layout()
         view.superview?.layoutSubtreeIfNeeded()
@@ -322,7 +322,7 @@ class NSToastHostingController: NSViewController {
         return view.isFlipped ? frame : flip(frame: frame, of: view)
     }
     
-    private func flip(
+    private final func flip(
         frame: CGRect,
         of view: NSView
     ) -> CGRect {
