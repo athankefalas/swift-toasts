@@ -71,7 +71,14 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
             return Task {
                 defer {
                     presentationTask = nil
+                    toastPresentation.presentationCanceller?
+                        .removeHandler()
                 }
+                
+                toastPresentation.presentationCanceller?
+                    .setHandler { [weak self] in
+                        self?.presentationTask?.cancel()
+                    }
                 
                 try? await Task.sleep(
                     duration: toastPresentation.toast.configuration.duration

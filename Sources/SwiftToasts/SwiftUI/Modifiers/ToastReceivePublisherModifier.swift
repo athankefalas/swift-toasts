@@ -148,6 +148,7 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
                     toastAlignment: toastAlignment,
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
+                    presentationCanceller: nil,
                     onDismiss: onToastDismiss
                 ),
                 cancellationPolicy: toastCancellation.byReplacingAutomatic(

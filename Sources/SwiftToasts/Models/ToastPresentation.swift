@@ -13,6 +13,7 @@ struct ToastPresentation: Sendable {
     private(set) var toastAlignment: ToastAlignment
     private(set) var toastStyle: AnyToastStyle
     private(set) var toastTransition: ToastTransition
+    private(set) var presentationCanceller: ToastPresentationCanceller?
     private(set) var onPresent: (@MainActor () -> Void)?
     private(set) var onDismiss: (@MainActor () -> Void)?
     
@@ -21,6 +22,7 @@ struct ToastPresentation: Sendable {
         toastAlignment: ToastAlignment,
         toastStyle: AnyToastStyle = AnyToastStyle(PlainToastStyle()),
         toastTransition: ToastTransition = .defaultTransition,
+        presentationCanceller: ToastPresentationCanceller?,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
     ) {
@@ -28,6 +30,7 @@ struct ToastPresentation: Sendable {
         self.toastAlignment = toastAlignment
         self.toastStyle = toastStyle
         self.toastTransition = toastTransition
+        self.presentationCanceller = presentationCanceller
         self.onPresent = onPresent
         self.onDismiss = onDismiss
     }

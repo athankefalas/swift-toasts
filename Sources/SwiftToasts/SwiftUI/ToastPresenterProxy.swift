@@ -52,6 +52,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         toastAlignment: ToastAlignment,
         toastStyle: AnyToastStyle? = nil,
         toastTransition: ToastTransition? = nil,
+        presentationCanceller: ToastPresentationCanceller? = nil,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
     ) {
@@ -62,6 +63,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
                 toastAlignment: toastAlignment,
                 toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
                 toastTransition: toastTransition ?? .defaultTransition,
+                presentationCanceller: presentationCanceller,
                 onPresent: onPresent,
                 onDismiss: onDismiss
             )
@@ -85,6 +87,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         toastAlignment: ToastAlignment,
         toastStyle: AnyToastStyle? = nil,
         toastTransition: ToastTransition? = nil,
+        presentationCanceller: ToastPresentationCanceller? = nil,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
     ) -> AnyCancellable {
@@ -95,6 +98,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
                 toastAlignment: toastAlignment,
                 toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
                 toastTransition: toastTransition ?? .defaultTransition,
+                presentationCanceller: presentationCanceller,
                 onPresent: onPresent,
                 onDismiss: onDismiss
             )

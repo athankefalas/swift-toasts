@@ -79,6 +79,7 @@ public struct ScheduleToastAction: CustomReflectable {
                 toastAlignment: toastAlignment,
                 toastStyle: toastStyle,
                 toastTransition: toastTransition,
+                presentationCanceller: nil,
                 onPresent: onPresent,
                 onDismiss: onDismiss
             ),
