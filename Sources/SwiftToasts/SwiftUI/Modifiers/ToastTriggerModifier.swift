@@ -111,12 +111,15 @@ struct _ToastTriggerModifierPreview: View {
     private var isOn = false
     
     var body: some View {
-        Toggle("Some option", isOn: $isOn)
-            .toast(trigger: isOn) { newValue in
-                if newValue {
-                    Toast("Option changed to \(newValue)")
+        VStack {
+            Toggle("Some option", isOn: $isOn)
+                .toast(trigger: isOn) { newValue in
+                    if newValue {
+                        Toast("Option changed to \(newValue)")
+                    }
                 }
-            }
+        }
+        .frame(maxHeight: .infinity)
     }
 }
 

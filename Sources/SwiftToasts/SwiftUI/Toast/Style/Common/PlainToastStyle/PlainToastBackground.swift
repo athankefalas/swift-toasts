@@ -53,22 +53,34 @@ struct PlainToastBackground: View {
     }
 #endif
     
+    @Environment(\.toastOrnamentPresentationEnabled)
+    private var toastOrnamentPresentationEnabled
+    
     let accentColor: Color
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
     
     var body: some View {
         ZStack {
-            material
-                .clipShape(shape)
-            
-            shape
-                .stroke(
-                    accentColor.opacity(0.2),
-                    lineWidth: borderWidth
-                )
-                .layoutPriority(-1)
+            if !toastOrnamentPresentationEnabled {
+                material
+                    .clipShape(shape)
+                
+                shape
+                    .stroke(
+                        accentColor.opacity(0.2),
+                        lineWidth: borderWidth
+                    )
+                    .layoutPriority(-1)
+            } else {
+                Color.clear
+            }
         }
+#if os(visionOS)
+        .glassBackgroundEffect(
+            displayMode: toastOrnamentPresentationEnabled ? .always : .never
+        )
+#endif
     }
     
     private var shape: some Shape {
@@ -83,6 +95,9 @@ struct PlainToastBackground: View {
 #if os(macOS)
             Rectangle()
                 .fill(Material.ultraThickMaterial)
+#elseif os(visionOS)
+            Rectangle()
+                .fill(Material.thinMaterial)
 #else
             Rectangle()
                 .fill(Material.regularMaterial)
@@ -92,6 +107,8 @@ struct PlainToastBackground: View {
         }
     }
 }
+
+#if DEBUG
 
 #Preview {
     VStack {
@@ -116,3 +133,5 @@ struct PlainToastBackground: View {
         )
     )
 }
+
+#endif

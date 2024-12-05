@@ -17,7 +17,6 @@ final class CancellablesBox: ObservableObject {
     }
     
     deinit {
-        print("## Deinit")
         MainActor.assumeIsolated {
             cancellables.forEach({ $0.cancel() })
             cancellables.removeAll()

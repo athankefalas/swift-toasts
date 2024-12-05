@@ -58,7 +58,7 @@ public struct PlainToastStyle: ToastStyle {
         }
         
         private var borderWidth: CGFloat {
-            guard platformIdiom == .desktop else {
+            guard platformIdiom == .desktop || platformIdiom == .headset else {
                 return isHovering ? 2 : 1
             }
             
@@ -212,6 +212,7 @@ struct PlainToastStylePreview: View {
 
 #Preview {
     PlainToastStylePreview()
+        .environment(\.toastOrnamentPresentationEnabled, true)
 }
 
 #endif

@@ -192,31 +192,31 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
             id: _combinedHash(of: insertion.id, and: removal.id)
         ) { context in
             switch context.phase {
-            case .toastInsertion:
-                return insertion.curve(context)
-            case .toastRemoval:
-                return removal.curve(context)
+                case .toastInsertion:
+                    return insertion.curve(context)
+                case .toastRemoval:
+                    return removal.curve(context)
             }
         } delay: { context in
             switch context.phase {
-            case .toastInsertion:
-                return insertion.delay(context)
-            case .toastRemoval:
-                return removal.delay(context)
+                case .toastInsertion:
+                    return insertion.delay(context)
+                case .toastRemoval:
+                    return removal.delay(context)
             }
         } duration: { context in
             switch context.phase {
-            case .toastInsertion:
-                return insertion.duration(context)
-            case .toastRemoval:
-                return removal.duration(context)
+                case .toastInsertion:
+                    return insertion.duration(context)
+                case .toastRemoval:
+                    return removal.duration(context)
             }
         } animationProperties: { context in
             switch context.phase {
-            case .toastInsertion:
-                return insertion.animationProperties(context)
-            case .toastRemoval:
-                return removal.animationProperties(context)
+                case .toastInsertion:
+                    return insertion.animationProperties(context)
+                case .toastRemoval:
+                    return removal.animationProperties(context)
             }
         }
     }
@@ -253,14 +253,14 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
             var translation = CGSize.zero
             
             switch edge {
-            case .top:
-                translation.height = -context.geometry.height
-            case .leading:
-                translation.width = -(context.geometry.minX + context.geometry.width)
-            case .bottom:
-                translation.height = context.geometry.height
-            case .trailing:
-                translation.width = context.geometry.minX + context.geometry.width
+                case .top:
+                    translation.height = -context.geometry.height
+                case .leading:
+                    translation.width = -(context.geometry.minX + context.geometry.width)
+                case .bottom:
+                    translation.height = context.geometry.height
+                case .trailing:
+                    translation.width = context.geometry.minX + context.geometry.width
             }
             
             if context.platformUsesFlippedCoordinateSystem {
@@ -291,11 +291,11 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         ToastTransition(id: "scale(scale:\(scale))") { context in
             TransformProperty(
                 fromValue: context.phase == .toastInsertion
-                    ? [.scale(x: scale, y: scale, z: 1)]
-                    : [],
+                ? [.scale(x: scale, y: scale, z: 1)]
+                : [],
                 toValue: context.phase == .toastInsertion
-                    ? []
-                    : [.scale(x: scale, y: scale, z: 1)]
+                ? []
+                : [.scale(x: scale, y: scale, z: 1)]
             )
         }
     }
@@ -312,11 +312,11 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
             if !context.isReduceMotionEnabled {
                 TransformProperty(
                     fromValue: context.phase == .toastInsertion
-                        ? [.rotate(angle: angle, axes: axes)]
-                        : [],
+                    ? [.rotate(angle: angle, axes: axes)]
+                    : [],
                     toValue: context.phase == .toastInsertion
-                        ? []
-                        : [.rotate(angle: angle, axes: axes)]
+                    ? []
+                    : [.rotate(angle: angle, axes: axes)]
                 )
             }
         }
@@ -324,6 +324,14 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
     
     /// Returns the default transition used to animate the insertion and removal of a toast.
     public static var defaultTransition: ToastTransition {
+#if os(visionOS)
+        _headsetTransition
+#else
+        _platformAwareTransition
+#endif
+    }
+    
+    private static var _platformAwareTransition: ToastTransition {
         ToastTransition(id: "defaultTransition") { context in
             moveTransition(for: context.toastAlignment)?
                 .animationProperties(context) ?? []
@@ -334,6 +342,13 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
 #else
         .duration(0.5)
 #endif
+    }
+    
+    private static var _headsetTransition: ToastTransition {
+        ToastTransition(id: "defaultTransition") { context in
+            ToastTransition.scale.animationProperties(context)
+        }
+        .combined(with: .opacity)
     }
 }
 

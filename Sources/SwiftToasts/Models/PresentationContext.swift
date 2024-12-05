@@ -13,26 +13,29 @@ public final class PresentationContext {
     
     /// An attribute that provides some semantic context to a platform component that is displayed in a view hierarchy.
     public enum Attribute: String, Hashable, CustomStringConvertible {
-        /// This attributes indicates that this node is a view.
+        /// This attribute indicates that this node is a view.
         case view
         
-        /// This attributes indicates that this node is a menu modal.
+        /// This attribute indicates that this node is a menu modal.
         case menu
-        /// This attributes indicates that this node is a sheet modal.
+        /// This attribute indicates that this node is a sheet modal.
         case sheet
-        /// This attributes indicates that this node is an aler modalt.
+        /// This attribute indicates that this node is an aler modalt.
         case alert
-        /// This attributes indicates that this node is a popover modal.
+        /// This attribute indicates that this node is a popover modal.
         case popover
-        /// This attributes indicates that this node is a modal.
+        /// This attribute indicates that this node is a modal.
         case modal
         
-        /// This attributes indicates that this node is a window that manages one or more containers.
+        /// This attribute indicates that this node is a window that manages one or more containers.
         case window
-        /// This attributes indicates that this node is a container that manages the presentation of a view.
+        /// This attribute indicates that this node is a container that manages the presentation of a view.
         case container
-        /// This attributes indicates that this node is part of the system view hierarchy and can be discarded.
+        /// This attribute indicates that this node is part of the system view hierarchy and can be discarded.
         case discardable
+        
+        /// This attribute indicates that this node is a semantic placeholder that is not part of the view hierarchy and is specially handled.
+        case semantic
         
         public var description: String {
             rawValue
@@ -105,10 +108,12 @@ public final class PresentationContext {
     }
 }
 
+// MARK: Platform UIKit
+
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
-extension PresentationContext {
+public extension PresentationContext {
     
     convenience init(_ window: UIWindow) {
         self.init(
@@ -223,10 +228,12 @@ extension PresentationContext {
 
 #endif
 
+// MARK: Platform Cocoa
+
 #if canImport(Cocoa)
 import Cocoa
 
-extension PresentationContext {
+public extension PresentationContext {
     
     convenience init(_ window: NSWindow) {
         self.init(
@@ -408,4 +415,24 @@ extension PresentationContext {
     }
 }
 
+#endif
+
+// MARK: Platform VisionOS UIKit
+
+#if canImport(UIKit) && os(visionOS)
+import UIKit
+import SwiftUI
+
+public extension PresentationContext {
+    
+    convenience init(ornament: ToastOrnament) {
+        self.init(
+            owner: ornament,
+            attributes: [.semantic],
+            parent: { nil },
+            siblings: [],
+            children: []
+        )
+    }
+}
 #endif

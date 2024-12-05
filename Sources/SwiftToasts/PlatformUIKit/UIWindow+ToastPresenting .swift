@@ -78,16 +78,61 @@ extension UIWindow: ToastPresenting {
         }
         
         if let window = context.owner as? UIWindow {
-            toastController.present(toast: toast, inView: window)
+            toastController.present(
+                toast: toast,
+                inView: window
+            )
         } else if let viewController = context.owner as? UIViewController {
-            toastController.present(toast: toast, inController: viewController)
+            toastController.present(
+                toast: toast,
+                inController: viewController
+            )
         } else if let view = context.owner as? UIView {
-            toastController.present(toast: toast, inView: view)
+            toastController.present(
+                toast: toast,
+                inView: view
+            )
+        } else {
+#if os(visionOS)
+            if let ornament = context.owner as? ToastOrnament {
+                attemptOrnamentPresentation(
+                    of: toast,
+                    in: ornament,
+                    using: toastController
+                )
+            }
+#else
+            toast.onPresent?()
+            toast.onDismiss?()
+#endif
+        }
+    }
+
+#if os(visionOS)
+    private func attemptOrnamentPresentation(
+        of toast: ToastPresentation,
+        in ornament: ToastOrnament,
+        using toastController: UIToastHostingController
+    ) {
+        
+        defer {
+            ornament.release()
+        }
+        
+        if let toastViewPair = ornamentEmbeddedPresentation(
+            of: toast,
+            in: ToastOrnament(contentAlignment: .center)
+        ) {
+            toastController.present(
+                toast: toastViewPair.adaptedToast,
+                inView: toastViewPair.contentView
+            )
         } else {
             toast.onPresent?()
             toast.onDismiss?()
         }
     }
+#endif
     
     @MainActor
     func prepareForToastPresentationIfNeeded() {

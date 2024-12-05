@@ -150,7 +150,7 @@ final class UIToastHostingController: UIViewController {
     }
     
     private final func attach(to parent: UIView) {
-        parent.addSubview(self.view)
+        parent.addSubview(view)
         view.frame = parent.bounds
     }
     
@@ -194,7 +194,7 @@ final class UIToastHostingController: UIViewController {
     
     private final func attach(to parent: UIViewController) {
         parent.addChild(self)
-        parent.view.addSubview(self.view)
+        parent.view.addSubview(view)
         view.frame = parent.view.bounds
         didMove(toParent: parent)
     }
