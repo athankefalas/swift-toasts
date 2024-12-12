@@ -2,7 +2,7 @@
 //  AnyTransition+ToastTransition.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 4/11/24.
+//  Created by Sakis Kefalas on 4/11/24.
 //
 
 import SwiftUI

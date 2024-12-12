@@ -1,8 +1,8 @@
 //
 //  CancellablesBox.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 10/10/24.
+//  Created by Sakis Kefalas on 10/10/24.
 //
 
 import SwiftUI

@@ -1,8 +1,8 @@
 //
 //  ToastBuilder.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 11/10/24.
+//  Created by Sakis Kefalas on 11/10/24.
 //
 
 import SwiftUI

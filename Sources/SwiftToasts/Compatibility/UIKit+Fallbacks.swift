@@ -2,7 +2,7 @@
 //  UIKit+Fallbacks.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 31/10/24.
+//  Created by Sakis Kefalas on 31/10/24.
 //
 
 #if canImport(UIKit) && !os(watchOS)

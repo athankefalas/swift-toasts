@@ -2,7 +2,7 @@
 //  Array+AnyAnimationPropertyMerging.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 3/11/24.
+//  Created by Sakis Kefalas on 3/11/24.
 //
 
 import Foundation

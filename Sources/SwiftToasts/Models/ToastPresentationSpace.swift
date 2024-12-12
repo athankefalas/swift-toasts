@@ -2,7 +2,7 @@
 //  ToastPresentationSpace.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 10/11/24.
+//  Created by Sakis Kefalas on 10/11/24.
 //
 
 enum ToastPresentationSpace {

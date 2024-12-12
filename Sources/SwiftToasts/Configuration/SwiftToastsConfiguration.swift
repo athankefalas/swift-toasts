@@ -1,8 +1,8 @@
 //
 //  SwiftToastsConfiguration.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 23/10/24.
+//  Created by Sakis Kefalas on 23/10/24.
 //
 
 import Foundation

@@ -1,8 +1,8 @@
 //
 //  UIToastHostingController.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 6/10/24.
+//  Created by Sakis Kefalas on 6/10/24.
 //
 
 #if canImport(UIKit) && canImport(SwiftUI) && canImport(Combine) && !os(watchOS)

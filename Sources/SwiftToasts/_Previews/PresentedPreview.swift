@@ -2,7 +2,7 @@
 //  PresentedPreview.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 1/11/24.
+//  Created by Sakis Kefalas on 1/11/24.
 //
 
 import SwiftUI

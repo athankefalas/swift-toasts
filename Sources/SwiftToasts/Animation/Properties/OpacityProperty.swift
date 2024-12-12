@@ -1,8 +1,8 @@
 //
 //  OpacityProperty.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 8/10/24.
+//  Created by Sakis Kefalas on 8/10/24.
 //
 
 import SwiftUI

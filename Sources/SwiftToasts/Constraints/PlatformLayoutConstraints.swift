@@ -1,8 +1,8 @@
 //
 //  PlatformLayoutConstraints.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 9/10/24.
+//  Created by Sakis Kefalas on 9/10/24.
 //
 
 import SwiftUI

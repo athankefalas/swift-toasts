@@ -2,7 +2,7 @@
 //  ToastButtonStyle.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 9/11/24.
+//  Created by Sakis Kefalas on 9/11/24.
 //
 
 import SwiftUI

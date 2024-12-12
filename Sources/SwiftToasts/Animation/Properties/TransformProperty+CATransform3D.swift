@@ -1,8 +1,8 @@
 //
 //  TransformProperty+CATransform3D.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 8/10/24.
+//  Created by Sakis Kefalas on 8/10/24.
 //
 
 #if (canImport(UIKit) || canImport(Cocoa)) && !os(watchOS)

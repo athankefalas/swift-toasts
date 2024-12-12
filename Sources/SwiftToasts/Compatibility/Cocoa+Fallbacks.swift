@@ -2,7 +2,7 @@
 //  Cocoa+Fallbacks.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 2/11/24.
+//  Created by Sakis Kefalas on 2/11/24.
 //
 
 #if canImport(Cocoa)

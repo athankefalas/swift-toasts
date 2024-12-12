@@ -1,6 +1,6 @@
 //
 //  NSAssociatedProperty.swift
-//  ToastPlayground
+//  SwiftToasts
 //
 //  Created by Sakis Kefalas on 5/10/24.
 //

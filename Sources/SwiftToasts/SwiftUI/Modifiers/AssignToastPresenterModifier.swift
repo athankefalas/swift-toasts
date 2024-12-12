@@ -1,8 +1,8 @@
 //
 //  AssignToastPresenterModifier.swift
-//  ToastPlayground
+//  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 7/10/24.
+//  Created by Sakis Kefalas on 7/10/24.
 //
 
 import SwiftUI
