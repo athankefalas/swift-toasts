@@ -10,15 +10,14 @@ import SwiftUI
 import Combine
 
 private struct ToastStyleEnvironmentKey: EnvironmentKey {
-    static var defaultValue: AnyToastStyle {
-        MainActor.assumeIsolated {
-            AnyToastStyle(PlainToastStyle())
-        }
+    @preconcurrency static var defaultValue: AnyToastStyle {
+        AnyToastStyle(PlainToastStyle())
     }
 }
 
 public extension EnvironmentValues {
     
+    /// The style of Toast components.
     fileprivate(set) var toastStyle: AnyToastStyle {
         get { self[ToastStyleEnvironmentKey.self] }
         set { self[ToastStyleEnvironmentKey.self] = newValue }

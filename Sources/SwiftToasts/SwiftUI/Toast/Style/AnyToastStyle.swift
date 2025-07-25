@@ -8,10 +8,11 @@
 import SwiftUI
 import Combine
 
+/// A type erased `ToastStyle`.
 public struct AnyToastStyle: ToastStyle {
     private let _makeBody: @MainActor @Sendable (Configuration) -> AnyView
     
-    init<Style: ToastStyle>(_ style: Style) {
+    nonisolated public init<Style: ToastStyle>(_ style: Style) {
         self._makeBody = { AnyView(style.makeBody(configuration: $0)) }
     }
     
@@ -22,7 +23,7 @@ public struct AnyToastStyle: ToastStyle {
 
 extension ToastStyle {
     
-    func erased() -> AnyToastStyle {
+    nonisolated func erased() -> AnyToastStyle {
         AnyToastStyle(self)
     }
 }

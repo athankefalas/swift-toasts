@@ -56,6 +56,12 @@ private struct ToastIdentifiableTaskModifier<ID: Equatable>: ViewModifier {
 
 public extension View {
     
+    /// Adds an asynchronous task to perform before this view appears or when the specified value changes and optionally use the given `ScheduleToastAction` to present a Toast.
+    /// - Parameters:
+    ///   - id: A value that defines the identity of the attached Task.
+    ///   - priority: The priority of the attached Task.
+    ///   - operation: The async operation performed by the attached Task.
+    /// - Note: The given schedule action may outlive the owning View, in which case the scheduled Toast may never be presented.
     func task<ID: Equatable>(
         id: ID,
         priority: TaskPriority = .userInitiated,

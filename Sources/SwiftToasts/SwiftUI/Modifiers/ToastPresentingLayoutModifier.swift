@@ -279,7 +279,7 @@ public extension View {
                 Text("Show Toast")
             }
             .toastTransition(
-                ToastTransition.opacity
+                ToastTransition.scale
                     .curve(.easeInOut)
                     .duration(1)
             )

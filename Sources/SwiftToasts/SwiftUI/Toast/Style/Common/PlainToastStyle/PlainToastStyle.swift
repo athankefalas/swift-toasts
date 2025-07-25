@@ -10,7 +10,7 @@ import Combine
 
 public struct PlainToastStyle: ToastStyle {
     
-    public init() {}
+    public nonisolated init() {}
     
     public func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(configuration: configuration)
@@ -29,9 +29,6 @@ public struct PlainToastStyle: ToastStyle {
         
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
-        
-        @Environment(\.accessibilityReduceTransparency)
-        private var accessibilityReduceTransparency
         
         @State
         private var isHovering = false
@@ -63,24 +60,6 @@ public struct PlainToastStyle: ToastStyle {
             }
             
             return isHovering ? 3 : 2
-        }
-        
-        private var shadowColor: Color {
-            let shadowColor = Color(
-                .sRGBLinear,
-                white: 0,
-                opacity: platformIdiom == .desktop ? 0.2 : 0.17
-            )
-            
-            guard !accessibilityReduceTransparency else {
-                return .clear
-            }
-            
-            return shadowColor
-        }
-        
-        private var shadowRadius: CGFloat {
-            isHovering ? 24 : 16
         }
         
         private var isCenterAligned: Bool {
@@ -116,15 +95,11 @@ public struct PlainToastStyle: ToastStyle {
                     PlainToastBackground(
                         accentColor: accentColor,
                         cornerRadius: 12,
-                        borderWidth: borderWidth
+                        borderWidth: borderWidth,
+                        isHovering: isHovering
                     )
                 )
                 .padding()
-                .clipped()
-                .shadow(
-                    color: shadowColor,
-                    radius: shadowRadius
-                )
                 .scaleEffect(isHovering ? 1.05 : 1)
 #if !os(tvOS)
                 .fallbackOnHover { isHovering = $0 }

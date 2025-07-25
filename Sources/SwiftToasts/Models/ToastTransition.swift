@@ -291,11 +291,11 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         ToastTransition(id: "scale(scale:\(scale))") { context in
             TransformProperty(
                 fromValue: context.phase == .toastInsertion
-                ? [.scale(x: scale, y: scale, z: 1)]
-                : [],
+                    ? [.scale(x: scale, y: scale, z: 1)]
+                    : [],
                 toValue: context.phase == .toastInsertion
-                ? []
-                : [.scale(x: scale, y: scale, z: 1)]
+                    ? []
+                    : [.scale(x: scale, y: scale, z: 1)]
             )
         }
     }
@@ -312,11 +312,11 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
             if !context.isReduceMotionEnabled {
                 TransformProperty(
                     fromValue: context.phase == .toastInsertion
-                    ? [.rotate(angle: angle, axes: axes)]
-                    : [],
+                        ? [.rotate(angle: angle, axes: axes)]
+                        : [],
                     toValue: context.phase == .toastInsertion
-                    ? []
-                    : [.rotate(angle: angle, axes: axes)]
+                        ? []
+                        : [.rotate(angle: angle, axes: axes)]
                 )
             }
         }

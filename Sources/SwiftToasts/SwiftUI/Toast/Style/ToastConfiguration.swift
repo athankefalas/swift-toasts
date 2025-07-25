@@ -8,11 +8,12 @@
 import SwiftUI
 import Combine
 
+/// The properties of a Toast component.
 @MainActor
 public struct ToastConfiguration: Sendable {
-    private(set) var role: ToastRole
-    private(set) var duration: ToastDuration
-    private(set) var content: AnyView
+    public let role: ToastRole
+    public let duration: ToastDuration
+    public let content: AnyView
     
     init<Content: View>(
         role: ToastRole,

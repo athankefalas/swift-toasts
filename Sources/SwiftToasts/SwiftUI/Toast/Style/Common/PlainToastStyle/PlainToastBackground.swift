@@ -53,16 +53,57 @@ struct PlainToastBackground: View {
     }
 #endif
     
+    @Environment(\.platformIdiom)
+    private var platformIdiom
+    
+    @Environment(\.accessibilityReduceTransparency)
+    private var accessibilityReduceTransparency
+    
     @Environment(\.toastOrnamentPresentationEnabled)
     private var toastOrnamentPresentationEnabled
     
     let accentColor: Color
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
+    let isHovering: Bool
+    
+    private var shadowColor: Color {
+        let shadowColor = Color(
+            .sRGBLinear,
+            white: 0,
+            opacity: platformIdiom == .desktop ? 0.2 : 0.17
+        )
+        
+        guard !accessibilityReduceTransparency else {
+            return .clear
+        }
+        
+        return shadowColor
+    }
+    
+    private var shadowRadius: CGFloat {
+        isHovering ? 24 : 16
+    }
+    
+    private var usesGlassBackgroundEffect: Bool {
+#if os(visionOS)
+        if toastOrnamentPresentationEnabled {
+            return true
+        }
+#endif
+        
+#if  LIQUID_GLASS_DESIGN
+        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
+            return true
+        }
+#endif
+        
+        return false
+    }
     
     var body: some View {
         ZStack {
-            if !toastOrnamentPresentationEnabled {
+            if !usesGlassBackgroundEffect {
                 material
                     .clipShape(shape)
                 
@@ -76,11 +117,21 @@ struct PlainToastBackground: View {
                 Color.clear
             }
         }
-#if os(visionOS)
-        .glassBackgroundEffect(
-            displayMode: toastOrnamentPresentationEnabled ? .always : .never
+#if LIQUID_GLASS_DESIGN
+        .fallbackGlassEffect(
+            in: shape,
+            enabled: usesGlassBackgroundEffect
         )
 #endif
+#if os(visionOS)
+        .glassBackgroundEffect(
+            displayMode: usesGlassBackgroundEffect ? .always : .never
+        )
+#endif
+        .shadow(
+            color: usesGlassBackgroundEffect ? .clear : shadowColor,
+            radius: usesGlassBackgroundEffect ? 0 : shadowRadius
+        )
     }
     
     private var shape: some Shape {
@@ -108,6 +159,27 @@ struct PlainToastBackground: View {
     }
 }
 
+// MARK: Liguid Glass Material Support
+
+#if LIQUID_GLASS_DESIGN
+
+extension View {
+    
+    @ViewBuilder
+    func fallbackGlassEffect<SomeShape: Shape>(
+        in shape: SomeShape,
+        enabled: Bool
+    ) -> some View {
+        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
+            self.glassEffect(.regular.interactive(), in: shape, isEnabled: enabled)
+        } else { // Fallback on earlier versions
+            self
+        }
+    }
+}
+
+#endif
+
 #if DEBUG
 
 #Preview {
@@ -117,7 +189,8 @@ struct PlainToastBackground: View {
         PlainToastBackground(
             accentColor: .blue,
             cornerRadius: 12,
-            borderWidth: 2
+            borderWidth: 2,
+            isHovering: false
         )
         .padding(32)
         .border(Color.black)

@@ -92,6 +92,12 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
 
 public extension View {
     
+    /// Presents a toast when the given binding is toggled to true.
+    /// - Parameters:
+    ///   - isPresented: The binding controlling the presentation of the Toast.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present.
     func toast(
         isPresented: Binding<Bool>,
         alignment: ToastAlignment = .defaultAlignment,
@@ -112,6 +118,12 @@ public extension View {
         )
     }
     
+    /// Presents a toast when the given binding has a non nil value.
+    /// - Parameters:
+    ///   - item: The binding controlling the presentation of the Toast.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present for the given item.
     func toast<Value: Equatable>(
         item: Binding<Value?>,
         alignment: ToastAlignment = .defaultAlignment,
@@ -187,11 +199,11 @@ struct _ToastPresentationByValueModifierPreview: View {
     }
 }
 
-#Preview("Toast Presentation By Using Flag") {
+#Preview("Toast Presentation By Flag") {
     _ToastPresentationByFlagModifierPreview()
 }
 
-#Preview("Toast Presentation By Using Value") {
+#Preview("Toast Presentation By Value") {
     _ToastPresentationByValueModifierPreview()
 }
 

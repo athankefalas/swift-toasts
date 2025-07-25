@@ -69,6 +69,12 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
 
 public extension View {
     
+    /// Presents a Toast when the given trigger value changes.
+    /// - Parameters:
+    ///   - trigger: The value that triggers the Toast presentation.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present.
     func toast<Trigger: Equatable>(
         trigger: Trigger,
         alignment: ToastAlignment = .defaultAlignment,
@@ -85,6 +91,12 @@ public extension View {
         )
     }
     
+    /// Presents a Toast when the given trigger value changes.
+    /// - Parameters:
+    ///   - trigger: The value that triggers the Toast presentation.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present for the latest trigger value.
     func toast<Trigger: Equatable>(
         trigger: Trigger,
         alignment: ToastAlignment = .defaultAlignment,

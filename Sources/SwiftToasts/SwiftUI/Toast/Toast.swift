@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A Toast component used to present transient messages to the user.
 public struct Toast: View, Sendable {
     
     @Environment(\.toastStyle)
@@ -18,6 +19,11 @@ public struct Toast: View, Sendable {
         self.configuration = configuration
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
+    ///   - content: The content view of the Toast.
     public init<Content: View>(
         role: ToastRole = .defaultRole,
         duration: ToastDuration = .defaultDuration,
@@ -41,6 +47,11 @@ public struct Toast: View, Sendable {
 
 public extension Toast {
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: String,
         role: ToastRole = .defaultRole,
@@ -55,6 +66,11 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: LocalizedStringKey,
         role: ToastRole = .defaultRole,
@@ -69,6 +85,11 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
     init(
         _ title: LocalizedStringResource,
@@ -90,6 +111,12 @@ public extension Toast {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public extension Toast {
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: String,
         systemImage: String,
@@ -108,6 +135,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: String,
         image: String,
@@ -126,6 +159,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     init(
         _ title: String,
@@ -146,6 +185,12 @@ public extension Toast {
     }
     
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: LocalizedStringKey,
         systemImage: String,
@@ -165,6 +210,12 @@ public extension Toast {
     }
     
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init(
         _ title: LocalizedStringKey,
         image: String,
@@ -183,6 +234,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     init(
         _ title: LocalizedStringKey,
@@ -202,6 +259,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
     init(
         _ title: LocalizedStringResource,
@@ -221,6 +284,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
     init(
         _ title: LocalizedStringResource,
@@ -240,6 +309,12 @@ public extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     init(
         _ title: LocalizedStringResource,
@@ -256,6 +331,92 @@ public extension Toast {
             } icon: {
                 Image(image)
             }
+        }
+    }
+}
+
+// MARK: Toast Title + Subtitle
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension Toast {
+    
+    /// Creates a new Toast
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
+    init<Value: StringProtocol>(
+        _ title: String,
+        value: Value,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
+    ) {
+        self.init(
+            role: role,
+            duration: duration
+        ) {
+            LabeledContent(title, value: value)
+        }
+    }
+    
+    /// Creates a new Toast
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
+    init<Value: StringProtocol>(
+        _ title: LocalizedStringKey,
+        value: Value,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
+    ) {
+        self.init(
+            role: role,
+            duration: duration
+        ) {
+            LabeledContent(title, value: value)
+        }
+    }
+    
+    /// Creates a new Toast
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
+    init<Value: CustomStringConvertible>(
+        _ title: String,
+        value: Value,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
+    ) {
+        self.init(
+            role: role,
+            duration: duration
+        ) {
+            LabeledContent(title, value: value.description)
+        }
+    }
+    
+    /// Creates a new Toast
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
+    init<Value: CustomStringConvertible>(
+        _ title: LocalizedStringKey,
+        value: Value,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
+    ) {
+        self.init(
+            role: role,
+            duration: duration
+        ) {
+            LabeledContent(title, value: value.description)
         }
     }
 }
@@ -265,6 +426,13 @@ public extension Toast {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Toast {
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: StringProtocol>(
         _ title: String,
         value: Value,
@@ -283,7 +451,13 @@ extension Toast {
             }
         }
     }
-    
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: StringProtocol>(
         _ title: LocalizedStringKey,
         value: Value,
@@ -303,6 +477,13 @@ extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: CustomStringConvertible>(
         _ title: String,
         value: Value,
@@ -322,6 +503,13 @@ extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - systemImage: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: CustomStringConvertible>(
         _ title: LocalizedStringKey,
         value: Value,
@@ -345,6 +533,13 @@ extension Toast {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Toast {
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: StringProtocol>(
         _ title: String,
         value: Value,
@@ -364,6 +559,13 @@ extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: StringProtocol>(
         _ title: LocalizedStringKey,
         value: Value,
@@ -383,6 +585,13 @@ extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: CustomStringConvertible>(
         _ title: String,
         value: Value,
@@ -402,6 +611,13 @@ extension Toast {
         }
     }
     
+    /// Creates a new Toast.
+    /// - Parameters:
+    ///   - title: The title of the Toast.
+    ///   - value: The value subtitle of the Toast.
+    ///   - image: The icon of the Toast.
+    ///   - role: The semantic role of the Toast.
+    ///   - duration: The duration of the Toast.
     init<Value: CustomStringConvertible>(
         _ title: LocalizedStringKey,
         value: Value,
@@ -415,90 +631,6 @@ extension Toast {
         ) {
             Label {
                 LabeledContent(title, value: value.description)
-            } icon: {
-                Image(image)
-            }
-        }
-    }
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Toast {
-    
-    init<F: FormatStyle>(
-        _ title: String,
-        value: F.FormatInput,
-        format: F,
-        systemImage: String,
-        role: ToastRole = .defaultRole,
-        duration: ToastDuration = .defaultDuration
-    ) where F.FormatInput: Equatable, F.FormatOutput == String {
-        self.init(
-            role: role,
-            duration: duration
-        ) {
-            Label {
-                LabeledContent(title, value: value, format: format)
-            } icon: {
-                Image(systemName: systemImage)
-            }
-        }
-    }
-    
-    init<F: FormatStyle>(
-        _ title: String,
-        value: F.FormatInput,
-        format: F,
-        image: String,
-        role: ToastRole = .defaultRole,
-        duration: ToastDuration = .defaultDuration
-    ) where F.FormatInput: Equatable, F.FormatOutput == String {
-        self.init(
-            role: role,
-            duration: duration
-        ) {
-            Label {
-                LabeledContent(title, value: value, format: format)
-            } icon: {
-                Image(image)
-            }
-        }
-    }
-    
-    init<F: FormatStyle>(
-        _ title: LocalizedStringKey,
-        value: F.FormatInput,
-        format: F,
-        systemImage: String,
-        role: ToastRole = .defaultRole,
-        duration: ToastDuration = .defaultDuration
-    ) where F.FormatInput: Equatable, F.FormatOutput == String {
-        self.init(
-            role: role,
-            duration: duration
-        ) {
-            Label {
-                LabeledContent(title, value: value, format: format)
-            } icon: {
-                Image(systemName: systemImage)
-            }
-        }
-    }
-    
-    init<F: FormatStyle>(
-        _ title: LocalizedStringKey,
-        value: F.FormatInput,
-        format: F,
-        image: String,
-        role: ToastRole = .defaultRole,
-        duration: ToastDuration = .defaultDuration
-    ) where F.FormatInput: Equatable, F.FormatOutput == String {
-        self.init(
-            role: role,
-            duration: duration
-        ) {
-            Label {
-                LabeledContent(title, value: value, format: format)
             } icon: {
                 Image(image)
             }
@@ -517,7 +649,12 @@ extension Toast {
                 
                 if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                     ForEach(ToastRole.allCases, id: \.self) { role in
-                        Toast("Title", value: "Subtitle", systemImage: "square.fill", role: role)
+                        Toast(
+                            "Title",
+                            value: "Subtitle",
+                            systemImage: "square.fill",
+                            role: role
+                        )
                     }
                 }
                 
@@ -525,9 +662,12 @@ extension Toast {
                 
                 if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                     ForEach(ToastRole.allCases, id: \.self) { role in
-                        Toast(role: role) {
-                            LabeledContent("Title", value: "Subtitle")
-                        }
+                        
+                        Toast(
+                            "Title",
+                            value: "Subtitle \(role)",
+                            role: role
+                        )
                     }
                 }
                 
@@ -547,8 +687,22 @@ extension Toast {
                 
                 Divider()
                 
+                ForEach(ToastRole.allCases, id: \.self) { role in
+                    Toast(role: role) {
+                        if #available(iOS 15.0, *) {
+                            Label {
+                                HStack(spacing: 64) {
+                                    Text("Title")
+                                    Button("A") {}
+                                }
+                            } icon: {
+                                Image(systemName: "square.fill")
+                            }
+                        }
+                    }
+                }
+                
             }
-            .frame(maxWidth: .infinity)
         }
     }
 }

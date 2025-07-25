@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     
+    /// Assigns the active Toast presenter in the current context to the given binding.
+    /// - Parameter binding: The active Toast Presenter
     func assignToastPresenter(
         to binding: Binding<ToastPresenterProxy>
     ) -> some View {

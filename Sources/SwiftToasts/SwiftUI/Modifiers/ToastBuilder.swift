@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A custom parameter attribute that optionally constructs a single Toast, or nil from a builder closure.
 @resultBuilder
 public struct ToastBuilder {
     

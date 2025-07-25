@@ -21,7 +21,7 @@ private struct ToastPresenterEnvironmentKey: EnvironmentKey {
 
 public extension EnvironmentValues {
     
-    /// A proxy of the toast presenter in this View hierarchy.
+    /// A proxy of the active toast presenter in this View hierarchy.
     internal(set) var toastPresenter: ToastPresenterProxy {
         get { self[ToastPresenterEnvironmentKey.self] }
         set { self[ToastPresenterEnvironmentKey.self] = newValue }

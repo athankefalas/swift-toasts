@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 
+/// A style that configures the presentation of a `Toast` component.
 @MainActor
 public protocol ToastStyle: Sendable {
     typealias Configuration = ToastConfiguration

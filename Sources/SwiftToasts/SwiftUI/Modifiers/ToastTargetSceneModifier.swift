@@ -20,7 +20,7 @@ private struct ToastTargetSceneModifier: ViewModifier {
 public extension View {
     
     /// Marks the scene of this `View` hierarchy as the target for presenting toasts.
-    /// - Note: If scene level presentation is not available in the current platform this modifier will have on effect.
+    /// - Note: If scene level presentation is not available in the current platform this modifier will have no effect.
     /// - Returns: A modified view.
     func toastTargetScene() -> some View {
         modifier(ToastTargetSceneModifier())

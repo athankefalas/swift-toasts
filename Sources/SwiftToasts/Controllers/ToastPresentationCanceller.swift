@@ -7,11 +7,12 @@
 
 import Foundation
 
+/// A controller object that can be used to programatically dismiss an already presented `Toast`.
 @MainActor
 public final class ToastPresentationCanceller {
     private var presentationDismissalHandler: @MainActor () -> Void
     
-    init() {
+    public init() {
         self.presentationDismissalHandler = {}
     }
     

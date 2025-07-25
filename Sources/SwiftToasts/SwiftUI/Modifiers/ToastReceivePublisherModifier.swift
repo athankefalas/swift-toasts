@@ -164,6 +164,12 @@ public typealias PublishedResult<P: Publisher> = Result<P.Output, P.Failure>
 
 public extension View {
     
+    /// Presents a Toast when the given publisher publishes a new value.
+    /// - Parameters:
+    ///   - publisher: The given publisher.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present for the given published result.
     func toast<ValuePublisher: Publisher>(
         byReceiving publisher: ValuePublisher,
         alignment: ToastAlignment = .defaultAlignment,
@@ -181,6 +187,12 @@ public extension View {
         )
     }
     
+    /// Presents a Toast when the given publisher publishes a new value.
+    /// - Parameters:
+    ///   - publisher: The given publisher.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present when the publisher fires.
     func toast<ValuePublisher: Publisher>(
         byReceiving publisher: ValuePublisher,
         alignment: ToastAlignment = .defaultAlignment,

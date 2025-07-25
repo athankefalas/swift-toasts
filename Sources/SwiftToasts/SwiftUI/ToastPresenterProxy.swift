@@ -46,6 +46,15 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         self.toastPresenter = toastPresenter
     }
     
+    /// Schedules the given `Toast` for presentation.
+    /// - Parameters:
+    ///   - toast: The Toast to present.
+    ///   - toastAlignment: The alignment to use when presenting the Toast.
+    ///   - toastStyle: The style to use when presenting the Toast.
+    ///   - toastTransition: The transition to use when presenting and dismissing the Toast.
+    ///   - presentationCanceller: A controller that can be used to programmatically dismiss a presented Toast.
+    ///   - onPresent: A callback invoked when the given Toast is presented.
+    ///   - onDismiss: A callback invoked when the given Toast is dismissed.
     @MainActor
     public func schedulePresentation(
         toast: Toast,
@@ -56,7 +65,6 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
     ) {
-        
         schedule(
             presentation: ToastPresentation(
                 toast: toast,
@@ -81,6 +89,16 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         toastScheduler.schedulePresentation(presentation)
     }
     
+    /// Schedules the given `Toast` for presentation.
+    /// - Parameters:
+    ///   - toast: The Toast to present.
+    ///   - toastAlignment: The alignment to use when presenting the Toast.
+    ///   - toastStyle: The style to use when presenting the Toast.
+    ///   - toastTransition: The transition to use when presenting and dismissing the Toast.
+    ///   - presentationCanceller: A controller that can be used to programmatically dismiss a presented Toast.
+    ///   - onPresent: A callback invoked when the given Toast is presented.
+    ///   - onDismiss: A callback invoked when the given Toast is dismissed.
+    /// - Returns: A cancellation token used to cancel the sceduled Toast before it can be presented.
     @MainActor
     public func scheduleCancellablePresentation(
         toast: Toast,
@@ -91,7 +109,6 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
     ) -> AnyCancellable {
-        
         scheduleCancellable(
             presentation: ToastPresentation(
                 toast: toast,
