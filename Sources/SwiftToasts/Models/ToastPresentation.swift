@@ -13,7 +13,7 @@ struct ToastPresentation: Sendable {
     private(set) var toastAlignment: ToastAlignment
     private(set) var toastStyle: AnyToastStyle
     private(set) var toastTransition: ToastTransition
-    private(set) var presentationCanceller: ToastPresentationCanceller?
+    private(set) weak var presentationCanceller: ToastPresentationCanceller?
     private(set) var onPresent: (@MainActor () -> Void)?
     private(set) var onDismiss: (@MainActor () -> Void)?
     

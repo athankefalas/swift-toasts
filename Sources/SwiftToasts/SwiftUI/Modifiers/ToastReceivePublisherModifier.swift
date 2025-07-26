@@ -109,8 +109,14 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
     @Environment(\.toastCancellation)
     private var toastCancellation
     
+    @Environment(\.toastPresentationInvalidation)
+    private var toastPresentationInvalidation
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
+    
+    @State
+    private var presentationCanceller = ToastPresentationCanceller()
     
     @FallbackStateObject
     private var publisherSubscriber: PublisherSubscriber
@@ -118,6 +124,10 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
     private let toastAlignment: ToastAlignment
     private let onToastDismiss: (@MainActor () -> Void)?
     private let toast: (Result<Output, Failure>) -> Toast?
+    
+    private var invalidationOptions: ToastPresentationInvalidationOptions {
+        toastPresentationInvalidation ?? .contextChanged
+    }
     
     init(
         publisher: AnyPublisher<Output, Failure>,
@@ -137,8 +147,15 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
     
     func body(content: Content) -> some View {
         content.fallbackOnChange(of: publisherSubscriber.value) { newValue in
-            guard let newValueResult = newValue.toResult,
-                  let toast = toast(newValueResult) else {
+            guard let newValueResult = newValue.toResult else {
+                return
+            }
+            
+            if invalidationOptions.contains(.contextChanged) {
+                presentationCanceller.dismissPresentation()
+            }
+            
+            guard let toast = toast(newValueResult) else {
                 return
             }
             
@@ -148,7 +165,7 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
                     toastAlignment: toastAlignment,
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
-                    presentationCanceller: nil,
+                    presentationCanceller: presentationCanceller,
                     onDismiss: onToastDismiss
                 ),
                 cancellationPolicy: toastCancellation.byReplacingAutomatic(
@@ -156,6 +173,12 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
                 ),
                 cancellables: &cancellables
             )
+        }
+        .fallbackOnChange(of: invalidationOptions) { newValue in
+            presentationCanceller.dismissOnDeinit = newValue.contains(.presentationDismissed)
+        }
+        .onAppear {
+            presentationCanceller.dismissOnDeinit = invalidationOptions.contains(.presentationDismissed)
         }
     }
 }
@@ -183,6 +206,35 @@ public extension View {
                 toastAlignment: alignment,
                 onToastDismiss: onDismiss,
                 toast: toast
+            )
+        )
+    }
+    
+    /// Presents a Toast when the given publisher publishes a new value.
+    /// - Parameters:
+    ///   - publisher: The given publisher.
+    ///   - alignment: The alignment to use when presenting the Toast.
+    ///   - onDismiss: A callback invoked when the Toast is dismissed.
+    ///   - toast: The Toast to present for the given published result.
+    func toast<ValuePublisher: Publisher>(
+        byReceiving publisher: ValuePublisher,
+        alignment: ToastAlignment = .defaultAlignment,
+        onDismiss:(@MainActor () -> Void)? = nil,
+        @ToastBuilder content toast: @escaping (ValuePublisher.Output) -> Toast?
+    ) -> some View
+    where ValuePublisher.Output: Equatable, ValuePublisher.Failure == Never {
+        modifier(
+            ToastReceivePublisherModifier(
+                publisher: publisher.eraseToAnyPublisher(),
+                toastAlignment: alignment,
+                onToastDismiss: onDismiss,
+                toast: {
+                    if case let Result.success(value) = $0 {
+                        return toast(value)
+                    } else {
+                        return nil
+                    }
+                }
             )
         )
     }
@@ -221,14 +273,14 @@ struct _ToastReceivePublisherModifierPreview: View {
     
     @State
     private var timer = Timer.publish(
-        every: 5,
+        every: 1.5,
         on: .main,
         in: .common
     )
     .autoconnect()
     .receive(on: DispatchQueue.global(qos: .background))
     .tryMap { date in
-        if date.timeIntervalSince(start) > 5 * 3 {
+        if date.timeIntervalSince(start) > 1.5 * 3 {
             throw CancellationError()
         } else {
             return date

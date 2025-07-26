@@ -22,13 +22,23 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     @Environment(\.toastCancellation)
     private var toastCancellation
     
+    @Environment(\.toastPresentationInvalidation)
+    private var toastPresentationInvalidation
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
+    
+    @State
+    private var presentationCanceller = ToastPresentationCanceller()
     
     private let trigger: Trigger
     private let toastAlignment: ToastAlignment
     private let onToastDismiss: (@MainActor () -> Void)?
     private let toast: (Trigger) -> Toast?
+    
+    private var invalidationOptions: ToastPresentationInvalidationOptions {
+        toastPresentationInvalidation ?? .contextChanged
+    }
     
     init(
         trigger: Trigger,
@@ -44,9 +54,12 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     
     func body(content: Content) -> some View {
         content.fallbackOnChange(of: trigger) { newValue in
-            
             guard let toast = toast(newValue) else {
                 return
+            }
+            
+            if invalidationOptions.contains(.contextChanged) {
+                presentationCanceller.dismissPresentation()
             }
             
             toastPresenter._schedule(
@@ -55,7 +68,7 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
                     toastAlignment: toastAlignment,
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
-                    presentationCanceller: nil,
+                    presentationCanceller: presentationCanceller,
                     onDismiss: onToastDismiss
                 ),
                 cancellationPolicy: toastCancellation.byReplacingAutomatic(
@@ -63,6 +76,12 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
                 ),
                 cancellables: &cancellables
             )
+        }
+        .fallbackOnChange(of: invalidationOptions) { newValue in
+            presentationCanceller.dismissOnDeinit = newValue.contains(.presentationDismissed)
+        }
+        .onAppear {
+            presentationCanceller.dismissOnDeinit = invalidationOptions.contains(.presentationDismissed)
         }
     }
 }

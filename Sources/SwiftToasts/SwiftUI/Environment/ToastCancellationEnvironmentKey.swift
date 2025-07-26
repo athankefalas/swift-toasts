@@ -13,7 +13,7 @@ private struct ToastCancellationEnvironmentKey: EnvironmentKey {
 
 public extension EnvironmentValues {
     
-    /// The preferred toast cancellation policy.
+    /// The preferred scheduled toast cancellation policy.
     internal(set) var toastCancellation: ToastCancellation {
         get { self[ToastCancellationEnvironmentKey.self] }
         set { self[ToastCancellationEnvironmentKey.self] = newValue }
@@ -22,7 +22,7 @@ public extension EnvironmentValues {
 
 public extension View {
     
-    /// Controls the toast cancellation policy in this View and it's descendants.
+    /// Controls the cancellation policy for scheduled Toasts in this View and it's descendants.
     /// - Parameter cancellationPolicy: The preferred cancellation policy.
     /// - Returns: A modified view.
     func toastCancellation(

@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-/// A type that represents the cancellation policy of a toast.
+/// A type that represents the cancellation policy of a scheduled toast.
 public enum ToastCancellation: Hashable, CaseIterable, Sendable {
-    /// The toast will never be cancelled.
+    /// The scheduled toast will never be cancelled.
     case never
     
-    /// The toast will be cancelled when the presentation of the source that scheduled it ends.
+    /// The scheduled toast will be cancelled when the presentation of the source that scheduled it ends.
     case presentation
     
-    /// The toast will be cancelled when a new toast is scheduled from the same source.
+    /// The scheduled toast will be cancelled when a new toast is scheduled from the same source.
     case always
     
-    /// The cancellation policy will be automatically selected.
+    /// The scheduled toast cancellation policy will be automatically selected.
     case automatic
     
     internal func byReplacingAutomatic(

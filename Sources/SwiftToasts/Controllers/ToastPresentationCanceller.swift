@@ -9,11 +9,19 @@ import Foundation
 
 /// A controller object that can be used to programatically dismiss an already presented `Toast`.
 @MainActor
-public final class ToastPresentationCanceller {
+public final class ToastPresentationCanceller: ObservableObject {
+    var dismissOnDeinit: Bool = false
     private var presentationDismissalHandler: @MainActor () -> Void
     
     public init() {
         self.presentationDismissalHandler = {}
+    }
+    
+    deinit {
+        guard dismissOnDeinit else { return }
+        MainActor.assumeIsolated {
+            presentationDismissalHandler()
+        }
     }
     
     final func removeHandler() {
@@ -27,6 +35,9 @@ public final class ToastPresentationCanceller {
     }
     
     public final func dismissPresentation() {
-        presentationDismissalHandler()
+        let presentationDismissalHandler = presentationDismissalHandler
+        Task(priority: .userInitiated) { @MainActor in
+            presentationDismissalHandler()
+        }
     }
 }

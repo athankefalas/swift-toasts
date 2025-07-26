@@ -67,8 +67,6 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
         ) {
             self.state = .queued
             self.presentation = presentation
-            
-            
             self.presentation = presentation
                 .onPresent { [weak self] in
                     self?.state.presented()
@@ -157,7 +155,6 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
         presenterID: ObjectIdentifier,
         presenterPhasePublisher: AnyPublisher<PresenterPhaseObserver.PresenterPhase, Never>?
     ) {
-        
         self.handlingTask = Task(priority: .low) { @MainActor in
             let scenePhaseObserver = ScenePhaseObserver(sceneID: presenterID)
             let presenterPhaseObserver = PresenterPhaseObserver(presenterPhasePublisher: presenterPhasePublisher)

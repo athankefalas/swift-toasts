@@ -682,7 +682,7 @@ extension Toast {
                 Divider()
                 
                 ForEach(ToastRole.allCases, id: \.self) { role in
-                    Toast("Title", role: role)
+                    Toast("Title", role: role, duration: .short)
                 }
                 
                 Divider()
@@ -702,6 +702,63 @@ extension Toast {
                     }
                 }
                 
+                Divider()
+                
+                if #available(iOS 16.0, *) {
+                    Toast("Hello Toast!")
+                    
+                    Toast(
+                        "Something went wrong.",
+                        role: .failure
+                    )
+
+                    Toast(
+                        "Settings Saved",
+                        systemImage: "checkmark.circle",
+                        role: .success
+                    )
+                    
+                    Toast(
+                        "Network Offline",
+                        value: "Please check your connection.",
+                        systemImage: "network.slash",
+                        role: .warning
+                    )
+                    
+                    let userName = "us3rN4me"
+                    let avatarRawURL = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    
+                    Toast(role: .informational, duration: .long) {
+                        Label {
+                            Text("User **@\(userName)** is online")
+                        } icon: {
+                            AsyncImage(
+                                url: URL(string: avatarRawURL)
+                            ) { phase in
+                                switch phase {
+                                    case .empty, .failure:
+                                        EmptyView()
+                                    case .success(let image):
+                                        image.resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    @unknown default:
+                                        EmptyView()
+                                }
+                            }
+                            .frame(width: 48, height: 48)
+                            .clipShape(Circle())
+                        }
+                    }
+                    
+                    Toast(role: .informational, duration: .seconds(8)) {
+                        HStack {
+                            ProgressView()
+                                .tint(.accentColor)
+                            
+                            Text("Synchronizing data...")
+                        }
+                    }
+                }
             }
         }
     }
