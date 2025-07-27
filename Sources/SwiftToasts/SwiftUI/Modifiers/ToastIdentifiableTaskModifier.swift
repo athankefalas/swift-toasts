@@ -21,6 +21,9 @@ private struct ToastIdentifiableTaskModifier<ID: Equatable>: ViewModifier {
     @Environment(\.toastCancellation)
     private var toastCancellation
     
+    @Environment(\.toastInteractiveDismissEnabled)
+    private var toastInteractiveDismissEnabled
+    
     @PresentationBoundState
     private var cancellablesBox = CancellablesBox()
     
@@ -43,8 +46,11 @@ private struct ToastIdentifiableTaskModifier<ID: Equatable>: ViewModifier {
             await operation(
                 ScheduleToastAction(
                     toastPresenterProxy: toastPresenter,
-                    toastStyle: toastStyle,
-                    toastTransition: toastTransition,
+                    toastEnvironmentValues: ToastEnvironmentValues(
+                        toastStyle: toastStyle,
+                        toastTransition: toastTransition,
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,
                     cancellablesBox: cancellablesBox

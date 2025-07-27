@@ -118,6 +118,7 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
             )
             
             return presentation
+                .toastEnvironmentValues
                 .toastTransition
                 .duration(context)
         }
@@ -135,6 +136,9 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
     
     @Environment(\.accessibilityReduceTransparency)
     private var accessibilityReduceTransparency
+    
+    @State
+    private var fallbackNamespaceID = UUID()
     
     @State
     private var toastPresentingLayoutGeometry: ToastPresentingLayoutGeometry?
@@ -182,7 +186,10 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
                 Color.clear
                 
                 if let toastPresentation = toastPresenter.toastPresentation {
-                    HostedToastContent(hosting: toastPresentation) {
+                    HostedToastContent(
+                        id: fallbackNamespaceID,
+                        hosting: toastPresentation
+                    ) {
                         toastPresenter.dismissToast()
                     }
                     .transition(

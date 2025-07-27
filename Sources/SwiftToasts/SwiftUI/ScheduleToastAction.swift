@@ -19,8 +19,7 @@ import Combine
 public struct ScheduleToastAction: CustomReflectable {
     public let toastPresenterProxy: ToastPresenterProxy
     
-    private let toastStyle: AnyToastStyle
-    private let toastTransition: ToastTransition
+    private let toastEnvironmentValues: ToastEnvironmentValues
     private let toastCancellation: ToastCancellation
     private let preferredCancellation: ToastCancellation
     private weak var cancellablesBox: CancellablesBox?
@@ -44,15 +43,13 @@ public struct ScheduleToastAction: CustomReflectable {
     
     init(
         toastPresenterProxy: ToastPresenterProxy,
-        toastStyle: AnyToastStyle,
-        toastTransition: ToastTransition,
+        toastEnvironmentValues: ToastEnvironmentValues = ToastEnvironmentValues(),
         toastCancellation: ToastCancellation,
         preferredCancellation: ToastCancellation,
         cancellablesBox: CancellablesBox
     ) {
         self.toastPresenterProxy = toastPresenterProxy
-        self.toastStyle = toastStyle
-        self.toastTransition = toastTransition
+        self.toastEnvironmentValues = toastEnvironmentValues
         self.toastCancellation = toastCancellation
         self.preferredCancellation = preferredCancellation
         self.cancellablesBox = cancellablesBox
@@ -97,8 +94,7 @@ public struct ScheduleToastAction: CustomReflectable {
             presentation: ToastPresentation(
                 toast: toast,
                 toastAlignment: toastAlignment,
-                toastStyle: toastStyle,
-                toastTransition: toastTransition,
+                toastEnvironmentValues: toastEnvironmentValues,
                 presentationCanceller: nil,
                 onPresent: onPresent,
                 onDismiss: onDismiss

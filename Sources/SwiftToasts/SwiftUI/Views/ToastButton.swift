@@ -50,6 +50,9 @@ public struct ToastButton<Label: View>: View {
     @Environment(\.toastCancellation)
     private var toastCancellation
     
+    @Environment(\.toastInteractiveDismissEnabled)
+    private var toastInteractiveDismissEnabled
+    
     @PresentationBoundState
     private var cancellablesBox = CancellablesBox()
     
@@ -106,8 +109,11 @@ public struct ToastButton<Label: View>: View {
             action(
                 ScheduleToastAction(
                     toastPresenterProxy: toastPresenter,
-                    toastStyle: toastStyle,
-                    toastTransition: toastTransition,
+                    toastEnvironmentValues: ToastEnvironmentValues(
+                        toastStyle: toastStyle,
+                        toastTransition: toastTransition,
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,
                     cancellablesBox: cancellablesBox
@@ -123,8 +129,11 @@ public struct ToastButton<Label: View>: View {
             action(
                 ScheduleToastAction(
                     toastPresenterProxy: toastPresenter,
-                    toastStyle: toastStyle,
-                    toastTransition: toastTransition,
+                    toastEnvironmentValues: ToastEnvironmentValues(
+                        toastStyle: toastStyle,
+                        toastTransition: toastTransition,
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,
                     cancellablesBox: cancellablesBox

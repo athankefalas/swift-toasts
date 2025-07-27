@@ -689,7 +689,7 @@ extension Toast {
                 
                 ForEach(ToastRole.allCases, id: \.self) { role in
                     Toast(role: role) {
-                        if #available(iOS 15.0, *) {
+                        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
                             Label {
                                 HStack(spacing: 64) {
                                     Text("Title")
@@ -704,7 +704,7 @@ extension Toast {
                 
                 Divider()
                 
-                if #available(iOS 16.0, *) {
+                if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
                     Toast("Hello Toast!")
                     
                     Toast(

@@ -78,14 +78,18 @@ public struct ToastPresenterReader<Content: View>: View {
             proxy.schedulePresentation(
                 toast: Toast("Hello Toast!"),
                 toastAlignment: .top,
-                toastTransition: transitionUnderTest
+                toastEnvironmentValues: ToastEnvironmentValues(
+                    toastTransition: transitionUnderTest
+                )
             )
         }
         .onAppear {
             proxy.schedulePresentation(
                 toast: Toast("Hello Toast!"),
                 toastAlignment: .top,
-                toastTransition: transitionUnderTest
+                toastEnvironmentValues: ToastEnvironmentValues(
+                    toastTransition: transitionUnderTest
+                )
             )
         }
     }

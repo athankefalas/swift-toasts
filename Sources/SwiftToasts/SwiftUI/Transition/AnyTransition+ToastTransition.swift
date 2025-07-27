@@ -67,7 +67,7 @@ private struct BridgedToastTransitionModifier: ViewModifier {
             presentation: ToastPresentation,
             context: ToastTransition.Context
         ) {
-            let transition = presentation.toastTransition
+            let transition = presentation.toastEnvironmentValues.toastTransition
             let properties: [AnyAnimationProperty] = .reduceByMerging(
                 animationProperties: transition.animationProperties(context)
             )

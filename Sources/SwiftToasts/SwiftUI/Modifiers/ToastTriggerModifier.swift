@@ -25,6 +25,9 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     @Environment(\.toastPresentationInvalidation)
     private var toastPresentationInvalidation
     
+    @Environment(\.toastInteractiveDismissEnabled)
+    private var toastInteractiveDismissEnabled
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
     
@@ -66,8 +69,11 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
                 presentation: ToastPresentation(
                     toast: toast,
                     toastAlignment: toastAlignment,
-                    toastStyle: toastStyle,
-                    toastTransition: toastTransition,
+                    toastEnvironmentValues: ToastEnvironmentValues(
+                        toastStyle: toastStyle,
+                        toastTransition: toastTransition,
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    ),
                     presentationCanceller: presentationCanceller,
                     onDismiss: onToastDismiss
                 ),

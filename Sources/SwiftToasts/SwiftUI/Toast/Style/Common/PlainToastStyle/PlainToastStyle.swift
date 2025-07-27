@@ -30,6 +30,9 @@ public struct PlainToastStyle: ToastStyle {
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
         
+        @Environment(\.toastInteractiveDismissEnabled)
+        private var toastInteractiveDismissEnabled
+        
         @State
         private var isHovering = false
         
@@ -89,6 +92,10 @@ public struct PlainToastStyle: ToastStyle {
                         .contentShape(Rectangle())
                 )
                 .platformDismissalGesture {
+                    guard toastInteractiveDismissEnabled else {
+                        return
+                    }
+                    
                     toastDismiss?()
                 }
                 .background(

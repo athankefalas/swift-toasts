@@ -119,6 +119,7 @@ final class UIToastHostingController: UIViewController {
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
         hostingController.rootView = HostedToastContent(
+            id: ObjectIdentifier(self),
             hosting: toastPresentation
         ) { [weak self] in
             self?.dismissToast()
@@ -138,7 +139,7 @@ final class UIToastHostingController: UIViewController {
         layoutAndReset()
         
         hostingController.view.animate(
-            transition: toastPresentation.toastTransition,
+            transition: toastPresentation.toastEnvironmentValues.toastTransition,
             in: makeAnimationContext(
                 phase: .toastInsertion,
                 toast: toastPresentation
@@ -162,6 +163,7 @@ final class UIToastHostingController: UIViewController {
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
         hostingController.rootView = HostedToastContent(
+            id: ObjectIdentifier(self),
             hosting: toastPresentation
         ) { [weak self] in
             self?.dismissToast()
@@ -181,7 +183,7 @@ final class UIToastHostingController: UIViewController {
         layoutAndReset()
         
         hostingController.view.animate(
-            transition: toastPresentation.toastTransition,
+            transition: toastPresentation.toastEnvironmentValues.toastTransition,
             in: makeAnimationContext(
                 phase: .toastInsertion,
                 toast: toastPresentation
@@ -231,7 +233,7 @@ final class UIToastHostingController: UIViewController {
     ) {
         layoutAndReset()
         hostingController.view.animate(
-            transition: toastPresentation.toastTransition,
+            transition: toastPresentation.toastEnvironmentValues.toastTransition,
             in: makeAnimationContext(
                 phase: .toastRemoval,
                 toast: toastPresentation

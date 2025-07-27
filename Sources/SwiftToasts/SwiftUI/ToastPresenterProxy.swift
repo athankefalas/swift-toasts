@@ -50,8 +50,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
     /// - Parameters:
     ///   - toast: The Toast to present.
     ///   - toastAlignment: The alignment to use when presenting the Toast.
-    ///   - toastStyle: The style to use when presenting the Toast.
-    ///   - toastTransition: The transition to use when presenting and dismissing the Toast.
+    ///   - toastEnvironmentValues: The environment values used to configure the appearance and behaviour of a Toast.
     ///   - presentationCanceller: A controller that can be used to programmatically dismiss a presented Toast.
     ///   - onPresent: A callback invoked when the given Toast is presented.
     ///   - onDismiss: A callback invoked when the given Toast is dismissed.
@@ -59,8 +58,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
     public func schedulePresentation(
         toast: Toast,
         toastAlignment: ToastAlignment,
-        toastStyle: AnyToastStyle? = nil,
-        toastTransition: ToastTransition? = nil,
+        toastEnvironmentValues: ToastEnvironmentValues = ToastEnvironmentValues(),
         presentationCanceller: ToastPresentationCanceller? = nil,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
@@ -69,8 +67,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
             presentation: ToastPresentation(
                 toast: toast,
                 toastAlignment: toastAlignment,
-                toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
-                toastTransition: toastTransition ?? .defaultTransition,
+                toastEnvironmentValues: toastEnvironmentValues,
                 presentationCanceller: presentationCanceller,
                 onPresent: onPresent,
                 onDismiss: onDismiss
@@ -93,8 +90,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
     /// - Parameters:
     ///   - toast: The Toast to present.
     ///   - toastAlignment: The alignment to use when presenting the Toast.
-    ///   - toastStyle: The style to use when presenting the Toast.
-    ///   - toastTransition: The transition to use when presenting and dismissing the Toast.
+    ///   - toastEnvironmentValues: The environment values used to configure the appearance and behaviour of a Toast.
     ///   - presentationCanceller: A controller that can be used to programmatically dismiss a presented Toast.
     ///   - onPresent: A callback invoked when the given Toast is presented.
     ///   - onDismiss: A callback invoked when the given Toast is dismissed.
@@ -103,8 +99,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
     public func scheduleCancellablePresentation(
         toast: Toast,
         toastAlignment: ToastAlignment,
-        toastStyle: AnyToastStyle? = nil,
-        toastTransition: ToastTransition? = nil,
+        toastEnvironmentValues: ToastEnvironmentValues = ToastEnvironmentValues(),
         presentationCanceller: ToastPresentationCanceller? = nil,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil
@@ -113,8 +108,7 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
             presentation: ToastPresentation(
                 toast: toast,
                 toastAlignment: toastAlignment,
-                toastStyle: toastStyle ?? AnyToastStyle(PlainToastStyle()),
-                toastTransition: toastTransition ?? .defaultTransition,
+                toastEnvironmentValues: toastEnvironmentValues,
                 presentationCanceller: presentationCanceller,
                 onPresent: onPresent,
                 onDismiss: onDismiss
