@@ -1,6 +1,22 @@
 #  SwiftToasts
 
-Lib description
+A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors that does not block interaction with the main content. 
+
+SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the SwiftUI API conventions, using the library feels familiar, intuitive and trully native.
+
+Features:
+
+🎨 Configurable Toast style.
+
+⚙️ Configurable Toast alignment.
+
+🎞️ Configurable Toast transition animations.
+
+⏲️ Deterministic scheduler based Toast presentation.
+
+🍎 Compatible with multiple Apple's platforms and all SwiftUI versions.
+
+🛠️ Variety of modifiers and controls that can be used to present Toasts using SwiftUI inspired APIs.
 
 ## Compatibility
 
@@ -18,7 +34,7 @@ The SwiftToasts library is compatible with all versions of SwiftUI.
 
 #### WatchOS
 
-On watchOS SwiftToasts requires an additional modifier to enable Toast Presentation in a compatibility mode.
+Because watchOS does not have a platform-native dynamic view hierarchy framework such as UIKit or AppKit, SwiftToasts requires an additional modifier to enable Toast Presentation on watchOS in a compatibility mode.
 
 ## Installation
 
@@ -26,7 +42,7 @@ You can install SwiftToasts as a package dependency.
 
 ## Creating a Toast
 
-A `Toast` is a plain SwiftUI View and requires three properties to configure and create it, the role of the Toast, the duration and the displayed content view. Similar to common SwiftUI components, such as `Button` or `Label`, a number of initializers exist that allow the initialization of a Toast with commonly used content.
+A `Toast` is defined a plain SwiftUI View and requires three properties to configure and create it, the role of the Toast, the duration and the displayed content view. Similar to common SwiftUI components, such as `Button` or `Label`, a number of initializers exist that allow the initialization of a Toast with commonly used content.
 
 ``` Swift
 
@@ -79,11 +95,10 @@ Toast(role: .informational, duration: .long) {
 
 /// Creating an informational Toast with custom content and an custom duration.
 Toast(role: .informational, duration: .seconds(8)) {
-    HStack {
-        ProgressView()
-            .tint(.accentColor)
-        
+    Label {
         Text("Synchronizing data...")
+    } icon: {
+        ProgressView()
     }
 }
 ```
@@ -117,25 +132,381 @@ The following roles are supported:
 
 The duration of a `Toast` defines how long a Toast presentation will remain active. The duration of a Toast can be defined by using the `ToastDuration` type.
 
-
+Other than predefined defined durations that have a specific lifetime, a Toast may also be presented indefinitely, by using the `ToastDuration.indefinite` duration. Please note, that a Toast that is presented indefinitely must be explicitly dismissed either by user interaction or by any other means that controls the presentation of a Toast.
 
 ## Presenting a Toast
 
+After a `Toast` is created it can be scheduled for presentation on a __*separate*__, __*modal environment*__. An internal scheduler places scheduled toasts in a FIFO queue and ensures that Toasts will be presented one at a time in the order they were scheduled.
+
 ### Modifiers
 
-### Tasks
+The modifiers below can be used to present a `Toast` as a reaction to a trigger, an occured event or a state change.
+
+#### Toast
+
+The `toast` modifier and it's variants can be used to present a `Toast` as a reaction to a trigger, an occured event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the show to present.
+
+The content builder closure supports conditional and optional `Toast` building following the API style of the SwiftUI ViewBuilder.
+
+``` Swift
+// Showing a Toast based on a boolean binding.
+content
+    .toast(
+        isPresented: $showToast,
+        alignment: .top,
+        onDismiss: { print("Toast Dismissed.") }
+    ) {
+        if error != nil {
+            Toast("Done.", role: .success)
+        }
+    }
+
+// Showing a Toast based on an item binding.
+content
+    .toast(
+        isPresented: $toastItem,
+        alignment: .top,
+        onDismiss: { print("Toast Dismissed.") }
+    ) { item in
+        switch item {
+            case .completed:
+                Toast("Completed.", role: .success)
+            case .failed:
+                Toast("Failed.", role: .failure)
+        }
+    }
+
+// Showing a Toast when some value changes
+content
+    .toast(trigger: someValue) {
+        Toast("Value changed")
+    }
+
+// Showing a Toast when some value changes
+content
+    .toast(
+        trigger: someValue,
+        alignment: .top,
+        onDismiss: { print("Toast Dismissed.") }
+    ) { newValue
+        Toast("Value changed to \(newValue).")
+    }
+
+// Showing a Toast when a publisher sends a new value.
+content
+    .toast(byReceiving: publisher) { newValue in
+        Toast("Publisher sent value \(newValue).")
+    }
+
+```
+
+#### Tasks
+
+The toast variants of the `task` modifier can be used to schedule the presentation of a `Toast` when the presentation is a direct result of an asynchronous operation.
+
+``` swift
+// Showing a Toast as a result of a task.
+content
+    .task { schedule in
+        let didSucceed = await operation()
+
+        guard !didSucceed else {
+            return
+        }
+
+        schedule(
+            toast: Toast(
+                "Operation failed.",
+                role: .failure
+            )
+        )
+    }
+
+// Showing a Toast as a result of an identified task.
+content
+    .task(id: identity) { schedule in
+        let didSucceed = await operation()
+
+        guard !didSucceed else {
+            return
+        }
+
+        schedule(
+            toast: Toast(
+                "Operation failed.",
+                role: .failure
+            )
+        )
+    }
+
+```
 
 ### Buttons
 
+A `ToastButton` can be used to schedule the presentation of a `Toast` when the presentation is a direct result of a user interaction or user triggered operation.
+
+``` Swift
+
+// Showing a Toast after a user presses a Button.
+ToastButton("Submit") { schedule in
+    operation()
+    schedule(
+        toast: Toast(
+            "Completed.",
+            systemImage: "checkmark.circle.fill",
+            role: .success
+        )
+    )
+}
+
+```
+
 ## Configuring a Toast Presentation
 
-### Toast Transitions
+Most of the aspects of a Toast or it's presentation can be configured using several *environment* based modifiers.
 
-### Toast Cancellation
+### Style
+
+The style of a Toast can be configured in the same way as some of the system provided components. The library is shipped with a basic style called `PlainToastStyle` but if further customization is required a custom style can be used by conforming to the `ToastStyle` protocol.
+
+``` Swift
+
+// Showing a Toast with the default style.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(.plain)
+
+// Showing a Toast with a custom style.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(SomeToastStyle())
+
+```
+
+### Transition
+
+The transition animation when presenting a Toast is also configurable with a selection of predefined transitions. A transition can be combined with another to create a variety of different effects.
+
+``` Swift
+
+// Showing a Toast by fading it in and out.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastTransition(.opacity)
+
+// Showing a Toast by scaling it in and out.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastTransition(.scale)
+
+// Showing a Toast by scaling it in and fading it out.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastTransition(
+    .asymmetric(
+        insertion: .scale,
+        removal: .opacity
+    )
+)
+
+// Showing a Toast by combining two or more transitions.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastTransition(
+    .move(edge: .top)
+    .combined(
+        with: .opacity.combined(
+            with: .scale
+        )
+    )
+)
+
+```
+
+### Cancellation
+
+After a `Toast` is created is scheduled for presentation in a queue. A scheduled Toast may be cancelled *before* it is presented by the source it was scheduled from depending on context and the available configuration. 
+
+By default, a scheduled toast will not be cancelled unless the scene containing it's source is dismissed. The cancellation policy in the current environment can be configured by using the `toastCancellation` modifier.
+
+Please note, that cancellation only affects Toasts that have not yet been presented and are still waiting for presentation in the schedulers queue.
+
+For example, when firing a form submission action using a `ToastButton` it might be desirable to *save* the updated values of the form and immediately dismiss the scene. In order for the scheduled presentation to not be cancelled, the `.never` cancellation policy will be required.
+
+``` Swift 
+// The button below saves the form, starts the dismissal of the active scene
+// and then schedules a Toast. By using the `.never` cancellation policy the
+// scheduled Tost will not be cancelled when the active scene is dismissed.
+ToastButton("Submit") { schedule in
+    saveForm()
+    dismiss()
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastCancellation(.never)
+
+```
+
+Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling a large number of toasts when a value changes rapidly and frequently. In order to automatically cancell all scheduled toasts by a specific source, the `.always` cancellation policy is required.
+
+``` Swift
+// A change of the volume value triggers a toast.
+// By using the `.always` cancellation policy each time a new Toast 
+// is scheduled all previous Toasts already in the queue, that have not
+// yet been presented, will be cancelled.
+Slider(value: $volume, in: 0...100) {
+    Text("Volume: \(volume)%")
+}
+.toast(trigger: volume) { newValue in
+    Toast("Volume set to \(newValue)%.")
+}
+.toastCancellation(.always)
+```
+
+### Presentation Invalidation
+
+While toasts are a fire and forget visual component there is a limited capability to dismiss already presented toasts. The `toast` modifier and it's variants specifically, use a trigger value as context to determine when to schedule a `Toast`. By default, whenever the value changes again an already displayed toast is automatically dismissed as the context that triggered it has *changed*. This behavior can be easily configured by using the `toastPresentationInvalidation` modifier.
+
+For example, it might be desirable to configure a toast triggered by a value change to automatically dismiss when the value changes *and* when the source's scene is dismissed.
+
+``` Swift
+// A change of the volume value triggers a toast.
+// By using the `.contextChanged, .presentationDismissed` presentation
+// invalidation options an already presented Toast will de dismissed when
+// the slider's value changes and when it's container is dismissed.
+Slider(value: $volume, in: 0...100) {
+    Text("Volume: \(volume)%")
+}
+.toast(trigger: volume) { newValue in
+    Toast("Volume set to \(newValue)%.")
+}
+.toastCancellation(.always)
+.toastPresentationInvalidation([.contextChanged, .presentationDismissed])
+```
+
+Alternatively, if it is desired that the active toast presentation is never invalidated the `.never` presentation invalidation can be used instead.
 
 ## Toast Styling
 
-Components inside toast Text / Label / LabelledContent
+When a `Toast` is presented it's appearance is retrieved by the source's environment. A custom style can be implemented by creating a struct that conforms to the `ToastStyle` protocol.
 
-Available Environment Keys
+By using the `configuration` parameter and several environment values, a custom toast style can provide pretty detailed and configurable visual content based on the desired design specifications.
+
+``` Swift
+import SwiftUI
+import SwiftToasts
+
+struct CustomToastStyle: ToastStyle {
+    
+    func makeBody(configuration: Configuration) -> some View {
+        StyledToastBody(configuration: configuration)
+    }
+    
+    struct StyledToastBody: View {
+        @Environment(\.toastDismiss)
+        private var toastDismiss
+        
+        @Environment(\.toastPresentedAlignment)
+        private var toastPresentedAlignment
+        
+        @Environment(\.toastInteractiveDismissEnabled)
+        private var toastInteractiveDismissEnabled
+        
+        let configuration: Configuration
+        
+        private var shape: AnyShape {
+            if toastPresentedAlignment == .center {
+                return AnyShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                return AnyShape(Capsule())
+            }
+        }
+        
+        private var color: Color {
+            configuration.role == .failure ? .red : .accentColor
+        }
+        
+        var body: some View {
+            configuration.content
+                .padding(12)
+                .foregroundStyle(color)
+                .background(.ultraThinMaterial, in: shape)
+                .overlay {
+                    shape.stroke(
+                        color.opacity(0.25),
+                        lineWidth: 1
+                    )
+                }
+                .onTapGesture {
+                    guard toastInteractiveDismissEnabled else { return }
+                    toastDismiss?()
+                }
+        }
+    }
+}
+
+// Showing a Toast with the custom style.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(CustomToastStyle())
+
+```
+
+### Toast Environment Values
+
+In order to read 
 

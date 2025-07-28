@@ -15,9 +15,11 @@ struct ToastButtonStyle: ButtonStyle {
     }
     
     private struct StyledViewBody: View {
-        
         @Environment(\.isEnabled)
         private var isEnabled
+        
+        @Environment(\.toastDismiss)
+        private var toastDismiss
         
         let accentColor: Color
         let configuration: Configuration
@@ -35,6 +37,12 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
+                .simultaneousGesture(
+                    TapGesture(count: 1)
+                        .onEnded {
+                            toastDismiss?()
+                        }
+                )
         }
     }
 }

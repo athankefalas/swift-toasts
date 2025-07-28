@@ -17,7 +17,6 @@ public struct PlainToastStyle: ToastStyle {
     }
     
     private struct StyledViewBody: View {
-        
         @Environment(\.toastDismiss)
         private var toastDismiss
         
@@ -129,7 +128,7 @@ private extension View {
         )
         .applyToastLabeledContentStyle()
         .applyToastButtonStyle(
-            accentColor: accentColor
+            accentColor: .accentColor
         )
         .font(.fallbackTitle3)
     }

@@ -751,11 +751,10 @@ extension Toast {
                     }
                     
                     Toast(role: .informational, duration: .seconds(8)) {
-                        HStack {
-                            ProgressView()
-                                .tint(.accentColor)
-                            
+                        Label {
                             Text("Synchronizing data...")
+                        } icon: {
+                            ProgressView()
                         }
                     }
                 }

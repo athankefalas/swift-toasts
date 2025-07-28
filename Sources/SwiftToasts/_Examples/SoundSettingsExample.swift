@@ -70,6 +70,8 @@ struct SoundSettingsExample: View {
                     }
                     .toastCancellation(.always)
                     .toastTransition(.opacity)
+                    .toastPresentationInvalidation(.all)
+                    .toastInteractiveDismissDisabled(true)
             }
             
             if settings.isOn {
@@ -107,7 +109,6 @@ struct SoundSettingsExample: View {
             }
         }
         .toastCancellation(.presentation)
-        .toastPresentationInvalidation(.all)
         .onAppear {
             initialSettingsSignature = settings.hashValue
         }

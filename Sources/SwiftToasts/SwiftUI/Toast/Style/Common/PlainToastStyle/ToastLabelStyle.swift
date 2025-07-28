@@ -45,6 +45,7 @@ struct ToastLabelStyle: LabelStyle {
                 VStack(spacing: 24) {
                     configuration.icon
                         .foregroundColor(accentColor)
+                        .fallbackTintColor(accentColor)
                         .font(.system(size: largeIconSize))
                         .accessibilityIdentifier("ToastIcon")
                     
@@ -59,6 +60,7 @@ struct ToastLabelStyle: LabelStyle {
                 HStack(spacing: 12) {
                     configuration.icon
                         .foregroundColor(accentColor)
+                        .fallbackTintColor(accentColor)
                         .font(.system(size: iconSize))
                         .accessibilityIdentifier("ToastIcon")
                     
@@ -81,6 +83,15 @@ extension View {
     ) -> some View {
         if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
             self.labelStyle(ToastLabelStyle(accentColor: accentColor))
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    fileprivate func fallbackTintColor(_ color: Color) -> some View {
+        if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+            self.tint(color)
         } else {
             self
         }
