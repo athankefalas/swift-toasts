@@ -30,7 +30,13 @@ public struct ToastTransition: Identifiable, Equatable, Sendable {
         case easeIn
         case easeOut
         case easeInOut
-        case spring(mass: Double = 1, stiffness: Double, damping: Double, initialVelocity: CGFloat = 0, allowOverDamping: Bool = false)
+        case spring(
+            mass: Double = 1,
+            stiffness: Double,
+            damping: Double,
+            initialVelocity: CGFloat = 0,
+            allowOverDamping: Bool = false
+        )
     }
     
     /// A type that holds contextual information about the toast, platform, view hierarchy and transition phase.

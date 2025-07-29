@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if DEBUG && os(iOS)
+#if DEBUG
 
 struct SoundSettingsModel: Hashable {
     var isOn = true
@@ -40,7 +40,7 @@ class NetworkMonitor: ObservableObject {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 struct SoundSettingsExample: View {
     @Environment(\.dismiss)
     private var dismiss
@@ -96,7 +96,7 @@ struct SoundSettingsExample: View {
             .toastCancellation(.never)
         }
         .navigationTitle("Sound Settings")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleDisplayMode(.inline)
         .toast(byReceiving: monitor.$state) {
             monitor.state = .reachable
         } content: { newValue in
@@ -115,21 +115,15 @@ struct SoundSettingsExample: View {
     }
 }
 
-struct PreviewStage: View {
-    var body: some View {
-        PresentedPreview {
-            ZStack {
-                if #available(iOS 17.0, *) {
-                    SoundSettingsExample()
-                }
+
+#Preview {
+    PresentedPreview {
+        ZStack {
+            if #available(iOS 17.0, macOS 14.0, *) {
+                SoundSettingsExample()
             }
         }
     }
-}
-
-
-#Preview {
-    PreviewStage()
 }
 
 #endif

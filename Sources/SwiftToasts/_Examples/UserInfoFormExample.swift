@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if DEBUG //&& os(iOS)
+#if DEBUG
 
 @available(iOS 17.0, macOS 14.0, *)
 @MainActor
@@ -113,7 +113,7 @@ struct UserInfoFormExample: View {
         .navigationTitle("Edit Profile")
         .toolbarTitleDisplayMode(.inline)
         .toast(isPresented: $isLoading, alignment: .center) {
-            Toast(role: .informational) {
+            Toast(role: .informational, duration: .indefinite) {
                 Label {
                     Text("Loading...")
                 } icon: {

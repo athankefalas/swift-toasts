@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private enum BridgedToastTransitionPhase {
+private enum BridgedToastTransitionPhase: Hashable {
     case inserting
     case removing
     case identity
@@ -32,33 +32,28 @@ private struct BridgedToastTransitionModifier: ViewModifier {
         
         var animation: Animation {
             switch curve {
-            case .default:
-                if #available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *) {
-                    return .interactiveSpring(duration: duration)
-                        .delay(delay)
-                } else {
+                case .default:
                     return .easeInOut(duration: duration)
                         .delay(delay)
-                }
-            case .linear:
-                return .linear(duration: duration)
+                case .linear:
+                    return .linear(duration: duration)
+                        .delay(delay)
+                case .easeIn:
+                    return .easeIn(duration: duration)
+                        .delay(delay)
+                case .easeOut:
+                    return.easeOut(duration: duration)
+                        .delay(delay)
+                case .easeInOut:
+                    return .easeInOut(duration: duration).delay(delay)
+                case .spring(let mass, let stiffness, let damping, let initialVelocity, _):
+                    return .interpolatingSpring(
+                        mass: mass,
+                        stiffness: stiffness,
+                        damping: damping,
+                        initialVelocity: initialVelocity
+                    )
                     .delay(delay)
-            case .easeIn:
-                return .easeIn(duration: duration)
-                    .delay(delay)
-            case .easeOut:
-                return.easeOut(duration: duration)
-                    .delay(delay)
-            case .easeInOut:
-                return .easeInOut(duration: duration).delay(delay)
-            case .spring(let mass, let stiffness, let damping, let initialVelocity, _):
-                return .interpolatingSpring(
-                    mass: mass,
-                    stiffness: stiffness,
-                    damping: damping,
-                    initialVelocity: initialVelocity
-                )
-                .delay(delay)
             }
         }
         
@@ -113,7 +108,6 @@ private struct BridgedToastTransitionModifier: ViewModifier {
             phase: BridgedToastTransitionPhase,
             properties: [AnyAnimationProperty]
         ) -> (offset: CGSize, scale: CGSize, angle: Angle, axes: RotationAxis) {
-           
             let defaultScale = CGSize(width: 1, height: 1)
             
             guard phase != .identity else {
@@ -133,19 +127,19 @@ private struct BridgedToastTransitionModifier: ViewModifier {
             
             for value in fromValue {
                 switch value {
-                case .translate(x: let x, y: let y, z: _):
-                    fromOffsetValue.width = x
-                    fromOffsetValue.height = y
-                case .scale(x: let x, y: let y, z: _):
-                    fromScaleValue.width = x
-                    fromScaleValue.height = y
-                case .rotate(angle: let angle, axes: let axes):
-                    fromAngle = angle
-                    fromAxes = (
-                        x: axes.contains(.x) ? 1 : fromAxes.x,
-                        y: axes.contains(.y) ? 1 : fromAxes.y,
-                        z: axes.contains(.z) ? 1 : fromAxes.z
-                    )
+                    case .translate(x: let x, y: let y, z: _):
+                        fromOffsetValue.width = x
+                        fromOffsetValue.height = y
+                    case .scale(x: let x, y: let y, z: _):
+                        fromScaleValue.width = x
+                        fromScaleValue.height = y
+                    case .rotate(angle: let angle, axes: let axes):
+                        fromAngle = angle
+                        fromAxes = (
+                            x: axes.contains(.x) ? 1 : fromAxes.x,
+                            y: axes.contains(.y) ? 1 : fromAxes.y,
+                            z: axes.contains(.z) ? 1 : fromAxes.z
+                        )
                 }
             }
             
@@ -156,19 +150,19 @@ private struct BridgedToastTransitionModifier: ViewModifier {
             
             for value in toValue {
                 switch value {
-                case .translate(x: let x, y: let y, z: _):
-                    toOffsetValue.width = x
-                    toOffsetValue.height = y
-                case .scale(x: let x, y: let y, z: _):
-                    toScaleValue.width = x
-                    toScaleValue.height = y
-                case .rotate(angle: let angle, axes: let axes):
-                    toAngle = angle
-                    toAxes = (
-                        x: axes.contains(.x) ? 1 : toAxes.x,
-                        y: axes.contains(.y) ? 1 : toAxes.y,
-                        z: axes.contains(.z) ? 1 : toAxes.z
-                    )
+                    case .translate(x: let x, y: let y, z: _):
+                        toOffsetValue.width = x
+                        toOffsetValue.height = y
+                    case .scale(x: let x, y: let y, z: _):
+                        toScaleValue.width = x
+                        toScaleValue.height = y
+                    case .rotate(angle: let angle, axes: let axes):
+                        toAngle = angle
+                        toAxes = (
+                            x: axes.contains(.x) ? 1 : toAxes.x,
+                            y: axes.contains(.y) ? 1 : toAxes.y,
+                            z: axes.contains(.z) ? 1 : toAxes.z
+                        )
                 }
             }
             
