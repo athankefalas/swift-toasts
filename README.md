@@ -2,7 +2,7 @@
 
 A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors without blocking user interaction with the main content. 
 
-SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and trully native.
+SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and truly native.
 
 Features:
 
@@ -139,11 +139,11 @@ After a `Toast` is created it can be scheduled for presentation on a __*separate
 
 ### Modifiers
 
-The modifiers below can be used to present a `Toast` as a reaction to a trigger, an occured event or a state change.
+The modifiers below can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change.
 
 #### Toast
 
-The `toast` modifier and it's variants can be used to present a `Toast` as a reaction to a trigger, an occured event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the toast to present.
+The `toast` modifier and it's variants can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the toast to present.
 
 The content builder closure supports conditional and optional `Toast` building following the API style of the SwiftUI ViewBuilder.
 
@@ -390,7 +390,7 @@ ToastButton("Submit") { schedule in
 
 ```
 
-Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling a large number of toasts when a value changes rapidly and frequently. In order to automatically cancell all scheduled toasts by a specific source, the `.always` cancellation policy is required.
+Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling a large number of toasts when a value changes rapidly and frequently. In order to automatically cancel all scheduled toasts by a specific source, the `.always` cancellation policy is required.
 
 ``` Swift
 // A change of the volume value triggers a toast.
@@ -533,17 +533,17 @@ A set of different *environment* values are injected into a presented toast for 
 
 #### Toast Dismiss Action
 
-The toast dismiss action is an environment value injected in the `toastDismiss` keypath and contains an action that can be used to programmaticaly dismiss a toast depending on a specific user interaction.
+The toast dismiss action is an environment value injected in the `toastDismiss` KeyPath and contains an action that can be used to programmatically dismiss a toast depending on a specific user interaction.
 
 Please note, that the scheduler automatically handles the duration of a toast so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
 
 #### Toast Presented Alignment
 
-The toast presented alignment is an *environment* value injected in the `toastPresentedAlignment` keypath and contains the alignment of a presented toast. This can be used to modify the appearance of a toast in specific alignments. For example, when a `Toast` is presented at the center alignment it might be preferable to use larger font and icon sizes.
+The toast presented alignment is an *environment* value injected in the `toastPresentedAlignment` KeyPath and contains the alignment of a presented toast. This can be used to modify the appearance of a toast in specific alignments. For example, when a `Toast` is presented at the center alignment it might be preferable to use larger font and icon sizes.
 
 #### Toast Interactive Dismiss Enabled
 
-The toast interactive dismiss enabled flag is an *environment* value injected in the `toastInteractiveDismissEnabled` keypath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style this flag could be checked before dismissing a toast when it is tapped.
+The toast interactive dismiss enabled flag is an *environment* value injected in the `toastInteractiveDismissEnabled` KeyPath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style this flag could be checked before dismissing a toast when it is tapped.
 
 ## Alternative Presentation Contexts
 
