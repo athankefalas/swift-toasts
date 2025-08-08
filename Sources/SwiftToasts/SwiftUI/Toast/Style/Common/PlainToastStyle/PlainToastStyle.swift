@@ -86,9 +86,12 @@ public struct PlainToastStyle: ToastStyle {
                     alignment: isCenterAligned ? .center : .leading
                 )
                 .background(
-                    Color.clear
-                        .allowsHitTesting(true)
-                        .contentShape(Rectangle())
+                    PlainToastBackground(
+                        accentColor: accentColor,
+                        cornerRadius: 12,
+                        borderWidth: borderWidth,
+                        isHovering: isHovering
+                    )
                 )
                 .platformDismissalGesture {
                     guard toastInteractiveDismissEnabled else {
@@ -97,14 +100,6 @@ public struct PlainToastStyle: ToastStyle {
                     
                     toastDismiss?()
                 }
-                .background(
-                    PlainToastBackground(
-                        accentColor: accentColor,
-                        cornerRadius: 12,
-                        borderWidth: borderWidth,
-                        isHovering: isHovering
-                    )
-                )
                 .padding()
                 .scaleEffect(isHovering ? 1.05 : 1)
 #if !os(tvOS)

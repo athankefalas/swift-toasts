@@ -441,7 +441,7 @@ public extension ToastButton where Label == SwiftUI.Label<Text, Image> {
 
 #Preview("Simple Button") {
     ToastButton { proxy in
-        proxy.schedule(toast: Toast("Toast"))
+        proxy.schedule(toast: Toast("Toast", duration: .indefinite))
     } label: {
         Text("Toast")
     }

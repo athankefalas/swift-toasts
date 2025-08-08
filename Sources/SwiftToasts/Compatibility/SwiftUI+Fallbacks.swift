@@ -387,3 +387,15 @@ extension View {
         )
     }
 }
+
+struct FallbackAnyShape: Shape {
+    private let _path: @Sendable (CGRect) -> Path
+    
+    init<S: Shape>(_ shape: S) {
+        self._path = { shape.path(in: $0) }
+    }
+    
+    func path(in rect: CGRect) -> Path {
+        _path(rect)
+    }
+}

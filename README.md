@@ -2,7 +2,7 @@
 
 A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors without blocking user interaction with the main content. 
 
-SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the SwiftUI API conventions, using the library feels familiar, intuitive and trully native.
+SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and trully native.
 
 Features:
 
@@ -14,7 +14,7 @@ Features:
 
 ⏲️ Deterministic scheduler based Toast presentation.
 
-🍎 Compatible with multiple Apple's platforms and all SwiftUI versions.
+🍎 Compatible with multiple Apple platforms and all SwiftUI versions.
 
 🛠️ Variety of ways that can be used to present Toasts using SwiftUI inspired APIs.
 

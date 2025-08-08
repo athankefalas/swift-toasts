@@ -92,7 +92,7 @@ struct PlainToastBackground: View {
         }
 #endif
         
-#if  LIQUID_GLASS_DESIGN
+#if BUILT_ON_XCODE_26
         if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
             return true
         }
@@ -113,11 +113,13 @@ struct PlainToastBackground: View {
                         lineWidth: borderWidth
                     )
                     .layoutPriority(-1)
-            } else {
-                Color.clear
             }
+            
+            Color(white: 1, opacity: 0.01)
+                .allowsHitTesting(true)
+                .contentShape(shape)
         }
-#if LIQUID_GLASS_DESIGN
+#if BUILT_ON_XCODE_26
         .fallbackGlassEffect(
             in: shape,
             enabled: usesGlassBackgroundEffect
@@ -134,9 +136,22 @@ struct PlainToastBackground: View {
         )
     }
     
-    private var shape: some Shape {
-        RoundedRectangle(
-            cornerRadius: cornerRadius
+    private var shape: FallbackAnyShape {
+#if BUILT_ON_XCODE_26
+        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
+            return FallbackAnyShape(
+                ConcentricRectangle(
+                    corners: .concentric(
+                        minimum: .fixed(cornerRadius)
+                    )
+                )
+            )
+        }
+#endif
+        return FallbackAnyShape(
+            RoundedRectangle(
+                cornerRadius: cornerRadius
+            )
         )
     }
     
@@ -161,7 +176,7 @@ struct PlainToastBackground: View {
 
 // MARK: Liguid Glass Material Support
 
-#if LIQUID_GLASS_DESIGN
+#if BUILT_ON_XCODE_26
 
 extension View {
     
@@ -171,7 +186,7 @@ extension View {
         enabled: Bool
     ) -> some View {
         if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-            self.glassEffect(.regular.interactive(), in: shape, isEnabled: enabled)
+            self.glassEffect(.regular.interactive(), in: shape)
         } else { // Fallback on earlier versions
             self
         }
@@ -192,6 +207,9 @@ extension View {
             borderWidth: 2,
             isHovering: false
         )
+        .onTapGesture {
+            print("Tapped")
+        }
         .padding(32)
         .border(Color.black)
         .padding()
