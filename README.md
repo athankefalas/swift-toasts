@@ -1,5 +1,12 @@
 #  SwiftToasts
 
+<!-- # Badges -->
+[![License](https://img.shields.io/github/license/athankefalas/swift-toasts)](https://github.com/athankefalas/swift-toasts/blob/main/LICENSE)
+[![Release](https://img.shields.io/github/v/release/athankefalas/swift-toasts)](https://github.com/athankefalas/swift-toasts/releases/tag/v0.9.0)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fathankefalas%2Fswift-toasts%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/athankefalas/swift-toasts)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fathankefalas%2Fswift-toasts%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/athankefalas/swift-toasts)
+
+
 A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors without blocking user interaction with the main content. 
 
 SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and truly native.
