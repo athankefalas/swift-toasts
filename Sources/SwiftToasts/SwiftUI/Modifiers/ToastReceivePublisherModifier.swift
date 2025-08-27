@@ -271,7 +271,7 @@ public extension View {
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 let start = Date()
 

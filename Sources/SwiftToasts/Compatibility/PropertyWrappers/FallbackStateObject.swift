@@ -159,7 +159,7 @@ struct FallbackStateObject<Value: ObservableObject>: @preconcurrency DynamicProp
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct _FallbackStateObjectPreview: View {
     

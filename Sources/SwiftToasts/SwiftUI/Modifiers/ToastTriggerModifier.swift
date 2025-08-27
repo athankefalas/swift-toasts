@@ -141,7 +141,7 @@ public extension View {
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct _ToastTriggerModifierPreview: View {
     

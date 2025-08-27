@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct PresentedPreview<Content: View>: View {
     
@@ -56,13 +56,6 @@ struct PresentedPreview<Content: View>: View {
             }
             .erased()
         }
-    }
-}
-
-private extension View {
-    
-    func erased() -> AnyView {
-        AnyView(self)
     }
 }
 
