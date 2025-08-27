@@ -186,7 +186,7 @@ extension View {
         enabled: Bool
     ) -> some View {
         if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-            self.glassEffect(.regular.interactive(), in: shape)
+            self.glassEffect(enabled ? .regular.interactive() : .identity, in: shape)
         } else { // Fallback on earlier versions
             self
         }

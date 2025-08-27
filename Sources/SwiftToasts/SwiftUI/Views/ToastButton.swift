@@ -445,6 +445,12 @@ public extension ToastButton where Label == SwiftUI.Label<Text, Image> {
     } label: {
         Text("Toast")
     }
+    .padding()
+    .background(Color.white)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(
+        LinearGradient(colors: [.red, .green, .blue], startPoint: .leading, endPoint: .trailing)
+    )
 }
 
 #Preview("Simple Button + Leaking") {
