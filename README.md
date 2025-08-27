@@ -172,7 +172,7 @@ content
 // Showing a Toast based on an item binding.
 content
     .toast(
-        isPresented: $toastItem,
+        item: $toastItem,
         alignment: .top,
         onDismiss: { print("Toast Dismissed.") }
     ) { item in
