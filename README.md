@@ -1,8 +1,8 @@
 #  SwiftToasts
 
 <!-- # Badges -->
-![GitHub License](https://img.shields.io/github/license/athankefalas/swift-toasts)
-![GitHub Release](https://img.shields.io/github/v/release/athankefalas/swift-toasts)
+[![GitHub License](https://img.shields.io/github/license/athankefalas/swift-toasts)](https://github.com/athankefalas/swift-toasts/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/athankefalas/swift-toasts)](https://github.com/athankefalas/swift-toasts/releases)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fathankefalas%2Fswift-toasts%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/athankefalas/swift-toasts)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fathankefalas%2Fswift-toasts%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/athankefalas/swift-toasts)
 
