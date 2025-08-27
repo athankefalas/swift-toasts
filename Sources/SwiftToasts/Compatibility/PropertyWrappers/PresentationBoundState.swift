@@ -210,7 +210,7 @@ struct PresentationBoundState<Value>: @preconcurrency DynamicProperty, Sendable 
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct PresentationBoundStatePreview: View {
     

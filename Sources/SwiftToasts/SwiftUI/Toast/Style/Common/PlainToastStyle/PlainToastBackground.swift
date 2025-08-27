@@ -198,7 +198,7 @@ extension View {
 
 #endif
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 #Preview {
     VStack {

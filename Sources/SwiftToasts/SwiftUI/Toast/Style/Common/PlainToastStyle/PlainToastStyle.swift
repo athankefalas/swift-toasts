@@ -155,7 +155,7 @@ public extension ToastStyle where Self == PlainToastStyle {
 
 // MARK: Preview
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct PlainToastStylePreview: View {
     

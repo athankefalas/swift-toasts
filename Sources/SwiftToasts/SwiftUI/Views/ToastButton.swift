@@ -437,7 +437,7 @@ public extension ToastButton where Label == SwiftUI.Label<Text, Image> {
     }
 }
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 #Preview("Simple Button") {
     ToastButton { proxy in

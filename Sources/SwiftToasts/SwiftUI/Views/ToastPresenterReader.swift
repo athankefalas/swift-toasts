@@ -67,7 +67,7 @@ public struct ToastPresenterReader<Content: View>: View {
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 #Preview {
     ToastPresenterReader { proxy in

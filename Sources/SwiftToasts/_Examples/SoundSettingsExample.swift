@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct SoundSettingsModel: Hashable {
     var isOn = true
