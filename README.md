@@ -38,7 +38,9 @@ Because watchOS does not have a platform-native dynamic view hierarchy framework
 
 ## Installation
 
-You can install SwiftToasts as a package dependency.
+You can install SwiftToasts as a Swift package dependency, by using the following url:
+
+    https://github.com/athankefalas/swift-toasts.git
 
 ## Creating a Toast
 
