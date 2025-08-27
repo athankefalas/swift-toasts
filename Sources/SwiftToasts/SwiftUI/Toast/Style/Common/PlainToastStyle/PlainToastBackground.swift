@@ -155,21 +155,24 @@ struct PlainToastBackground: View {
         )
     }
     
-    @ViewBuilder
-    private var material: some View {
+    private var material: AnyView {
         if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
 #if os(macOS)
-            Rectangle()
+            return Rectangle()
                 .fill(Material.ultraThickMaterial)
+                .erased()
 #elseif os(visionOS)
-            Rectangle()
+            return Rectangle()
                 .fill(Material.thinMaterial)
+                .erased()
 #else
-            Rectangle()
+            return Rectangle()
                 .fill(Material.regularMaterial)
+                .erased()
 #endif
         } else {
-            FallbackBackgroundEffectView()
+            return FallbackBackgroundEffectView()
+                .erased()
         }
     }
 }
@@ -207,9 +210,6 @@ extension View {
             borderWidth: 2,
             isHovering: false
         )
-        .onTapGesture {
-            print("Tapped")
-        }
         .padding(32)
         .border(Color.black)
         .padding()

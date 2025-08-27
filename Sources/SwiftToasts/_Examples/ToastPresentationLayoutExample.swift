@@ -9,7 +9,7 @@ import SwiftUI
 
 #if DEBUG
 
-@available(iOS 17.0, macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *)
 struct ToastPresentationLayoutExample: View {
     @State
     var showSheet: Bool = false
@@ -40,7 +40,9 @@ struct ToastPresentationLayoutExample: View {
                 }
                 .buttonBorderShape(.capsule)
                 .buttonStyle(.borderedProminent)
+#if !os(tvOS)
                 .controlSize(.large)
+#endif
             }
             .padding(.vertical, 32)
             .toast(isPresented: $showToast) {
@@ -61,7 +63,7 @@ struct ToastPresentationLayoutExample: View {
 
 #Preview {
     ZStack {
-        if #available(iOS 17.0, macOS 14.0, *) {
+        if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
             ToastPresentationLayoutExample()
         }
     }

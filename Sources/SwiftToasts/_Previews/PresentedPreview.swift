@@ -59,11 +59,4 @@ struct PresentedPreview<Content: View>: View {
     }
 }
 
-private extension View {
-    
-    func erased() -> AnyView {
-        AnyView(self)
-    }
-}
-
 #endif

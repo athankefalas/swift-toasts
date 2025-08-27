@@ -399,3 +399,11 @@ struct FallbackAnyShape: Shape {
         _path(rect)
     }
 }
+
+
+extension View {
+    
+    func erased() -> AnyView {
+        AnyView(self)
+    }
+}

@@ -155,6 +155,8 @@ public extension ToastStyle where Self == PlainToastStyle {
 
 // MARK: Preview
 
+#if DEBUG
+
 struct PlainToastStylePreview: View {
     
     let previewableToastRoles: [ToastRole] = [.informational]
@@ -181,10 +183,6 @@ struct PlainToastStylePreview: View {
         }
     }
 }
-
-// MARK: Previews
-
-#if DEBUG
 
 #Preview {
     PlainToastStylePreview()

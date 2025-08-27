@@ -9,7 +9,7 @@ import SwiftUI
 
 #if DEBUG
 
-@available(iOS 17.0, macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *)
 @MainActor
 @Observable
 class UserInfoFormModel {
@@ -55,16 +55,16 @@ class UserInfoFormModel {
         field: Field
     ) -> Field? {
         switch field {
-            case .firstName:
-                return .middleName
-            case .middleName:
-                return .lastName
-            case .lastName:
-                return .age
-            case .age:
-                return .submit
-            case .submit:
-                return nil
+        case .firstName:
+            return .middleName
+        case .middleName:
+            return .lastName
+        case .lastName:
+            return .age
+        case .age:
+            return .submit
+        case .submit:
+            return nil
         }
     }
     
@@ -78,7 +78,7 @@ class UserInfoFormModel {
     }
 }
 
-@available(iOS 17.0, macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *)
 struct UserInfoFormExample: View {
     @Environment(\.dismiss)
     private var dismiss
@@ -186,41 +186,62 @@ struct UserInfoFormExample: View {
     
     private var ageSection: some View {
         Section {
-            Stepper(
-                value: $formModel.age,
-                in: 12...120,
-                step: 1
-            ) {
-                TextField(
-                    "Age",
-                    text: Binding<String> {
-                        guard formModel.age > 0 else {
-                            return ""
-                        }
-                        
-                        return formModel.age.description
-                    } set: { newValue in
-                        formModel.age = Int(newValue) ?? formModel.age
-                    }
-                )
-                .fixedSize(horizontal: true, vertical: false)
-                .focused($formField, equals: .age)
-            } onEditingChanged: { isPressed in
-                guard !isPressed else { return }
-                formField = formModel.submitted(
-                    field: .age
-                )
-            }
-            .onSubmit {
-                formField = formModel.submitted(
-                    field: .age
-                )
-            }
+            stepper
+                .onSubmit {
+                    formField = formModel.submitted(
+                        field: .age
+                    )
+                }
         } header: {
             Text("Age")
         } footer: {
             Text("Only user between ages 12 and 120 can use the app")
         }
+    }
+    
+    private var stepper: some View {
+#if !os(tvOS)
+        Stepper(
+            value: $formModel.age,
+            in: 12...120,
+            step: 1
+        ) {
+            TextField(
+                "Age",
+                text: Binding<String> {
+                    guard formModel.age > 0 else {
+                        return ""
+                    }
+                    
+                    return formModel.age.description
+                } set: { newValue in
+                    formModel.age = Int(newValue) ?? formModel.age
+                }
+            )
+            .fixedSize(horizontal: true, vertical: false)
+            .focused($formField, equals: .age)
+        } onEditingChanged: { isPressed in
+            guard !isPressed else { return }
+            formField = formModel.submitted(
+                field: .age
+            )
+        }
+#else
+        TextField(
+            "Age",
+            text: Binding<String> {
+                guard formModel.age > 0 else {
+                    return ""
+                }
+                
+                return formModel.age.description
+            } set: { newValue in
+                formModel.age = Int(newValue) ?? formModel.age
+            }
+        )
+        .fixedSize(horizontal: true, vertical: false)
+        .focused($formField, equals: .age)
+#endif
     }
     
     private var submitSection: some View {
@@ -256,9 +277,11 @@ struct UserInfoFormExample: View {
             }
             .focusable()
             .focused($formField, equals: .submit)
+#if os(macOS)
             .keyboardShortcut(
                 formField == .submit ? .defaultAction : nil
             )
+#endif
             .toastInteractiveDismissDisabled(false)
             .toastCancellation(.never)
         }
@@ -268,7 +291,7 @@ struct UserInfoFormExample: View {
 #Preview {
     PresentedPreview {
         ZStack {
-            if #available(iOS 17.0, macOS 14.0, *) {
+            if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
                 UserInfoFormExample(
                     formModel: UserInfoFormModel()
                 )
