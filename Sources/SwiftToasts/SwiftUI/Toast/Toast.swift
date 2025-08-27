@@ -640,7 +640,7 @@ extension Toast {
 
 // MARK: Previews
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 #Preview {
     PresentedPreview {

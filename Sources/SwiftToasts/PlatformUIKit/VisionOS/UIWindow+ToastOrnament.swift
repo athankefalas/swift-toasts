@@ -79,6 +79,7 @@ extension UIWindow {
         
         let host = UIHostingController(
             rootView: HostedToastContent(
+                id: ObjectIdentifier(hostContainer),
                 hosting: toast,
                 dismissAction: {}
             )

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct SoundSettingsModel: Hashable {
     var isOn = true
@@ -40,7 +40,7 @@ class NetworkMonitor: ObservableObject {
     }
 }
 
-@available(iOS 17.0, macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *)
 struct SoundSettingsExample: View {
     @Environment(\.dismiss)
     private var dismiss
@@ -76,9 +76,7 @@ struct SoundSettingsExample: View {
             
             if settings.isOn {
                 Section("Volume") {
-                    Slider(value: $settings.volume, in: 0...100) {
-                        Text("Volume: \(settings.volume)%")
-                    }
+                    slider
                 }
             }
             
@@ -113,13 +111,33 @@ struct SoundSettingsExample: View {
             initialSettingsSignature = settings.hashValue
         }
     }
+    
+    private var slider: some View {
+#if !os(tvOS)
+        Slider(value: $settings.volume, in: 0...100) {
+            Text("Volume: \(settings.volume)%")
+        }
+#else
+        HStack {
+            Button("Decrease") {
+                settings.volume -= 10
+            }
+            
+            Text("Volume \(settings.volume)%")
+            
+            Button("Increase") {
+                settings.volume += 10
+            }
+        }
+#endif
+    }
 }
 
 
 #Preview {
     PresentedPreview {
         ZStack {
-            if #available(iOS 17.0, macOS 14.0, *) {
+            if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
                 SoundSettingsExample()
             }
         }

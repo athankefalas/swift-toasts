@@ -173,7 +173,7 @@ public extension View {
     }
 }
 
-#if DEBUG
+#if ENABLE_PREVIEWS
 
 struct _ToastPresentationByFlagModifierPreview: View {
     
