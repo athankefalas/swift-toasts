@@ -338,7 +338,7 @@ public extension Toast {
 // MARK: Toast Title + Subtitle
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Toast {
+public extension Toast {
     
     /// Creates a new Toast
     /// - Parameters:
@@ -424,7 +424,7 @@ extension Toast {
 // MARK: Toast Icon + Title + Subtitle
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Toast {
+public extension Toast {
     
     /// Creates a new Toast.
     /// - Parameters:
@@ -531,7 +531,7 @@ extension Toast {
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Toast {
+public extension Toast {
     
     /// Creates a new Toast.
     /// - Parameters:
