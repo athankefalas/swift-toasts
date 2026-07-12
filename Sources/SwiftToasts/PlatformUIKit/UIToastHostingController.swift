@@ -103,7 +103,6 @@ final class UIToastHostingController: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.isUserInteractionEnabled = true
         makeLayoutConstraints()
         
         hostingController.didMove(toParent: self)
