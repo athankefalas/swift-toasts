@@ -49,7 +49,7 @@ final class UIToastHostingController: UIViewController {
             
             frame.origin.x += hostingView.frame.origin.x
             frame.origin.y += hostingView.frame.origin.y
-//            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
+            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
             return frame
         }
         
@@ -122,7 +122,8 @@ final class UIToastHostingController: UIViewController {
         super.loadView()
         
         let backdropView = UIPassthroughBackdropView()
-        backdropView.backgroundColor = .clear
+        backdropView.backgroundColor = .init(white: 1, alpha: 0.01)
+        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
         backdropView.hostingView = hostingController.view
