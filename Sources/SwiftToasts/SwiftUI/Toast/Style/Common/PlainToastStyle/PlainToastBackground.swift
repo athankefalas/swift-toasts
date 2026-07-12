@@ -21,6 +21,7 @@ struct PlainToastBackground: View {
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
     let isHovering: Bool
+    let useTintedBackground: Bool
     
     private var shadowColor: Color {
         let shadowColor = Color(
@@ -55,8 +56,12 @@ struct PlainToastBackground: View {
             if !usesGlassBackgroundEffect {
                 if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
                     shape.fill(.background)
-                } else { // Fallback on earlier versions
+                } else {
                     shape.fill(Color.fallbackSystemBackground)
+                }
+                
+                if useTintedBackground {
+                    shape.fill(accentColor.opacity(0.1))
                 }
                 
                 shape
@@ -80,6 +85,7 @@ struct PlainToastBackground: View {
             color: usesGlassBackgroundEffect ? .clear : shadowColor,
             radius: usesGlassBackgroundEffect ? 0 : shadowRadius
         )
+        .contentShape(shape)
     }
     
     private var shape: FallbackAnyShape {
@@ -101,7 +107,8 @@ struct PlainToastBackground: View {
             accentColor: .blue,
             cornerRadius: 12,
             borderWidth: 2,
-            isHovering: false
+            isHovering: false,
+            useTintedBackground: true
         )
         .padding(32)
         .border(Color.black)

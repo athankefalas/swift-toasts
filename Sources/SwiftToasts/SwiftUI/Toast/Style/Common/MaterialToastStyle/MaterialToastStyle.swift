@@ -9,7 +9,29 @@ import SwiftUI
 
 public struct MaterialToastStyle: ToastStyle {
     
-    public nonisolated init() {}
+    public nonisolated enum MaterialThickness: Sendable {
+        case thin
+        case regular
+        case thick
+        
+        public static var automatic: MaterialThickness {
+#if os(macOS)
+            return .thick
+#elseif os(visionOS)
+            return .thin
+#else
+            return .regular
+#endif
+        }
+    }
+    
+    private let thickness: MaterialThickness
+    
+    public nonisolated init(
+        thickness: MaterialThickness = .automatic
+    ) {
+        self.thickness = thickness
+    }
     
     public func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(configuration: configuration) { properties in
@@ -17,7 +39,8 @@ public struct MaterialToastStyle: ToastStyle {
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,
                 borderWidth: properties.borderWidth,
-                isHovering: properties.isHovering
+                isHovering: properties.isHovering,
+                thickness: thickness
             )
         }
     }
@@ -52,6 +75,7 @@ struct MaterialToastStylePreview: View {
                                     "Toast Title",
                                     value: "Subtitle",
                                     systemImage: "square.fill",
+                                    role: .plain,
                                     duration: .indefinite
                                 ),
                                 toastAlignment: .center
@@ -59,13 +83,13 @@ struct MaterialToastStylePreview: View {
                         }
                     }
             }
+            .toastStyle(.material)
         }
     }
 }
 
 #Preview {
     MaterialToastStylePreview()
-        .environment(\.toastOrnamentPresentationEnabled, true)
 }
 
 #endif

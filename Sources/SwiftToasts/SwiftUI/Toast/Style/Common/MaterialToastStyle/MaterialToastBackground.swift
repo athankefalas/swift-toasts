@@ -21,6 +21,7 @@ struct MaterialToastBackground: View {
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
     let isHovering: Bool
+    let thickness: MaterialToastStyle.MaterialThickness
     
     private var shadowColor: Color {
         let shadowColor = Color(
@@ -89,21 +90,26 @@ struct MaterialToastBackground: View {
     
     private var material: AnyView {
         if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
+            let material: Material
+            
+            switch thickness {
+            case .thin:
+                material = .thinMaterial
+            case .regular:
+                material = .regularMaterial
+            case .thick:
 #if os(macOS)
-            return Rectangle()
-                .fill(Material.ultraThickMaterial)
-                .erased()
-#elseif os(visionOS)
-            return Rectangle()
-                .fill(Material.thinMaterial)
-                .erased()
+                material = .ultraThickMaterial
 #else
-            return Rectangle()
-                .fill(Material.regularMaterial)
-                .erased()
+                material = .thickMaterial
 #endif
+            }
+            
+            return Rectangle()
+                .fill(material)
+                .erased()
         } else {
-            return FallbackBackgroundEffectView()
+            return FallbackBackgroundEffectView(thickness: thickness)
                 .erased()
         }
     }
@@ -119,7 +125,8 @@ struct MaterialToastBackground: View {
             accentColor: .blue,
             cornerRadius: 12,
             borderWidth: 2,
-            isHovering: false
+            isHovering: false,
+            thickness: .thick
         )
         .padding(32)
         .border(Color.black)

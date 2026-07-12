@@ -22,39 +22,25 @@ struct GlassToastBackground: View {
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
     let isHovering: Bool
+    let useTintedGlass: Bool
+    let useInteractiveGlass: Bool
     
-    private var shadowColor: Color {
-        let shadowColor = Color(
-            .sRGBLinear,
-            white: 0,
-            opacity: platformIdiom == .desktop ? 0.2 : 0.17
-        )
+    private var glass: Glass {
+        var glass = Glass.regular
         
-        guard !accessibilityReduceTransparency else {
-            return .clear
+        if useTintedGlass {
+            glass = glass.tint(accentColor.opacity(0.1))
         }
         
-        return shadowColor
-    }
-    
-    private var shadowRadius: CGFloat {
-        isHovering ? 24 : 16
+        if useInteractiveGlass {
+            glass = glass.interactive()
+        }
+        
+        return glass
     }
     
     var body: some View {
         ZStack {
-            if false {
-//                material
-//                    .clipShape(shape)
-                
-                shape
-                    .stroke(
-                        accentColor.opacity(0.2),
-                        lineWidth: borderWidth
-                    )
-                    .layoutPriority(-1)
-            }
-            
             Color(white: 1, opacity: 0.01)
                 .allowsHitTesting(true)
                 .contentShape(shape)
@@ -64,13 +50,9 @@ struct GlassToastBackground: View {
             displayMode: .always
         )
 #else
-        .glassEffect(
-            .regular
-                .interactive()
-                .tint(accentColor.opacity(0.1)),
-            in: shape
-        )
+        .glassEffect(glass, in: shape)
 #endif
+        .contentShape(shape)
     }
     
     private var shape: FallbackAnyShape {
@@ -93,7 +75,9 @@ struct GlassToastBackground: View {
                 accentColor: .blue,
                 cornerRadius: 12,
                 borderWidth: 2,
-                isHovering: false
+                isHovering: false,
+                useTintedGlass: true,
+                useInteractiveGlass: true
             )
             .padding(32)
             .border(Color.black)

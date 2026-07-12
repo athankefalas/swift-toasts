@@ -8,8 +8,13 @@
 import SwiftUI
 
 public struct PlainToastStyle: ToastStyle {
+    private let useTintedBackground: Bool
     
-    public nonisolated init() {}
+    public nonisolated init(
+        useTintedBackground: Bool = false
+    ) {
+        self.useTintedBackground = useTintedBackground
+    }
     
     public func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(configuration: configuration) { properties in
@@ -17,7 +22,8 @@ public struct PlainToastStyle: ToastStyle {
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,
                 borderWidth: properties.borderWidth,
-                isHovering: properties.isHovering
+                isHovering: properties.isHovering,
+                useTintedBackground: useTintedBackground
             )
         }
     }
@@ -52,6 +58,7 @@ struct PlainToastStylePreview: View {
                                     "Toast Title",
                                     value: "Subtitle",
                                     systemImage: "square.fill",
+                                    role: .plain,
                                     duration: .indefinite
                                 ),
                                 toastAlignment: .center
@@ -59,13 +66,13 @@ struct PlainToastStylePreview: View {
                         }
                     }
             }
+            .toastStyle(.plain)
         }
     }
 }
 
 #Preview {
     PlainToastStylePreview()
-        .environment(\.toastOrnamentPresentationEnabled, true)
 }
 
 #endif
