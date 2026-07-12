@@ -34,13 +34,13 @@ final class UIToastHostingController: UIViewController {
             }
             
             var frame: CGRect?
-            for subview in hostingView.subviews {
+            for subviewFrame in readHostedContentFrames(in: hostingView) {
                 guard let currentFrame = frame else {
-                    frame = subview.frame
+                    frame = subviewFrame
                     continue
                 }
                 
-                frame = currentFrame.union(subview.frame)
+                frame = currentFrame.union(subviewFrame)
             }
             
             guard var frame else {
@@ -53,12 +53,16 @@ final class UIToastHostingController: UIViewController {
             return frame
         }
         
+        private func readHostedContentFrames(in view: UIView) -> [CGRect] {
+            view.subviews.isEmpty ? [view.frame] : view.subviews.map({ $0.frame })
+        }
+        
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-                return postiOS26hitTest(point, with: event)
-            } else {
+//            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+//                return postiOS26hitTest(point, with: event)
+//            } else {
                 return preiOS26hitTest(point, with: event)
-            }
+//            }
         }
         
         private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -119,7 +123,6 @@ final class UIToastHostingController: UIViewController {
         
         let backdropView = UIPassthroughBackdropView()
         backdropView.backgroundColor = .clear
-//        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
         backdropView.hostingView = hostingController.view
