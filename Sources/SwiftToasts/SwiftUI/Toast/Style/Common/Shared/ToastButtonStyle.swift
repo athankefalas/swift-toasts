@@ -37,9 +37,9 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-                .simultaneousTap {
-                    toastDismiss?()
-                }
+//                .simultaneousTap {
+//                    toastDismiss?()
+//                }
         }
     }
 }
@@ -64,7 +64,6 @@ extension View {
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
-        self
-//        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
+        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
     }
 }
