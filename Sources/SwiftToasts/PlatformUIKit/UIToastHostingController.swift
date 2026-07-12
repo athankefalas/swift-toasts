@@ -64,7 +64,7 @@ final class UIToastHostingController: UIViewController {
         private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
-            guard let hostingView = hostingView, target !== self else {
+            guard let hostingView = hostingView else {
                 return target
             }
             
