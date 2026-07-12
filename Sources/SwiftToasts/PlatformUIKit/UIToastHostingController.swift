@@ -31,6 +31,14 @@ final class UIToastHostingController: UIViewController {
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+                return postiOS26hitTest(point, with: event)
+            } else {
+                return preiOS26hitTest(point, with: event)
+            }
+        }
+        
+        private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
             guard let hostingView = hostingView else {
@@ -44,6 +52,18 @@ final class UIToastHostingController: UIViewController {
                 return nil
             }
             
+            return target
+        }
+        
+        private func postiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            let target = super.hitTest(point, with: event)
+            guard let hostingView, target !== self else {
+                return target
+            }
+            let convertedPoint = convert(point, to: hostingView)
+            guard hostingView.bounds.contains(convertedPoint) else {
+                return nil
+            }
             return target
         }
     }
