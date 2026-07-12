@@ -37,10 +37,21 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-//                .simultaneousTap {
+//                .simultaneousTap { // uncommenting this creates the issue
 //                    toastDismiss?()
 //                }
         }
+    }
+}
+
+struct ToastDismissReader<Content: View>: View {
+    @Environment(\.toastDismiss)
+    private var toastDismiss
+    
+    let content: (ToastDismissAction?) -> Content
+    
+    var body: some View {
+        content(toastDismiss)
     }
 }
 
@@ -64,6 +75,12 @@ extension View {
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
-        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
+        ToastDismissReader { dismissAction in
+            self.foregroundColor(accentColor)
+                .simultaneousTap {
+                    dismissAction?()
+                }
+        }
+//        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
     }
 }
