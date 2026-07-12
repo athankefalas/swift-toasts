@@ -55,7 +55,7 @@ final class UIToastHostingController: UIViewController {
             }
             
             let convertedPoint = convert(point, to: hostingView)
-            let containsPoint = hostedContentFrame.contains(convertedPoint)
+            let containsPoint = hostingView.frame.contains(convertedPoint)// || hostedContentFrame.contains(convertedPoint)
             
             guard target !== self, containsPoint else {
                 return nil
