@@ -37,14 +37,15 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-                .overlay(
+                .background(
                     Color.clear
                         .allowsHitTesting(true)
                         .contentShape(Rectangle())
                         .simultaneousGesture(
-                            DragGesture().onEnded({ _ in
-                                toastDismiss?()
-                            }),
+                            DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                                .onEnded({ _ in
+                                    toastDismiss?()
+                                }),
                             including: .all
                         )
 //                        .simultaneousTap {
