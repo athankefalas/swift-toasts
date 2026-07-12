@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(*, deprecated, message: "Do not use custom button style.")
 struct ToastButtonStyle: ButtonStyle {
     let accentColor: Color
     
@@ -38,9 +37,14 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-                .simultaneousTap {
-                    toastDismiss?()
-                }
+                .overlay(
+                    Color.clear
+                        .allowsHitTesting(true)
+                        .contentShape(Rectangle())
+                        .simultaneousTap {
+                            toastDismiss?()
+                        }
+                )
         }
     }
 }
@@ -76,11 +80,12 @@ extension View {
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
-        ToastDismissReader { dismissAction in
-            self.foregroundColor(accentColor)
-                .simultaneousTap {
-                    dismissAction?()
-                }
-        }
+//        ToastDismissReader { dismissAction in
+//            self.foregroundColor(accentColor)
+//                .simultaneousTap {
+//                    dismissAction?()
+//                }
+//        }
+        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
     }
 }
