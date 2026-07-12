@@ -66,7 +66,7 @@ final class UIToastHostingController: UIViewController {
                 return nil
             }
             
-            return target
+            return hostingView//target
         }
     }
     
