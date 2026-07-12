@@ -45,7 +45,11 @@ final class UIToastHostingController: UIViewController {
         }
         
         private func readHostedContentFrames(in view: UIView) -> [CGRect] {
-            view.subviews.isEmpty ? [view.frame] : view.subviews.map({ $0.frame })
+            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+                return [view.frame]
+            }
+            
+            return view.subviews.isEmpty ? [view.frame] : view.subviews.map({ $0.frame })
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
