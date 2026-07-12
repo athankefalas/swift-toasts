@@ -21,35 +21,16 @@ final class UIToastHostingController: UIViewController {
             }
             
             var frame: CGRect?
-            hostingView.layoutIfNeeded()
-            for subviewFrame in readHostedContentFrames(in: hostingView) {
+            for subview in hostingView.subviews {
                 guard let currentFrame = frame else {
-                    frame = subviewFrame
+                    frame = subview.frame
                     continue
                 }
                 
-                frame = currentFrame.union(subviewFrame)
+                frame = currentFrame.union(subview.frame)
             }
             
-            guard var frame else {
-                return .null
-            }
-            
-//            if !hostingView.subviews.isEmpty {
-//                frame.origin.x += hostingView.frame.origin.x
-//                frame.origin.y += hostingView.frame.origin.y
-//            }
-            
-//            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
-            return frame
-        }
-        
-        private func readHostedContentFrames(in view: UIView) -> [CGRect] {
-            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-                return [view.frame]
-            }
-            
-            return view.subviews.isEmpty ? [view.frame] : view.subviews.map({ $0.frame })
+            return frame ?? .null
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -59,22 +40,28 @@ final class UIToastHostingController: UIViewController {
                 return nil
             }
             
-            return target
+            if let hostingView, hostingView.isUserInteractionEnabled {
+                print("## Enabled")
+            }
             
-//            guard let hostingView = hostingView else {
-//                return target
-//            }
-//            
-//            let convertedPoint = convert(point, to: hostingView)
-//            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
-//            
-//            guard target !== self, containsPoint else {
-//                print("## \(target === self ? "SELF" : "NOT INSIDE")")
-//                return nil
-//            }
-//            
-//            print("## TAP")
-//            return target
+            return target
+        }
+        
+        private func _legacyHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            let target = super.hitTest(point, with: event)
+            
+            guard let hostingView = hostingView else {
+                return target
+            }
+            
+            let convertedPoint = convert(point, to: hostingView)
+            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
+            
+            guard target !== self, containsPoint else {
+                return nil
+            }
+            
+            return target
         }
     }
     
