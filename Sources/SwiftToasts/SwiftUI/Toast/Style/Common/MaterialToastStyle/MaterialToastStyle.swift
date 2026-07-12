@@ -13,7 +13,7 @@ public struct MaterialToastStyle: ToastStyle {
     
     public func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(configuration: configuration) { properties in
-            PlainToastBackground(
+            MaterialToastBackground(
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,
                 borderWidth: properties.borderWidth,
