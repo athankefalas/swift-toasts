@@ -40,7 +40,7 @@ final class UIToastHostingController: UIViewController {
 //                frame.origin.y += hostingView.frame.origin.y
 //            }
             
-            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
+//            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
             return frame
         }
         
@@ -66,7 +66,8 @@ final class UIToastHostingController: UIViewController {
                 return nil
             }
             
-            return hostingView//target
+            print("## TAP")
+            return target
         }
     }
     
