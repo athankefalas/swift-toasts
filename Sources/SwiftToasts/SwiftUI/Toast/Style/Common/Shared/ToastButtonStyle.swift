@@ -37,7 +37,7 @@ struct ToastButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.7 : 1)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-                .background(
+                .overlay(
                     Color.clear
                         .allowsHitTesting(true)
                         .contentShape(Rectangle())
