@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ToastButtonStyle: ButtonStyle {
+struct ToastButtonStyle: PrimitiveButtonStyle {
     let accentColor: Color
     
     func makeBody(configuration: Configuration) -> some View {
@@ -20,6 +20,15 @@ struct ToastButtonStyle: ButtonStyle {
         
         @Environment(\.toastDismiss)
         private var toastDismiss
+        
+        @State
+        private var namespace = UUID()
+        
+        @State
+        private var size: CGSize?
+        
+        @State
+        private var isPressed: Bool = false
         
         let accentColor: Color
         let configuration: Configuration
@@ -34,65 +43,87 @@ struct ToastButtonStyle: ButtonStyle {
         
         var body: some View {
             configuration.label
-                .opacity(configuration.isPressed ? 0.7 : 1)
-                .scaleEffect(configuration.isPressed ? 0.9 : 1)
+                .opacity(isPressed ? 0.4 : 1)
+                .scaleEffect(isPressed ? 0.9 : 1)
                 .foregroundColor(foreground)
-                .overlay(
+                .background(
                     Color.clear
                         .allowsHitTesting(true)
                         .contentShape(Rectangle())
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                                .onEnded({ _ in
-                                    toastDismiss?()
-                                }),
-                            including: .all
-                        )
-//                        .simultaneousTap {
-//                            toastDismiss?()
-//                        }
                 )
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .fallbackOnChange(of: geometry.size) { newValue in
+                                size = newValue
+                            }
+                            .onAppear {
+                                size = geometry.size
+                            }
+                    }
+                )
+                .coordinateSpace(name: namespace.uuidString)
+                .gesture(
+                    buttonGesture,
+                    isEnabled: isEnabled
+                )
+                .animation(.interactiveSpring, value: isPressed)
         }
-    }
-}
-
-struct ToastDismissReader<Content: View>: View {
-    @Environment(\.toastDismiss)
-    private var toastDismiss
-    
-    let content: (ToastDismissAction?) -> Content
-    
-    var body: some View {
-        content(toastDismiss)
+        
+        private var buttonGesture: some Gesture {
+            DragGesture(minimumDistance: 0, coordinateSpace: .named(namespace.uuidString))
+                .onChanged { value in
+                    isPressed = effectiveButtonFrame.contains(value.location)
+                }
+                .onEnded { value in
+                    defer {
+                        isPressed = false
+                    }
+                    
+                    guard effectiveButtonFrame.contains(value.location) else {
+                        return
+                    }
+                    
+                    withAnimation(.default) {
+                        configuration.trigger()
+                        toastDismiss?()
+                    }
+                }
+        }
+        
+        private var effectiveButtonFrame: CGRect {
+            CGRect(origin: .zero, size: size ?? .zero)
+                .insetBy(dx: -16, dy: -16)
+        }
     }
 }
 
 extension View {
     
-    func simultaneousTap(onEnded: @escaping () -> Void) -> AnyView {
-        if #available(iOS 13.0, macOS 10.15, tvOS 16.0, watchOS 6.0, *) {
-            AnyView(
-                self.simultaneousGesture(
-                    TapGesture(count: 1)
-                        .onEnded {
-                            onEnded()
-                        }
-                )
-            )
-        } else {
-            AnyView(self)
-        }
-    }
-    
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
-//        ToastDismissReader { dismissAction in
-//            self.foregroundColor(accentColor)
-//                .simultaneousTap {
-//                    dismissAction?()
-//                }
-//        }
         self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
     }
 }
+
+#if ENABLE_PREVIEWS
+
+#Preview {
+    VStack(spacing: 32) {
+        Button("Test System Style") {
+            print("Button Action")
+        }
+        
+        Button("Test Toast Style") {
+            print("Button Action")
+        }
+        .buttonStyle(ToastButtonStyle(accentColor: .blue))
+    }
+    .environment(\.toastDismiss, ToastDismissAction(id: "", action: {
+        print("Dismiss Toast.")
+    }))
+    .disabled(false)
+}
+
+#endif
