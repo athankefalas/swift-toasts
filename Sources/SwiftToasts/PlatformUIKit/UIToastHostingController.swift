@@ -40,10 +40,6 @@ final class UIToastHostingController: UIViewController {
                 return nil
             }
             
-            if let hostingView, hostingView.isUserInteractionEnabled {
-                print("## Enabled")
-            }
-            
             return target
         }
         
