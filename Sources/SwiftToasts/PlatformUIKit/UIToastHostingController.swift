@@ -34,7 +34,6 @@ final class UIToastHostingController: UIViewController {
             }
             
             var frame: CGRect?
-            print("## Susbviews: \(hostingView.subviews.count)")
             for subview in hostingView.subviews {
                 guard let currentFrame = frame else {
                     frame = subview.frame
@@ -50,6 +49,7 @@ final class UIToastHostingController: UIViewController {
             
             frame.origin.x += hostingView.frame.origin.x
             frame.origin.y += hostingView.frame.origin.y
+            print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
             return frame
         }
         
@@ -64,7 +64,7 @@ final class UIToastHostingController: UIViewController {
         private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
-            guard let hostingView = hostingView else {
+            guard let hostingView = hostingView, target !== self else {
                 return target
             }
             
