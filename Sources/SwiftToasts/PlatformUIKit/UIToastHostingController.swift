@@ -60,7 +60,7 @@ final class UIToastHostingController: UIViewController {
             }
             
             let convertedPoint = convert(point, to: hostingView)
-            let containsPoint = hostedContentFrame.contains(convertedPoint)
+            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
             
             guard target !== self, containsPoint else {
                 print("## \(target === self ? "SELF" : "NOT INSIDE")")
@@ -99,7 +99,7 @@ final class UIToastHostingController: UIViewController {
         super.loadView()
         
         let backdropView = UIPassthroughBackdropView()
-        backdropView.backgroundColor = .red
+        backdropView.backgroundColor = .clear
         backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
