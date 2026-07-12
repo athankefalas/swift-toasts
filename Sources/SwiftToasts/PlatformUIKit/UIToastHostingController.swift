@@ -17,25 +17,47 @@ final class UIToastHostingController: UIViewController {
         
         private var hostedContentFrame: CGRect {
             
+//            guard let hostingView else {
+//                return .zero
+//            }
+//            
+//            var frame = CGRect.zero
+//            
+//            for subview in hostingView.subviews {
+//                frame = frame.union(subview.frame)
+//            }
+//            
+//            return frame
+            
             guard let hostingView else {
-                return .zero
+                return .null
             }
             
-            var frame = CGRect.zero
-            
+            var frame: CGRect?
             for subview in hostingView.subviews {
-                frame = frame.union(subview.frame)
+                guard let currentFrame = frame else {
+                    frame = subview.frame
+                    continue
+                }
+                
+                frame = currentFrame.union(subview.frame)
             }
             
+            guard var frame else {
+                return .null
+            }
+            
+            frame.origin.x += hostingView.frame.origin.x
+            frame.origin.y += hostingView.frame.origin.y
             return frame
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-                return postiOS26hitTest(point, with: event)
-            } else {
+//            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+//                return postiOS26hitTest(point, with: event)
+//            } else {
                 return preiOS26hitTest(point, with: event)
-            }
+//            }
         }
         
         private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
