@@ -54,11 +54,11 @@ final class UIToastHostingController: UIViewController {
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-//            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-//                return postiOS26hitTest(point, with: event)
-//            } else {
+            if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+                return postiOS26hitTest(point, with: event)
+            } else {
                 return preiOS26hitTest(point, with: event)
-//            }
+            }
         }
         
         private func preiOS26hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -119,7 +119,7 @@ final class UIToastHostingController: UIViewController {
         
         let backdropView = UIPassthroughBackdropView()
         backdropView.backgroundColor = .init(white: 1, alpha: 0.001)
-        backdropView.isUserInteractionEnabled = true
+//        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
         backdropView.hostingView = hostingController.view
