@@ -7,52 +7,109 @@
 
 import SwiftUI
 
-#if canImport(UIKit)
-import UIKit
-#endif
-
-#if canImport(Cocoa)
-import Cocoa
-#endif
-
 struct PlainToastBackground: View {
+    @Environment(\.platformIdiom)
+    private var platformIdiom
     
-#if canImport(UIKit) && !os(watchOS)
-    struct FallbackBackgroundEffectView: UIViewRepresentable {
+    @Environment(\.accessibilityReduceTransparency)
+    private var accessibilityReduceTransparency
+    
+    @Environment(\.toastOrnamentPresentationEnabled)
+    private var toastOrnamentPresentationEnabled
+    
+    let accentColor: Color
+    let cornerRadius: CGFloat
+    let borderWidth: CGFloat
+    let isHovering: Bool
+    
+    private var shadowColor: Color {
+        let shadowColor = Color(
+            .sRGBLinear,
+            white: 0,
+            opacity: platformIdiom == .desktop ? 0.2 : 0.17
+        )
         
-        func makeUIView(context: Context) -> UIVisualEffectView {
-            UIVisualEffectView(
-                effect: UIBlurEffect(style: UIBlurEffect.Style.prominent)
-            )
+        guard !accessibilityReduceTransparency else {
+            return .clear
         }
         
-        func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
+        return shadowColor
     }
-#elseif canImport(UIKit) && os(watchOS)
-    struct FallbackBackgroundEffectView: View {
-        @Environment(\.colorScheme)
-        private var colorScheme
-        
-        var body: some View {
-            Color(white: colorScheme == .dark ? 0.15 : 0.95, opacity: 0.88)
+    
+    private var shadowRadius: CGFloat {
+        isHovering ? 24 : 16
+    }
+    
+    private var usesGlassBackgroundEffect: Bool {
+#if os(visionOS)
+        if toastOrnamentPresentationEnabled {
+            return true
         }
-    }
-#elseif canImport(Cocoa)
-    struct FallbackBackgroundEffectView: NSViewRepresentable {
-        
-        func makeNSView(context: Context) -> NSVisualEffectView {
-            let view = NSVisualEffectView()
-            view.material = .sidebar
-            view.blendingMode = .withinWindow
-            view.state = .active
-            
-            return view
-        }
-        
-        func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
-    }
 #endif
+        
+        return false
+    }
     
+    var body: some View {
+        ZStack {
+            if !usesGlassBackgroundEffect {
+                material
+                    .clipShape(shape)
+                
+                shape
+                    .stroke(
+                        accentColor.opacity(0.2),
+                        lineWidth: borderWidth
+                    )
+                    .layoutPriority(-1)
+            }
+            
+            Color(white: 1, opacity: 0.01)
+                .allowsHitTesting(true)
+                .contentShape(shape)
+        }
+#if os(visionOS)
+        .glassBackgroundEffect(
+            displayMode: usesGlassBackgroundEffect ? .always : .never
+        )
+#endif
+        .shadow(
+            color: usesGlassBackgroundEffect ? .clear : shadowColor,
+            radius: usesGlassBackgroundEffect ? 0 : shadowRadius
+        )
+    }
+    
+    private var shape: FallbackAnyShape {
+        return FallbackAnyShape(
+            RoundedRectangle(
+                cornerRadius: cornerRadius
+            )
+        )
+    }
+    
+    private var material: AnyView {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
+#if os(macOS)
+            return Rectangle()
+                .fill(Material.ultraThickMaterial)
+                .erased()
+#elseif os(visionOS)
+            return Rectangle()
+                .fill(Material.thinMaterial)
+                .erased()
+#else
+            return Rectangle()
+                .fill(Material.regularMaterial)
+                .erased()
+#endif
+        } else {
+            return FallbackBackgroundEffectView()
+                .erased()
+        }
+    }
+}
+
+struct PlainToastBackground_OLD: View {
     @Environment(\.platformIdiom)
     private var platformIdiom
     
