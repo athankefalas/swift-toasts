@@ -78,7 +78,7 @@ extension View {
         ToastDismissReader { dismissAction in
             self.foregroundColor(accentColor)
                 .simultaneousTap {
-                    dismissAction?()
+                    dismissAction!()
                 }
         }
 //        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
