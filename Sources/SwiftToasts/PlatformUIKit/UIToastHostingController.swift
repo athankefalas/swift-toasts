@@ -34,10 +34,10 @@ final class UIToastHostingController: UIViewController {
                 return .null
             }
             
-//            if !hostingView.subviews.isEmpty {
-//                frame.origin.x += hostingView.frame.origin.x
-//                frame.origin.y += hostingView.frame.origin.y
-//            }
+            if !hostingView.subviews.isEmpty {
+                frame.origin.x += hostingView.frame.origin.x
+                frame.origin.y += hostingView.frame.origin.y
+            }
             
             print("## Susbviews \(hostingView.subviews.count): \(hostingView.frame) -> \(frame)")
             return frame
@@ -93,12 +93,7 @@ final class UIToastHostingController: UIViewController {
         
         let backdropView = UIPassthroughBackdropView()
         backdropView.backgroundColor = .clear
-//        if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-            backdropView.isUserInteractionEnabled = true
-//        } else {
-//            backdropView.isUserInteractionEnabled = false
-//        }
-        
+        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
         backdropView.hostingView = hostingController.view
@@ -108,6 +103,7 @@ final class UIToastHostingController: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController.view.isUserInteractionEnabled = true
         makeLayoutConstraints()
         
         hostingController.didMove(toParent: self)
