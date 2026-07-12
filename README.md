@@ -70,7 +70,7 @@ Toast(
     role: .success
 )
 
-/// Creating a warning Toast with Label and subtitle content.
+/// Creating a warning Toast with a Label and LabeledContent with a title and subtitle.
 Toast(
     "Network Offline",
     value: "Please check your connection.",
@@ -113,7 +113,7 @@ Toast(role: .informational, duration: .seconds(8)) {
 
 ### Role
 
-The role property of a `Toast` defines the semantic purpose for the displayed content and can be used to conditionally modify the appearance of a Toast based on it's role. The role of a Toast is defined using the `ToastRole` enum.
+The role property of a `Toast` defines the semantic purpose for the displayed content and can be used to conditionally modify the appearance of a Toast based on its role. The role of a Toast is defined using the `ToastRole` enum.
 
 The following roles are supported:
 
@@ -127,7 +127,7 @@ The following roles are supported:
 
 3. Success
    
-   A role that presents an success message to the user after a user initiated operation was completed.
+   A role that presents a success message to the user after a user initiated operation was completed.
 4. Warning
    
    A role that presents a warning message to the user after a user initiated operation was completed but encountered a recoverable error or a system precept has changed.
@@ -152,7 +152,7 @@ The modifiers below can be used to present a `Toast` as a reaction to a trigger,
 
 #### Toast
 
-The `toast` modifier and it's variants can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the toast to present.
+The `toast` modifier and its variants can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the toast to present.
 
 The content builder closure supports conditional and optional `Toast` building following the API style of the SwiftUI ViewBuilder.
 
@@ -270,14 +270,52 @@ ToastButton("Submit") { schedule in
 
 ## Configuring a Toast Presentation
 
-Most of the aspects of a Toast or it's presentation can be configured using several *environment* based modifiers.
+Most of the aspects of a Toast or its presentation can be configured using several *environment* based modifiers.
 
 ### Style
 
-The style of a Toast can be configured in the same way as some of the system provided components. The library ships with a basic style called `PlainToastStyle`, but if further customization is required a custom style can easily be created by conforming to the `ToastStyle` protocol.
+The style of a Toast can be configured similarly to most of the system provided SwiftUI components, by using the related `.toastStyle` modifier. The library ships with a few predefined styles that use a rounded rectangle shaped toast draped with various system materials and/or glass, but if further customization is required a custom style can easily be created by conforming to the `ToastStyle` protocol. The default style is `.automatic`.
+
+Please note, that based on the `Toast` initializer used, the generated content may resolve to a hierarchy of `Text`, `Label` or `LabeledContent`. Any custom toast styles may have to account for the default system styling of these views, and customize it if needed in order to create the appropriate layout needed.
 
 ``` Swift
 // Showing a Toast with the default style.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(.automatic)
+
+// Showing a Toast with the material style.
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(.material)
+
+// Showing a Toast with the glass style (supported on iOS 26 / macOS 26 and later).
+ToastButton("Show Toast") { schedule in
+    schedule(
+        toast: Toast(
+            "Hello!",
+            systemImage: "hand.wave.fill",
+            role: .informational
+        )
+    )
+}
+.toastStyle(.glass)
+
+// Showing a Toast with the plain style.
 ToastButton("Show Toast") { schedule in
     schedule(
         toast: Toast(
@@ -302,6 +340,15 @@ ToastButton("Show Toast") { schedule in
 .toastStyle(SomeToastStyle())
 
 ```
+
+#### Common Styles
+
+| Style Name           | Short Name        | Description |
+|----------------------|-------------------|-------------|
+| -                    | `.automatic`      | A symbolic toast style which resolves to either `.material` or `.glass` based on the platform and / or version. |
+| `MaterialToastStyle`   | `.material`       | A toast style that uses system materials. The material thickness can be configured by creating a style using the full `MaterialToastStyle.init`. |
+| `GlassToastStyle`      | `.glass`          | A toast style that uses LiquidGlass materials. This style is only available in platforms that support LiquidGlass (iOS 26.0 and later, macOS 26.0 and later, tvOS 26.0 and later, watchOS 26.0 and later, visionOS 26.0 and later). The LiquidGlass attributes can be configured by creating a style using the full `GlassToastStyle.init`.  |
+| `PlainToastStyle`      | `.plain`          | A toast style that uses solid color. The solid color can be optionally tinted by creating a style using the full `PlainToastStyle.init`. |
 
 ### Transition
 
@@ -374,7 +421,7 @@ ToastButton("Show Toast") { schedule in
 
 After a `Toast` is created, it is scheduled for presentation in a queue. A scheduled Toast may be cancelled *before* it is presented by the source it was scheduled from, depending on context and the active environment configuration. 
 
-By default, a scheduled toast will not be cancelled unless the scene containing it's source is dismissed. The cancellation policy in the current environment can be configured by using the `toastCancellation` modifier.
+By default, a scheduled toast will not be cancelled unless the scene containing its source is dismissed. The cancellation policy in the current environment can be configured by using the `toastCancellation` modifier.
 
 Please note, that cancellation only affects Toasts that have not yet been presented and are still waiting for presentation in the schedulers queue.
 
@@ -440,7 +487,7 @@ Alternatively, if it is desired that the active toast presentation is never inva
 
 ### Interactive Dismissal
 
-A presented `Toast` may be dismissed before it's duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissEnabled` modifier. A common use case to prevent interactive dismissal, is for using a toast as a loading indicator.
+A presented `Toast` using one of the standard styles, can be dismissed before its duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissEnabled` modifier. A common use case to prevent interactive dismissal, is when using a toast as a loading indicator.
 
 ``` Swift
 // Showing a Toast as a loading indicator HUD.
@@ -464,7 +511,7 @@ content
 
 ## Toast Styling
 
-When a `Toast` is presented it's appearance is retrieved by the source's environment. A custom style can be implemented by creating a struct that conforms to the `ToastStyle` protocol.
+When a `Toast` is presented its appearance is retrieved by the source's environment. A custom style can be implemented by creating a struct that conforms to the `ToastStyle` protocol.
 
 By using the `configuration` parameter and leveraging several environment values, a custom toast style can provide a pretty detailed and adaptive visual representation of the contents of a toast.
 
@@ -500,7 +547,14 @@ struct CustomToastStyle: ToastStyle {
         }
         
         private var color: Color {
-            configuration.role == .failure ? .red : .accentColor
+            switch configuration.role {
+            case .failure:
+                return .red
+            case .warning:
+                return .yellow
+            default:
+                return .accentColor
+            }
         }
         
         var body: some View {
@@ -514,6 +568,8 @@ struct CustomToastStyle: ToastStyle {
                         lineWidth: 1
                     )
                 }
+                .labelStyle(.automatic) // Apply a Label style
+                .labeledContentStyle(.automatic) // Apply a LabeledContent style
                 .onTapGesture {
                     guard toastInteractiveDismissEnabled else { return }
                     toastDismiss?()
@@ -544,7 +600,7 @@ A set of different *environment* values are injected into a presented toast for 
 
 The toast dismiss action is an environment value injected in the `toastDismiss` KeyPath and contains an action that can be used to programmatically dismiss a toast depending on a specific user interaction.
 
-Please note, that the scheduler automatically handles the duration of a toast so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
+Please note, that the scheduler automatically handles the duration of a toast, so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
 
 #### Toast Presented Alignment
 
