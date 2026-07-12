@@ -30,17 +30,17 @@ final class UIToastHostingController: UIViewController {
                 frame = currentFrame.union(subview.frame)
             }
             
-            return frame ?? .null
+            return frame ?? hostingView.bounds
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-            let target = super.hitTest(point, with: event)
+//            let target = super.hitTest(point, with: event)
+//            
+//            if target === self {
+//                return nil
+//            }
             
-            if target === self {
-                return nil
-            }
-            
-            return target
+            return _legacyHitTest(point, with: event)
         }
         
         private func _legacyHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
