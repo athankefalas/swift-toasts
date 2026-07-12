@@ -1,13 +1,13 @@
 //
-//  PlainToastStyle.swift
+//  MaterialToastStyle.swift
 //  SwiftToasts
 //
-//  Created by Sakis Kefalas on 6/10/24.
+//  Created by Sakis Kefalas on 12/7/26.
 //
 
 import SwiftUI
 
-public struct PlainToastStyle: ToastStyle {
+public struct MaterialToastStyle: ToastStyle {
     
     public nonisolated init() {}
     
@@ -25,10 +25,10 @@ public struct PlainToastStyle: ToastStyle {
 
 // MARK: ToastStyle Extension
 
-public extension ToastStyle where Self == PlainToastStyle {
+public extension ToastStyle where Self == MaterialToastStyle {
     
-    nonisolated static var plain: PlainToastStyle {
-        PlainToastStyle()
+    nonisolated static var material: MaterialToastStyle {
+        MaterialToastStyle()
     }
 }
 
@@ -36,7 +36,7 @@ public extension ToastStyle where Self == PlainToastStyle {
 
 #if ENABLE_PREVIEWS
 
-struct PlainToastStylePreview: View {
+struct MaterialToastStylePreview: View {
     
     let previewableToastRoles: [ToastRole] = [.informational]
     
@@ -64,7 +64,7 @@ struct PlainToastStylePreview: View {
 }
 
 #Preview {
-    PlainToastStylePreview()
+    MaterialToastStylePreview()
         .environment(\.toastOrnamentPresentationEnabled, true)
 }
 

@@ -64,6 +64,7 @@ extension View {
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
-        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
+        self
+//        self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
     }
 }

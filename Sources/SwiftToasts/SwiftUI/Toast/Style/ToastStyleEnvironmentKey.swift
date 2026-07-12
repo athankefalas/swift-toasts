@@ -11,7 +11,7 @@ import Combine
 
 private struct ToastStyleEnvironmentKey: EnvironmentKey {
     @preconcurrency static var defaultValue: AnyToastStyle {
-        AnyToastStyle(PlainToastStyle())
+        AnyToastStyle(.automatic)
     }
 }
 

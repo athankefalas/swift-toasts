@@ -53,12 +53,15 @@ struct PlainToastBackground: View {
     var body: some View {
         ZStack {
             if !usesGlassBackgroundEffect {
-                material
-                    .clipShape(shape)
+                if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+                    shape.fill(.background)
+                } else { // Fallback on earlier versions
+                    shape.fill(Color.fallbackSystemBackground)
+                }
                 
                 shape
                     .stroke(
-                        accentColor.opacity(0.2),
+                        accentColor.opacity(0.5),
                         lineWidth: borderWidth
                     )
                     .layoutPriority(-1)
@@ -86,174 +89,7 @@ struct PlainToastBackground: View {
             )
         )
     }
-    
-    private var material: AnyView {
-        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
-#if os(macOS)
-            return Rectangle()
-                .fill(Material.ultraThickMaterial)
-                .erased()
-#elseif os(visionOS)
-            return Rectangle()
-                .fill(Material.thinMaterial)
-                .erased()
-#else
-            return Rectangle()
-                .fill(Material.regularMaterial)
-                .erased()
-#endif
-        } else {
-            return FallbackBackgroundEffectView()
-                .erased()
-        }
-    }
 }
-
-struct PlainToastBackground_OLD: View {
-    @Environment(\.platformIdiom)
-    private var platformIdiom
-    
-    @Environment(\.accessibilityReduceTransparency)
-    private var accessibilityReduceTransparency
-    
-    @Environment(\.toastOrnamentPresentationEnabled)
-    private var toastOrnamentPresentationEnabled
-    
-    let accentColor: Color
-    let cornerRadius: CGFloat
-    let borderWidth: CGFloat
-    let isHovering: Bool
-    
-    private var shadowColor: Color {
-        let shadowColor = Color(
-            .sRGBLinear,
-            white: 0,
-            opacity: platformIdiom == .desktop ? 0.2 : 0.17
-        )
-        
-        guard !accessibilityReduceTransparency else {
-            return .clear
-        }
-        
-        return shadowColor
-    }
-    
-    private var shadowRadius: CGFloat {
-        isHovering ? 24 : 16
-    }
-    
-    private var usesGlassBackgroundEffect: Bool {
-#if os(visionOS)
-        if toastOrnamentPresentationEnabled {
-            return true
-        }
-#endif
-        
-#if BUILT_ON_XCODE_26
-        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-            return true
-        }
-#endif
-        
-        return false
-    }
-    
-    var body: some View {
-        ZStack {
-            if !usesGlassBackgroundEffect {
-                material
-                    .clipShape(shape)
-                
-                shape
-                    .stroke(
-                        accentColor.opacity(0.2),
-                        lineWidth: borderWidth
-                    )
-                    .layoutPriority(-1)
-            }
-            
-            Color(white: 1, opacity: 0.01)
-                .allowsHitTesting(true)
-                .contentShape(shape)
-        }
-#if BUILT_ON_XCODE_26
-        .fallbackGlassEffect(
-            in: shape,
-            enabled: usesGlassBackgroundEffect
-        )
-#endif
-#if os(visionOS)
-        .glassBackgroundEffect(
-            displayMode: usesGlassBackgroundEffect ? .always : .never
-        )
-#endif
-        .shadow(
-            color: usesGlassBackgroundEffect ? .clear : shadowColor,
-            radius: usesGlassBackgroundEffect ? 0 : shadowRadius
-        )
-    }
-    
-    private var shape: FallbackAnyShape {
-#if BUILT_ON_XCODE_26
-        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-            return FallbackAnyShape(
-                ConcentricRectangle(
-                    corners: .concentric(
-                        minimum: .fixed(cornerRadius)
-                    )
-                )
-            )
-        }
-#endif
-        return FallbackAnyShape(
-            RoundedRectangle(
-                cornerRadius: cornerRadius
-            )
-        )
-    }
-    
-    private var material: AnyView {
-        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
-#if os(macOS)
-            return Rectangle()
-                .fill(Material.ultraThickMaterial)
-                .erased()
-#elseif os(visionOS)
-            return Rectangle()
-                .fill(Material.thinMaterial)
-                .erased()
-#else
-            return Rectangle()
-                .fill(Material.regularMaterial)
-                .erased()
-#endif
-        } else {
-            return FallbackBackgroundEffectView()
-                .erased()
-        }
-    }
-}
-
-// MARK: Liguid Glass Material Support
-
-#if BUILT_ON_XCODE_26
-
-extension View {
-    
-    @ViewBuilder
-    func fallbackGlassEffect<SomeShape: Shape>(
-        in shape: SomeShape,
-        enabled: Bool
-    ) -> some View {
-        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-            self.glassEffect(enabled ? .regular.interactive() : .identity, in: shape)
-        } else { // Fallback on earlier versions
-            self
-        }
-    }
-}
-
-#endif
 
 #if ENABLE_PREVIEWS
 

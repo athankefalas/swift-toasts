@@ -1,5 +1,5 @@
 //
-//  GlassToastBackground.swift
+//  MaterialToastBackground.swift
 //  SwiftToasts
 //
 //  Created by Sakis Kefalas on 12/7/26.
@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-struct GlassToastBackground: View {
+struct MaterialToastBackground: View {
     @Environment(\.platformIdiom)
     private var platformIdiom
     
@@ -41,11 +40,21 @@ struct GlassToastBackground: View {
         isHovering ? 24 : 16
     }
     
+    private var usesGlassBackgroundEffect: Bool {
+#if os(visionOS)
+        if toastOrnamentPresentationEnabled {
+            return true
+        }
+#endif
+        
+        return false
+    }
+    
     var body: some View {
         ZStack {
-            if false {
-//                material
-//                    .clipShape(shape)
+            if !usesGlassBackgroundEffect {
+                material
+                    .clipShape(shape)
                 
                 shape
                     .stroke(
@@ -61,16 +70,13 @@ struct GlassToastBackground: View {
         }
 #if os(visionOS)
         .glassBackgroundEffect(
-            displayMode: .always
-        )
-#else
-        .glassEffect(
-            .regular
-                .interactive()
-                .tint(accentColor.opacity(0.1)),
-            in: shape
+            displayMode: usesGlassBackgroundEffect ? .always : .never
         )
 #endif
+        .shadow(
+            color: usesGlassBackgroundEffect ? .clear : shadowColor,
+            radius: usesGlassBackgroundEffect ? 0 : shadowRadius
+        )
     }
     
     private var shape: FallbackAnyShape {
@@ -80,6 +86,27 @@ struct GlassToastBackground: View {
             )
         )
     }
+    
+    private var material: AnyView {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
+#if os(macOS)
+            return Rectangle()
+                .fill(Material.ultraThickMaterial)
+                .erased()
+#elseif os(visionOS)
+            return Rectangle()
+                .fill(Material.thinMaterial)
+                .erased()
+#else
+            return Rectangle()
+                .fill(Material.regularMaterial)
+                .erased()
+#endif
+        } else {
+            return FallbackBackgroundEffectView()
+                .erased()
+        }
+    }
 }
 
 #if ENABLE_PREVIEWS
@@ -88,17 +115,15 @@ struct GlassToastBackground: View {
     VStack {
         Spacer()
         
-        if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *) {
-            GlassToastBackground(
-                accentColor: .blue,
-                cornerRadius: 12,
-                borderWidth: 2,
-                isHovering: false
-            )
-            .padding(32)
-            .border(Color.black)
-            .padding()
-        }
+        MaterialToastBackground(
+            accentColor: .blue,
+            cornerRadius: 12,
+            borderWidth: 2,
+            isHovering: false
+        )
+        .padding(32)
+        .border(Color.black)
+        .padding()
         
         Spacer()
     }

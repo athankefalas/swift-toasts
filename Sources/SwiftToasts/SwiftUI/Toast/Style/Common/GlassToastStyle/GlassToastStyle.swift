@@ -2,12 +2,12 @@
 //  GlassToastStyle.swift
 //  SwiftToasts
 //
-//  Created by Αθανάσιος Κεφαλάς on 12/7/26.
+//  Created by Sakis Kefalas on 12/7/26.
 //
 
 import SwiftUI
 
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct GlassToastStyle: ToastStyle {
     public nonisolated init() {}
     
@@ -25,10 +25,10 @@ public struct GlassToastStyle: ToastStyle {
 
 // MARK: ToastStyle Extension
 
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public extension ToastStyle where Self == GlassToastStyle {
     
-    static var glass: GlassToastStyle {
+    nonisolated static var glass: GlassToastStyle {
         GlassToastStyle()
     }
 }
