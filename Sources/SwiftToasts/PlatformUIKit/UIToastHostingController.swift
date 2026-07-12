@@ -118,7 +118,7 @@ final class UIToastHostingController: UIViewController {
         super.loadView()
         
         let backdropView = UIPassthroughBackdropView()
-        backdropView.backgroundColor = .init(white: 1, alpha: 0.001)
+        backdropView.backgroundColor = .clear
 //        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
