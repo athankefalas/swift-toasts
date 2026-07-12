@@ -41,9 +41,15 @@ struct ToastButtonStyle: ButtonStyle {
                     Color.clear
                         .allowsHitTesting(true)
                         .contentShape(Rectangle())
-                        .simultaneousTap {
-                            toastDismiss?()
-                        }
+                        .simultaneousGesture(
+                            DragGesture().onEnded({ _ in
+                                toastDismiss?()
+                            }),
+                            including: .all
+                        )
+//                        .simultaneousTap {
+//                            toastDismiss?()
+//                        }
                 )
         }
     }
