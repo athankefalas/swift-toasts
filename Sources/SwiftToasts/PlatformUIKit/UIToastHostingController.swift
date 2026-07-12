@@ -55,20 +55,26 @@ final class UIToastHostingController: UIViewController {
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
-            guard let hostingView = hostingView else {
-                return target
-            }
-            
-            let convertedPoint = convert(point, to: hostingView)
-            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
-            
-            guard target !== self, containsPoint else {
-                print("## \(target === self ? "SELF" : "NOT INSIDE")")
+            if target === self {
                 return nil
             }
             
-            print("## TAP")
             return target
+            
+//            guard let hostingView = hostingView else {
+//                return target
+//            }
+//            
+//            let convertedPoint = convert(point, to: hostingView)
+//            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
+//            
+//            guard target !== self, containsPoint else {
+//                print("## \(target === self ? "SELF" : "NOT INSIDE")")
+//                return nil
+//            }
+//            
+//            print("## TAP")
+//            return target
         }
     }
     
