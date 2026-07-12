@@ -34,6 +34,7 @@ final class UIToastHostingController: UIViewController {
             }
             
             var frame: CGRect?
+            print("## Susbviews: \(hostingView.subviews.count)")
             for subview in hostingView.subviews {
                 guard let currentFrame = frame else {
                     frame = subview.frame
