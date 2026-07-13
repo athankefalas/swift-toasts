@@ -107,7 +107,6 @@ struct StyledViewBody<ToastBackground: View>: View {
                 
                 toastDismiss?()
             }
-//            .padding()
             .scaleEffect(isHovering ? 1.05 : 1)
 #if !os(tvOS)
             .fallbackOnHover { isHovering = $0 }
