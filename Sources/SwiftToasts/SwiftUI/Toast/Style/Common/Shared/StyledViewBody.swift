@@ -169,7 +169,7 @@ private extension View {
     }
 }
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 @MainActor
@@ -211,21 +211,15 @@ func platformAccessibilityAnnouncement(_ string: AttributedString) {
 #else
 
 @MainActor
-func platformAccessibilityAnnouncement(_ string: String) {
-    print("Platform does not support accessibility announcements.")
-}
+func platformAccessibilityAnnouncement(_ string: String) {}
 
 @MainActor
-func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
-    print("Platform does not support accessibility announcements.")
-}
+func platformAccessibilityAnnouncement(_ string: NSAttributedString) {}
 
 
 @available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
 @MainActor
-func platformAccessibilityAnnouncement(_ string: AttributedString) {
-    print("Platform does not support accessibility announcements.")
-}
+func platformAccessibilityAnnouncement(_ string: AttributedString) {}
 
 #endif
 

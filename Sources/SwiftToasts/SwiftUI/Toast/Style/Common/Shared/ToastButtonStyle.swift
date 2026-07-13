@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if !os(tvOS)
 struct ToastButtonStyle: PrimitiveButtonStyle {
     let accentColor: Color
     
@@ -105,13 +106,18 @@ struct ToastButtonStyle: PrimitiveButtonStyle {
         }
     }
 }
+#endif
 
 extension View {
     
     func applyToastButtonStyle(
         accentColor: Color
     ) -> some View {
+#if os(tvOS)
+        self.foregroundColor(accentColor)
+#else
         self.buttonStyle(ToastButtonStyle(accentColor: accentColor))
+#endif
     }
 }
 

@@ -17,9 +17,22 @@ import Cocoa
 
 #if canImport(UIKit) && !os(watchOS)
     struct FallbackBackgroundEffectView: UIViewRepresentable {
+        @Environment(\.colorScheme)
+        private var colorScheme
+        
         let thickness: MaterialToastStyle.MaterialThickness
         
         private var style: UIBlurEffect.Style {
+#if os(tvOS)
+            switch thickness {
+            case .thin:
+                return colorScheme == .dark ? .dark : .light
+            case .regular:
+                return .regular
+            case .thick:
+                return colorScheme == .dark ? .extraDark : .extraLight
+            }
+#else
             switch thickness {
             case .thin:
                 return .systemThinMaterial
@@ -28,6 +41,7 @@ import Cocoa
             case .thick:
                 return .systemThickMaterial
             }
+#endif
         }
         
         func makeUIView(context: Context) -> UIVisualEffectView {
