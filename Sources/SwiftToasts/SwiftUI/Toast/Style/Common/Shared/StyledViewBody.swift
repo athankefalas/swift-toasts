@@ -136,7 +136,7 @@ struct StyledViewBody<ToastBackground: View>: View {
                     return
                 }
                 
-                print("## Accessibility Announce: \(appearedAnnouncementName)")
+                AccessibilityAnnouncement.announcement(appearedAnnouncementName.string).post()
             }
             .onDisappear {
                 if toastAccessibilityOptions.accessibilityManageFocus {
@@ -147,7 +147,7 @@ struct StyledViewBody<ToastBackground: View>: View {
                     return
                 }
                 
-                print("## Accessibility Announce: \(disappearedAnnouncementName)")
+                AccessibilityAnnouncement.announcement(disappearedAnnouncementName.string).post()
             }
     }
 }
@@ -159,6 +159,92 @@ private extension View {
             self.accessibilityAction(named: Text(name), action)
         } else {
             self.accessibilityAction(.escape, action)
+        }
+    }
+}
+
+#if canImport(UIKit)
+import UIKit
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: String) {
+    UIAccessibility.post(notification: .announcement, argument: string)
+}
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
+    UIAccessibility.post(notification: .announcement, argument: string)
+}
+
+
+@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
+@MainActor
+func platformAccessibilityAnnouncement(_ string: AttributedString) {
+    UIAccessibility.post(notification: .announcement, argument: string)
+}
+
+#elseif canImport(AppKit)
+import AppKit
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: String) {
+    NSAccessibility.post(element: string, notification: .announcementRequested)
+}
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
+    NSAccessibility.post(element: string, notification: .announcementRequested)
+}
+
+@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
+@MainActor
+func platformAccessibilityAnnouncement(_ string: AttributedString) {
+    NSAccessibility.post(element: string, notification: .announcementRequested)
+}
+
+#else
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: String) {
+    print("Platform does not support accessibility announcements.")
+}
+
+@MainActor
+func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
+    print("Platform does not support accessibility announcements.")
+}
+
+
+@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
+@MainActor
+func platformAccessibilityAnnouncement(_ string: AttributedString) {
+    print("Platform does not support accessibility announcements.")
+}
+
+#endif
+
+nonisolated struct AccessibilityAnnouncement {
+    private let _action: @MainActor () -> Void
+    
+    private init(
+        action: @escaping @MainActor () -> Void
+    ) {
+        self._action = action
+    }
+    
+    @MainActor
+    func callAsFunction() {
+        _action()
+    }
+    
+    @MainActor
+    func post() {
+        _action()
+    }
+    
+    static func announcement(_ string: String) -> Self {
+        AccessibilityAnnouncement {
+            platformAccessibilityAnnouncement(string)
         }
     }
 }
