@@ -67,6 +67,10 @@ struct ToastButtonStyle: PrimitiveButtonStyle {
                     buttonGesture,
                     isEnabled: isEnabled
                 )
+                .accessibilityAction {
+                    action()
+                }
+                .fallbackAccessibilityIdentifier("ToastButton")
                 .animation(.interactiveSpring, value: isPressed)
         }
         
@@ -85,8 +89,7 @@ struct ToastButtonStyle: PrimitiveButtonStyle {
                     }
                     
                     withAnimation(.default) {
-                        configuration.trigger()
-                        toastDismiss?()
+                        action()
                     }
                 }
         }
@@ -94,6 +97,11 @@ struct ToastButtonStyle: PrimitiveButtonStyle {
         private var effectiveButtonFrame: CGRect {
             CGRect(origin: .zero, size: size ?? .zero)
                 .insetBy(dx: -16, dy: -16)
+        }
+        
+        private func action() {
+            configuration.trigger()
+            toastDismiss?()
         }
     }
 }

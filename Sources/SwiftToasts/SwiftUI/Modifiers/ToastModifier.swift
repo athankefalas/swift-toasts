@@ -27,6 +27,9 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
     
@@ -95,7 +98,8 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
                 toastEnvironmentValues: ToastEnvironmentValues(
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
-                    toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                    toastAccessibilityOptions: toastAccessibilityOptions
                 ),
                 presentationCanceller: presentationCanceller,
                 onDismiss: {

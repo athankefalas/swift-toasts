@@ -35,6 +35,7 @@ struct HostedToastContent: View {
                .environment(\.toastDismiss, ToastDismissAction(id: id, action: dismissAction))
                .toastStyle(toastPresentation.toastEnvironmentValues.toastStyle)
                .toastInteractiveDismissDisabled(!toastPresentation.toastEnvironmentValues.toastInteractiveDismissEnabled)
+               .toastAccessibilityOptions(toastPresentation.toastEnvironmentValues.toastAccessibilityOptions)
        }
     }
     

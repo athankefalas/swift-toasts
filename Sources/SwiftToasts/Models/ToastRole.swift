@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A value that describes the purpose of a toast.
-public enum ToastRole: Hashable, CaseIterable, Sendable {
+public nonisolated enum ToastRole: Hashable, CaseIterable, Sendable {
     /// A plain role with no additional context.
     case plain
     

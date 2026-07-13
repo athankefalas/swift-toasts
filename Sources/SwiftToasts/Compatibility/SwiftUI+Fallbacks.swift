@@ -32,6 +32,14 @@ extension View {
             self.accessibility(addTraits: traits)
         }
     }
+    
+    func fallbackAccessibilityLabel(_ label: Text) -> some View {
+        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+            self.accessibilityLabel(label)
+        } else {
+            self.accessibility(label: label)
+        }
+    }
 }
 
 extension Font {

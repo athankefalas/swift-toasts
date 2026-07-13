@@ -29,6 +29,9 @@ struct ToastLabelStyle: LabelStyle {
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
         
+        @Environment(\.toastAccessibilityOptions)
+        private var toastAccessibilityOptions
+        
         let accentColor: Color
         let configuration: Configuration
         
@@ -48,6 +51,7 @@ struct ToastLabelStyle: LabelStyle {
                         .fallbackTintColor(accentColor)
                         .font(.system(size: largeIconSize))
                         .accessibilityIdentifier("ToastIcon")
+                        .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)
@@ -63,6 +67,7 @@ struct ToastLabelStyle: LabelStyle {
                         .fallbackTintColor(accentColor)
                         .font(.system(size: iconSize))
                         .accessibilityIdentifier("ToastIcon")
+                        .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)

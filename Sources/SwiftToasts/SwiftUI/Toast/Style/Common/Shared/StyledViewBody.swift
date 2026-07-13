@@ -32,6 +32,12 @@ struct StyledViewBody<ToastBackground: View>: View {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
+//    @AccessibilityFocusState
+//    private var isAccessibilityElementFocused: Binding<Bool>
+    
     @State
     private var isHovering = false
     
@@ -99,6 +105,7 @@ struct StyledViewBody<ToastBackground: View>: View {
                         isHovering: isHovering
                     )
                 )
+                .fallbackAccessibilityHidden(true)
             )
             .platformDismissalGesture {
                 guard toastInteractiveDismissEnabled else {
@@ -113,7 +120,45 @@ struct StyledViewBody<ToastBackground: View>: View {
 #endif
             .animation(.default, value: isHovering)
             .accessibilityElement(children: .contain)
-            .fallbackAccessibilityAddTraits([.isModal, .updatesFrequently])
-            .fallbackAccessibilityIdentifier("Toast")
+            .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
+            .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifier)
+            .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
+                toastDismiss?()
+            }
+            .fallbackAccessibilityLabel(toastAccessibilityOptions.accessibilityLabel.flatMap({ Text($0) }) ?? Text(""))
+            .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityHidden)
+            .onAppear {
+                if toastAccessibilityOptions.accessibilityManageFocus {
+                    // Gain Focus
+                }
+                
+                guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
+                    return
+                }
+                
+                print("## Accessibility Announce: \(appearedAnnouncementName)")
+            }
+            .onDisappear {
+                if toastAccessibilityOptions.accessibilityManageFocus {
+                    // Lose Focus
+                }
+                
+                guard let disappearedAnnouncementName = toastAccessibilityOptions.accessibilityOnDisappearAnnouncement else {
+                    return
+                }
+                
+                print("## Accessibility Announce: \(disappearedAnnouncementName)")
+            }
+    }
+}
+
+private extension View {
+    
+    func accessibilityDismissAction(named name: LabelContent?, perform action: @escaping () -> Void) -> some View {
+        if let name {
+            self.accessibilityAction(named: Text(name), action)
+        } else {
+            self.accessibilityAction(.escape, action)
+        }
     }
 }
