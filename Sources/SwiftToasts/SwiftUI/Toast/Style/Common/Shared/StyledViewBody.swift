@@ -136,7 +136,10 @@ struct StyledViewBody<ToastBackground: View>: View {
                     return
                 }
                 
-                AccessibilityAnnouncement.announcement(appearedAnnouncementName.string).post()
+                Task { @MainActor in
+                    try? await Task.sleep(duration: .seconds(0.3))
+                    AccessibilityAnnouncement.announcement(appearedAnnouncementName.string).post()
+                }
             }
             .onDisappear {
                 if toastAccessibilityOptions.accessibilityManageFocus {
@@ -147,7 +150,10 @@ struct StyledViewBody<ToastBackground: View>: View {
                     return
                 }
                 
-                AccessibilityAnnouncement.announcement(disappearedAnnouncementName.string).post()
+                Task { @MainActor in
+                    try? await Task.sleep(duration: .seconds(0.3))
+                    AccessibilityAnnouncement.announcement(disappearedAnnouncementName.string).post()
+                }
             }
     }
 }
