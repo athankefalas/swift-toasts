@@ -120,7 +120,7 @@ struct StyledViewBody<ToastBackground: View>: View {
 #endif
             .animation(.default, value: isHovering)
             .accessibilityElement(children: .contain)
-            .fallbackAccessibilitySortPriority(.greatestFiniteMagnitude)
+            .fallbackAccessibilitySortPriority(10000)
             .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
             .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifier)
             .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
@@ -223,10 +223,10 @@ extension View {
     
     @ViewBuilder
     func fallbackAccessibilityFocused(_ isFocused: Binding<Bool>) -> some View {
-        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-            self.modifier(AccessibilityFocusModifier(isFocused: isFocused))
-        } else {
+//        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+//            self.modifier(AccessibilityFocusModifier(isFocused: isFocused))
+//        } else {
             self.modifier(FallbackAccessibilityFocusModifier(isFocused: isFocused))
-        }
+//        }
     }
 }
