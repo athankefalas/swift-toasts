@@ -33,7 +33,7 @@ final class NSTransientFloatingWindow: NSWindow {
     
     private final func postInit(parent: NSWindow) {
         self.level = .floating
-        self.styleMask = .hudWindow
+        self.styleMask = .utilityWindow
         self.isExcludedFromWindowsMenu = true
         self.isOpaque = false
         self.hasShadow = false
