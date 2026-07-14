@@ -15,7 +15,7 @@ final class NSTransientFloatingWindow: NSPanel {
     
     private(set) var isShown = false
     
-    override var canBecomeKey: Bool {
+    override var canBecomeMain: Bool {
         false
     }
     
@@ -38,8 +38,9 @@ final class NSTransientFloatingWindow: NSPanel {
     private final func postInit(parent: NSWindow) {
         self.level = .floating
         self.isFloatingPanel = true
-        self.styleMask = [.borderless, .nonactivatingPanel]
+        self.styleMask = [.borderless, .nonactivatingPanel, .hudWindow]
         self.isExcludedFromWindowsMenu = true
+        self.becomesKeyOnlyIfNeeded = true
         self.isOpaque = false
         self.hasShadow = false
         self.backgroundColor = .clear
@@ -111,10 +112,9 @@ final class NSTransientFloatingWindow: NSPanel {
         
         NotificationCenter.default
             .publisher(for: NSApplication.willHideNotification)
-            .compactMap({ $0.object as? NSWindow })
-            .sink { [weak parent, weak self] window in
+            .sink { [weak self] _ in
                 
-                guard window === parent, self?.isShown == true else {
+                guard self?.isShown == true else {
                     return
                 }
                 
@@ -154,6 +154,7 @@ final class NSTransientFloatingWindow: NSPanel {
         }
         
         parent?.removeChildWindow(self)
+        self.orderOut(nil)
         self.isShown = false
     }
 }
