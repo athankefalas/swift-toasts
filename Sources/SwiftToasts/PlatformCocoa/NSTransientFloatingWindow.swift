@@ -159,6 +159,7 @@ final class NSTransientFloatingWindow: NSPanel {
         
         self.isShown = true
 //        self.makeKey()
+        self.becomeKey()
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
     }
