@@ -29,12 +29,16 @@ func platformAccessibilityScreenChanged(_ content: FallbackAccessibilityNotifica
 func platformFindElementWithTag(_ tag: Int) -> Any? {
     return UIApplication.shared.connectedScenes
         .flatMap({ ($0 as? UIWindowScene)?.windows ?? [] })
-        .compactMap({ findElementWithTag(tag, in: $0) })
+        .compactMap({ findElementWithTag(tag, inWindow: $0) })
         .first
 }
 
 @MainActor
-private func findElementWithTag(_ tag: Int, in window: UIWindow) -> Any? {
+private func findElementWithTag(_ tag: Int, inWindow window: UIWindow) -> Any? {
+    if let result = findElementWithTag(tag, in: window) {
+        return result
+    }
+    
     return findElementWithTag(tag, in: window.rootViewController)
 }
 
