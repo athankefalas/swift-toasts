@@ -35,21 +35,34 @@ func platformFindElementWithTag(_ tag: Int) -> Any? {
 
 @MainActor
 private func findElementWithTag(_ tag: Int, in window: UIWindow) -> Any? {
-    var match = findElementWithTag(tag, in: window.rootViewController?.view)
-    
-    for childViewController in window.rootViewController?.children ?? [] {
-        match = findElementWithTag(tag, in: childViewController.view)
-        if match != nil { break }
+    return findElementWithTag(tag, in: window.rootViewController)
+}
+
+@MainActor
+private func findElementWithTag(_ tag: Int, in viewController: UIViewController?) -> Any? {
+    guard let viewController else {
+        return nil
     }
     
-    var modalViewController: UIViewController? = window.rootViewController?.presentedViewController
+    if let result = findElementWithTag(tag, in: viewController.view) {
+        return result
+    }
     
-    while match == nil && modalViewController != nil {
-        match = findElementWithTag(tag, in: modalViewController?.view)
+    for childViewController in viewController.children {
+        if let result = findElementWithTag(tag, in: childViewController) {
+            return result
+        }
+    }
+    
+    var modalViewController: UIViewController? = viewController.presentedViewController
+    while modalViewController != nil {
+        if let result = findElementWithTag(tag, in: modalViewController) {
+            return result
+        }
         modalViewController = modalViewController?.presentedViewController
     }
     
-    return match
+    return nil
 }
 
 @MainActor
@@ -95,7 +108,36 @@ func platformFindElementWithTag(_ tag: Int) -> Any? {
 
 @MainActor
 private func findElementWithTag(_ tag: Int, in window: NSWindow) -> Any? {
-    return findElementWithTag(tag, in: window.contentView)
+    if let result = findElementWithTag(tag, in: window.contentView) {
+        return result
+    }
+    
+    return findElementWithTag(tag, in: window.contentViewController)
+}
+
+@MainActor
+private func findElementWithTag(_ tag: Int, in viewController: NSViewController?) -> Any? {
+    guard let viewController else {
+        return nil
+    }
+    
+    if let result = findElementWithTag(tag, in: viewController.view) {
+        return result
+    }
+    
+    for childViewController in viewController.children {
+        if let result = findElementWithTag(tag, in: childViewController) {
+            return result
+        }
+    }
+    
+    for presentedViewController in viewController.presentedViewControllers ?? [] {
+        if let result = findElementWithTag(tag, in: presentedViewController) {
+            return result
+        }
+    }
+    
+    return nil
 }
 
 @MainActor
