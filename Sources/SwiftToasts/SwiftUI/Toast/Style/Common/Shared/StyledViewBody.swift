@@ -121,6 +121,7 @@ struct StyledViewBody<ToastBackground: View>: View {
             .animation(.default, value: isHovering)
             .accessibilityElement(children: .contain)
             .fallbackAccessibilitySortPriority(10000)
+            .fallbackAccessibilityFocused($isAccessibilityFocused)
             .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
             .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifier)
             .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
