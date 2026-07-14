@@ -36,6 +36,12 @@ func platformFindElementWithTag(_ tag: Int) -> Any? {
 @MainActor
 private func findElementWithTag(_ tag: Int, in window: UIWindow) -> Any? {
     var match = findElementWithTag(tag, in: window.rootViewController?.view)
+    
+    for childViewController in window.rootViewController?.children ?? [] {
+        match = findElementWithTag(tag, in: childViewController.view)
+        if match != nil { break }
+    }
+    
     var modalViewController: UIViewController? = window.rootViewController?.presentedViewController
     
     while match == nil && modalViewController != nil {
