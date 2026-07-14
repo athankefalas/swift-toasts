@@ -207,7 +207,14 @@ struct FallbackAccessibilityFocusModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.onAppear {
             guard isFocused else { return }
-            FallbackAccessibilityNotification.LayoutChanged.post(.elementWithTag(0))
+            FallbackAccessibilityNotification.LayoutChanged.post(.toastView)
+        }
+        .fallbackOnChange(of: isFocused) { isFocused in
+            if isFocused {
+                FallbackAccessibilityNotification.LayoutChanged.post(.toastView)
+            } else {
+                FallbackAccessibilityNotification.ScreenChanged.post(nil)
+            }
         }
     }
 }
