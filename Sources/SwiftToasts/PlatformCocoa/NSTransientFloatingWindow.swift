@@ -9,7 +9,7 @@
 import Cocoa
 import Combine
 
-final class NSTransientFloatingWindow: NSWindow {
+final class NSTransientFloatingWindow: NSPanel {
     private(set) weak var presentingWindow: NSWindow?
     private var subscriptions: Set<AnyCancellable> = []
     
@@ -33,7 +33,7 @@ final class NSTransientFloatingWindow: NSWindow {
     
     private final func postInit(parent: NSWindow) {
         self.level = .floating
-        self.styleMask = .utilityWindow
+        self.styleMask = [.hudWindow, .borderless, .utilityWindow, .nonactivatingPanel]
         self.isExcludedFromWindowsMenu = true
         self.isOpaque = false
         self.hasShadow = false
