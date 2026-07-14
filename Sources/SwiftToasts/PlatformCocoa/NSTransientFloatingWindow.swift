@@ -23,6 +23,16 @@ final class NSTransientFloatingWindow: NSPanel {
         true
     }
     
+    override var isKeyWindow: Bool {
+        get {
+            if isShown {
+                return true
+            }
+            
+            return super.isKeyWindow
+        }
+    }
+    
     convenience init(
         contentViewController: NSViewController,
         floatingIn parent: NSWindow
