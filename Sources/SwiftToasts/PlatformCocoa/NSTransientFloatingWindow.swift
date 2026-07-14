@@ -19,6 +19,10 @@ final class NSTransientFloatingWindow: NSPanel {
         false
     }
     
+    override var canBecomeKey: Bool {
+        true
+    }
+    
     convenience init(
         contentViewController: NSViewController,
         floatingIn parent: NSWindow
