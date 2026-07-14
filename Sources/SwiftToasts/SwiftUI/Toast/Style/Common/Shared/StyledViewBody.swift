@@ -125,7 +125,10 @@ struct StyledViewBody<ToastBackground: View>: View {
             .fallbackAccessibilityFocused($isAccessibilityFocused)
             .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
             .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifiers.container ?? "")
-            .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
+            .accessibilityDismissAction(
+                named: toastAccessibilityOptions.accessibilityDismissActionName,
+                when: toastInteractiveDismissEnabled
+            ) {
                 toastDismiss?()
             }
             .fallbackAccessibilityLabel(toastAccessibilityOptions.accessibilityLabel.flatMap({ Text($0) }) ?? Text(""))
@@ -165,9 +168,17 @@ struct StyledViewBody<ToastBackground: View>: View {
 
 private extension View {
     
-    func accessibilityDismissAction(named name: LabelContent?, perform action: @escaping () -> Void) -> some View {
-        if let name {
+    @ViewBuilder
+    func accessibilityDismissAction(
+        named name: LabelContent?,
+        when condition: Bool,
+        perform action: @escaping () -> Void
+    ) -> some View {
+        if !condition {
+            self
+        } else if let name {
             self.accessibilityAction(named: Text(name), action)
+                .accessibilityAction(.escape, action)
         } else {
             self.accessibilityAction(.escape, action)
         }
