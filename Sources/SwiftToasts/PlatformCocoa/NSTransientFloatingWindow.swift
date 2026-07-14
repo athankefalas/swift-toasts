@@ -15,6 +15,10 @@ final class NSTransientFloatingWindow: NSPanel {
     
     private(set) var isShown = false
     
+    override var canBecomeKey: Bool {
+        false
+    }
+    
     convenience init(
         contentViewController: NSViewController,
         floatingIn parent: NSWindow
@@ -33,7 +37,8 @@ final class NSTransientFloatingWindow: NSPanel {
     
     private final func postInit(parent: NSWindow) {
         self.level = .floating
-        self.styleMask = [.hudWindow, .borderless, .utilityWindow, .nonactivatingPanel]
+        self.isFloatingPanel = true
+        self.styleMask = [.borderless, .nonactivatingPanel]
         self.isExcludedFromWindowsMenu = true
         self.isOpaque = false
         self.hasShadow = false
