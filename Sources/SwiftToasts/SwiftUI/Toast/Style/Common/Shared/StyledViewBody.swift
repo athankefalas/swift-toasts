@@ -124,7 +124,7 @@ struct StyledViewBody<ToastBackground: View>: View {
             .fallbackAccessibilitySortPriority(10000)
             .fallbackAccessibilityFocused($isAccessibilityFocused)
             .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
-            .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifier)
+            .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifiers.container ?? "")
             .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
                 toastDismiss?()
             }

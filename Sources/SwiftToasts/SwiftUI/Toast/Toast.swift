@@ -62,7 +62,7 @@ public extension Toast {
             duration: duration
         ) {
             Text(verbatim: title)
-                .fallbackAccessibilityIdentifier("ToastTitle")
+                .toastContentAccessibilityId(\.title)
         }
     }
     
@@ -81,7 +81,7 @@ public extension Toast {
             duration: duration
         ) {
             Text(title)
-                .fallbackAccessibilityIdentifier("ToastTitle")
+                .toastContentAccessibilityId(\.title)
         }
     }
     
@@ -101,7 +101,7 @@ public extension Toast {
             duration: duration
         ) {
             Text(title)
-                .fallbackAccessibilityIdentifier("ToastTitle")
+                .toastContentAccessibilityId(\.title)
         }
     }
 }
@@ -129,8 +129,10 @@ public extension Toast {
         ) {
             Label {
                 Text(verbatim: title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -153,8 +155,10 @@ public extension Toast {
         ) {
             Label {
                 Text(verbatim: title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -178,8 +182,10 @@ public extension Toast {
         ) {
             Label {
                 Text(verbatim: title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -203,8 +209,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -228,8 +236,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -253,8 +263,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -278,8 +290,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -303,8 +317,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -328,8 +344,10 @@ public extension Toast {
         ) {
             Label {
                 Text(title)
+                    .toastContentAccessibilityId(\.title)
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -356,7 +374,13 @@ public extension Toast {
             role: role,
             duration: duration
         ) {
-            LabeledContent(title, value: value)
+            LabeledContent {
+                Text(value)
+                    .toastContentAccessibilityId(\.subtitle)
+            } label: {
+                Text(title)
+                    .toastContentAccessibilityId(\.title)
+            }
         }
     }
     
@@ -376,7 +400,13 @@ public extension Toast {
             role: role,
             duration: duration
         ) {
-            LabeledContent(title, value: value)
+            LabeledContent {
+                Text(value)
+                    .toastContentAccessibilityId(\.subtitle)
+            } label: {
+                Text(title)
+                    .toastContentAccessibilityId(\.title)
+            }
         }
     }
     
@@ -396,7 +426,13 @@ public extension Toast {
             role: role,
             duration: duration
         ) {
-            LabeledContent(title, value: value.description)
+            LabeledContent {
+                Text(value.description)
+                    .toastContentAccessibilityId(\.subtitle)
+            } label: {
+                Text(title)
+                    .toastContentAccessibilityId(\.title)
+            }
         }
     }
     
@@ -416,7 +452,13 @@ public extension Toast {
             role: role,
             duration: duration
         ) {
-            LabeledContent(title, value: value.description)
+            LabeledContent {
+                Text(value.description)
+                    .toastContentAccessibilityId(\.subtitle)
+            } label: {
+                Text(title)
+                    .toastContentAccessibilityId(\.title)
+            }
         }
     }
 }
@@ -445,9 +487,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value)
+                LabeledContent {
+                    Text(value)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -470,9 +519,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value)
+                LabeledContent {
+                    Text(value)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -496,9 +552,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value.description)
+                LabeledContent {
+                    Text(value.description)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -522,9 +585,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value.description)
+                LabeledContent {
+                    Text(value.description)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(systemName: systemImage)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -552,9 +622,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value)
+                LabeledContent {
+                    Text(value)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -578,9 +655,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value)
+                LabeledContent {
+                    Text(value)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -604,9 +688,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value.description)
+                LabeledContent {
+                    Text(value.description)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }
@@ -630,9 +721,16 @@ public extension Toast {
             duration: duration
         ) {
             Label {
-                LabeledContent(title, value: value.description)
+                LabeledContent {
+                    Text(value.description)
+                        .toastContentAccessibilityId(\.subtitle)
+                } label: {
+                    Text(title)
+                        .toastContentAccessibilityId(\.title)
+                }
             } icon: {
                 Image(image)
+                    .toastContentAccessibilityId(\.icon)
             }
         }
     }

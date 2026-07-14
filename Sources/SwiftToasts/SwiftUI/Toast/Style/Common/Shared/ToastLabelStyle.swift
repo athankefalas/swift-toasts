@@ -50,13 +50,11 @@ struct ToastLabelStyle: LabelStyle {
                         .foregroundColor(accentColor)
                         .fallbackTintColor(accentColor)
                         .font(.system(size: largeIconSize))
-                        .accessibilityIdentifier("ToastIcon")
                         .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)
                         .font(.title)
-                        .accessibilityIdentifier("ToastContent")
                         .accessibilityElement(children: .contain)
                 }
                 .padding(12)
@@ -66,13 +64,11 @@ struct ToastLabelStyle: LabelStyle {
                         .foregroundColor(accentColor)
                         .fallbackTintColor(accentColor)
                         .font(.system(size: iconSize))
-                        .accessibilityIdentifier("ToastIcon")
                         .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)
                         .font(.title3)
-                        .accessibilityIdentifier("ToastContent")
                         .accessibilityElement(children: .contain)
                 }
             }

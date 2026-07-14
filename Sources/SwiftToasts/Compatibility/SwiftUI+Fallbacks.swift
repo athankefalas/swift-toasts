@@ -64,7 +64,13 @@ extension Font {
 extension EnvironmentValues {
     
     var fallbackIsPresented: Bool {
-        get { self.presentationMode.wrappedValue.isPresented }
+        get {
+            if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+                return self.isPresented
+            } else {
+                return self.presentationMode.wrappedValue.isPresented
+            }
+        }
     }
 }
 

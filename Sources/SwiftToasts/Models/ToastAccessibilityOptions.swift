@@ -8,12 +8,35 @@
 import SwiftUI
 
 public nonisolated struct ToastAccessibilityOptions: Sendable {
+    
+    public struct ToastContentAccessibilityIdentifiers: Sendable {
+        public var icon: String?
+        public var title: String?
+        public var button: String?
+        public var subtitle: String?
+        public var container: String?
+        
+        public init(
+            icon: String? = "ToastIcon",
+            title: String? = "ToastTitle",
+            button: String? = "ToastButton",
+            subtitle: String? = "ToastSubtitle",
+            container: String? = "Toast"
+        ) {
+            self.icon = icon
+            self.title = title
+            self.button = button
+            self.subtitle = subtitle
+            self.container = container
+        }
+    }
+    
     public var accessibilityHidden: Bool
     public var accessibilityIconHidden: Bool
     public var accessibilityLabel: LabelContent?
     public var accessibilityTraits: AccessibilityTraits
     public var accessibilityManageFocus: Bool
-    public var accessibilityIdentifier: String // TODO: Use struct for all elements ???
+    public var accessibilityIdentifiers: ToastContentAccessibilityIdentifiers
     public var accessibilityDismissActionName: LabelContent?
     public var accessibilityOnAppearAnnouncement: LabelContent?
     public var accessibilityOnDisappearAnnouncement: LabelContent?
@@ -25,7 +48,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
         accessibilityLabel: LabelContent? = nil,
         accessibilityTraits: AccessibilityTraits = [.isModal, .updatesFrequently],
         accessibilityManageFocus: Bool = true,
-        accessibilityIdentifier: String = "Toast",
+        accessibilityIdentifiers: ToastContentAccessibilityIdentifiers = ToastContentAccessibilityIdentifiers(),
         accessibilityDismissActionName: LabelContent? = nil,
         accessibilityOnAppearAnnouncement: LabelContent? = nil,
         accessibilityOnDisappearAnnouncement: LabelContent? = nil
@@ -35,7 +58,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
         self.accessibilityLabel = accessibilityLabel
         self.accessibilityTraits = accessibilityTraits
         self.accessibilityManageFocus = accessibilityManageFocus
-        self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityIdentifiers = accessibilityIdentifiers
         self.accessibilityDismissActionName = accessibilityDismissActionName
         self.accessibilityOnAppearAnnouncement = accessibilityOnAppearAnnouncement
         self.accessibilityOnDisappearAnnouncement = accessibilityOnDisappearAnnouncement
@@ -48,7 +71,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
             accessibilityLabel: nil,
             accessibilityTraits: [],
             accessibilityManageFocus: false,
-            accessibilityIdentifier: "",
+            accessibilityIdentifiers: ToastContentAccessibilityIdentifiers(),
             accessibilityDismissActionName: nil,
             accessibilityOnAppearAnnouncement: nil,
             accessibilityOnDisappearAnnouncement: nil
@@ -59,7 +82,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
         ToastAccessibilityOptions()
     }
     
-    public static func preferred(
+    public static func accessible(
         dismissActionName accessibilityDismissActionName: LabelContent,
         appearanceAnnouncement accessibilityOnAppearAnnouncement: LabelContent,
         disappearanceAnnouncement accessibilityOnDisappearAnnouncement: LabelContent? = nil

@@ -71,7 +71,7 @@ struct ToastButtonStyle: PrimitiveButtonStyle {
                 .accessibilityAction {
                     action()
                 }
-                .fallbackAccessibilityIdentifier("ToastButton")
+                .toastContentAccessibilityId(\.button)
                 .animation(.interactiveSpring, value: isPressed)
         }
         

@@ -15,7 +15,6 @@ struct ToastLabeledContentStyle: LabeledContentStyle {
     }
     
     private struct StyledViewBody: View {
-        
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
         
@@ -37,12 +36,10 @@ struct ToastLabeledContentStyle: LabeledContentStyle {
                 configuration.label
                     .foregroundStyle(.primary)
                     .font(isCenterAligned ? .title : .title3)
-                    .accessibilityIdentifier("ToastTitle")
                 
                 configuration.content
                     .foregroundStyle(.secondary)
                     .font(isCenterAligned ? .title3.weight(.regular) : .callout)
-                    .accessibilityIdentifier("ToastSubtitle")
             }
         }
     }

@@ -96,14 +96,17 @@ public extension View {
     
     /// Controls the identifier a `Toast` will have in the accessibility system.
     /// - Parameters:
-    ///   - identifier: The identifier to use
+    ///   - identifiers: The identifiers to use for the Toast and its content.
     ///   - isEnabled: If true the accessibility hidden state is applied;
     ///     otherwise the accessibility hidden state is unchanged.
     /// - Returns: A modifed view.
-    func toastAccessibilityIdentifier(_ identifier: String, isEnabled: Bool = true) -> some View {
+    func toastContentAccessibilityIdentifiers(
+        _ identifiers: ToastAccessibilityOptions.ToastContentAccessibilityIdentifiers,
+        isEnabled: Bool = true
+    ) -> some View {
         self.transformEnvironment(\.toastAccessibilityOptions) { value in
             guard isEnabled else { return }
-            value.accessibilityIdentifier = identifier
+            value.accessibilityIdentifiers = identifiers
         }
     }
     
