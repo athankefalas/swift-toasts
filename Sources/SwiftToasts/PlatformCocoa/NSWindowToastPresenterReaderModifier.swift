@@ -85,7 +85,7 @@ extension View {
 internal func _getDefaultNSWindowToastPresenter() -> ToastPresenting? {
     return NSApplication.shared
         .windows
-        .filter({ $0.level == .normal && ($0.isMainWindow || $0.canBecomeMain) && $0.isVisible })
+        .filter({ $0.level == .normal && /*($0.isMainWindow || $0.canBecomeMain) &&*/ /*$0.isVisible &&*/ $0.isKeyWindow })
         .last
 }
 
