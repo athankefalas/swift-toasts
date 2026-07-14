@@ -36,7 +36,7 @@ final class NSTransientFloatingWindow: NSPanel {
     }
     
     private final func postInit(parent: NSWindow) {
-        self.level = .floating
+//        self.level = .floating
         self.isFloatingPanel = true
         self.styleMask = [.borderless, .nonactivatingPanel]
         self.isExcludedFromWindowsMenu = true
