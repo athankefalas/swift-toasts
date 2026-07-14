@@ -11,9 +11,9 @@ struct ToastContentAccessibilityIdentifierModifier: ViewModifier {
     @Environment(\.toastAccessibilityOptions.accessibilityIdentifiers)
     private var accessibilityIdentifiers
     
-    let keyPath: KeyPath<ToastAccessibilityOptions.ToastContentAccessibilityIdentifiers, String?>
+    let keyPath: KeyPath<ToastAccessibilityOptions.AccessibilityIdentifiers, String?>
     
-    init(keyPath: KeyPath<ToastAccessibilityOptions.ToastContentAccessibilityIdentifiers, String?>) {
+    init(keyPath: KeyPath<ToastAccessibilityOptions.AccessibilityIdentifiers, String?>) {
         self.keyPath = keyPath
     }
     
@@ -25,7 +25,7 @@ struct ToastContentAccessibilityIdentifierModifier: ViewModifier {
 extension View {
     
     func toastContentAccessibilityId(
-        _ keyPath: KeyPath<ToastAccessibilityOptions.ToastContentAccessibilityIdentifiers, String?>
+        _ keyPath: KeyPath<ToastAccessibilityOptions.AccessibilityIdentifiers, String?>
     ) -> some View {
         self.modifier(ToastContentAccessibilityIdentifierModifier(keyPath: keyPath))
     }

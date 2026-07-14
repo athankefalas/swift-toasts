@@ -9,7 +9,7 @@ import SwiftUI
 
 public nonisolated struct ToastAccessibilityOptions: Sendable {
     
-    public struct ToastContentAccessibilityIdentifiers: Sendable {
+    public struct AccessibilityIdentifiers: Sendable {
         public var icon: String?
         public var title: String?
         public var button: String?
@@ -36,7 +36,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
     public var accessibilityLabel: LabelContent?
     public var accessibilityTraits: AccessibilityTraits
     public var accessibilityManageFocus: Bool
-    public var accessibilityIdentifiers: ToastContentAccessibilityIdentifiers
+    public var accessibilityIdentifiers: AccessibilityIdentifiers
     public var accessibilityDismissActionName: LabelContent?
     public var accessibilityOnAppearAnnouncement: LabelContent?
     public var accessibilityOnDisappearAnnouncement: LabelContent?
@@ -48,7 +48,7 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
         accessibilityLabel: LabelContent? = nil,
         accessibilityTraits: AccessibilityTraits = [.isModal, .updatesFrequently],
         accessibilityManageFocus: Bool = true,
-        accessibilityIdentifiers: ToastContentAccessibilityIdentifiers = ToastContentAccessibilityIdentifiers(),
+        accessibilityIdentifiers: AccessibilityIdentifiers = AccessibilityIdentifiers(),
         accessibilityDismissActionName: LabelContent? = nil,
         accessibilityOnAppearAnnouncement: LabelContent? = nil,
         accessibilityOnDisappearAnnouncement: LabelContent? = nil
@@ -71,14 +71,14 @@ public nonisolated struct ToastAccessibilityOptions: Sendable {
             accessibilityLabel: nil,
             accessibilityTraits: [],
             accessibilityManageFocus: false,
-            accessibilityIdentifiers: ToastContentAccessibilityIdentifiers(),
+            accessibilityIdentifiers: AccessibilityIdentifiers(),
             accessibilityDismissActionName: nil,
             accessibilityOnAppearAnnouncement: nil,
             accessibilityOnDisappearAnnouncement: nil
         )
     }
     
-    public static var `default`: ToastAccessibilityOptions {
+    public static var visible: ToastAccessibilityOptions {
         ToastAccessibilityOptions()
     }
     

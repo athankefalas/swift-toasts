@@ -210,7 +210,7 @@ content
 
 #### Tasks
 
-The toast variants of the `task` modifier can be used to schedule the presentation of a `Toast` when the presentation is a direct result of an asynchronous operation.
+The toast variants of the `task` modifier can be used to schedule the presentation of a `Toast` when the presentation is a direct result of an asynchronous operation. In order to schedule the toast the instance of `ScheduleToastAction` that is passed as an argument in the task operation must be used.
 
 ``` swift
 // Showing a Toast as a result of a task.
@@ -251,7 +251,7 @@ content
 
 ### Buttons
 
-A `ToastButton` can be used to schedule the presentation of a `Toast` when the presentation is a direct result of a user interaction or user triggered operation.
+A `ToastButton` can be used to schedule the presentation of a `Toast` when the presentation is a direct result of a user interaction or user triggered operation. In order to schedule the toast the instance of `ScheduleToastAction` that is passed as an argument in the button action must be used.
 
 ``` Swift
 // Showing a Toast after a user presses a Button.
@@ -266,6 +266,34 @@ ToastButton("Submit") { schedule in
     )
 }
 
+```
+
+### Toast Presenter Reader
+
+A `Toast` can also be manually scheduled from anywhere with a `ToastPresenterReader` view and using the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts as well as to cancel all scheduled toasts that are still awaiting presentation.
+
+``` Swift
+ToastPresenterReader { toastPresenterProxy in
+    VStack {
+        Spacer()
+        
+        Button("Schedule Toast") {
+            toastPresenterProxy.schedulePresentation(
+                toast: Toast("Hello Toast!"),
+                toastAlignment: .top,
+                toastEnvironmentValues: ToastEnvironmentValues(
+                    toastTransition: .defaultTransition
+                )
+            )
+        }
+        
+        Button("Cancel Scheduled Toasts") {
+            toastPresenterProxy.cancelScheduledPresentations()
+        }
+        
+        Spacer()
+    }
+}
 ```
 
 ## Configuring a Toast Presentation
@@ -509,6 +537,74 @@ content
 
 ```
 
+#### Accessibility Options
+
+A wide variety of accessibility options for a presented `Toast` can be configured by using the `toastAccessibilityOptions` and related environment based modifiers. These options can affect various aspects of the accessibility of a Toast including visibility, label, traits, identifiers, automatic focus and even announcements tied to the lifetime of the toast.
+
+Because toasts are components that are generally presented __*modally*__ and possibly rather __*frequently*__, having them fully visible to the accessibility system may overwhelm users that rely on VoiceOver to navigate in your app, therefore it is recommended to rely on accessibility announcements instead. For this reason a `Toast` will not be accessible by default, but it must be explicitly marked as so.
+
+``` Swift
+// Toasts scheduled by the environment inside content will be hidden.
+// This is the default behavior.
+content
+    .toastAccessibilityOptions(.hidden)
+
+// Toasts scheduled by the environment inside content will be visible,
+// and will automatically gain accessibility focus when presented.
+content
+    .toastAccessibilityOptions(.visible)
+
+// Toasts scheduled by the environment inside content will be visible,
+// and will automatically gain accessibility focus when presented. Also,
+// an accessibility dismiss action and an announcement will be attached.
+content
+    .toastAccessibilityOptions(
+        .accessible(
+            dismissActionName: "Dismiss Toast",
+            appearanceAnnouncement: "Toast Appeared. Dismiss to continue."
+        )
+    )
+
+// Toasts scheduled by the environment inside content will have a custom
+// accessibility behavior. They will be visible to the accessibility system,
+// but they will not gain focus and instead an announcement will be attached when they appear.
+content
+    .toastAccessibilityOptions(
+        ToastAccessibilityOptions(
+            accessibilityHidden: false,
+            accessibilityManageFocus: false,
+            accessibilityOnAppearAnnouncement: "Toast Appeared."
+        )
+    )
+
+// Toasts scheduled by the environment inside content will have a custom
+// accessibility behavior. They will be visible to the accessibility system,
+// but they will not gain focus and instead an announcement will be attached when they appear.
+// This is effectively the same configuration as above, but uses modifiers to affect the
+// toast accessibility options individually.
+content
+    .toastAccessibilityHidden(false)
+    .toastAccessibilityManagesFocus(false)
+    .toastAccessibilityAppearedAnnouncement("Toast Appeared.")
+
+// Toasts scheduled by the environment inside content will have the
+// accessibility behavior defined by their parent, but an announcement
+// will also be attached when they appear.
+content.toastAccessibilityAppearedAnnouncement("Toast Appeared.")
+
+// Sets up accessibility identifiers to Toast and its content.
+// This configuration may be useful for testing purposes.
+content
+    .toastAccessibilityHidden(false)
+    .toastAccessibilityIconHidden(true)
+    .toastContentAccessibilityIdentifiers(
+        ToastAccessibilityOptions.AccessibilityIdentifiers(
+            title: "Toast.Title",
+            subtitle: "Toast.Subtitle"
+        )
+    )
+```
+
 ## Toast Styling
 
 When a `Toast` is presented its appearance is retrieved by the source's environment. A custom style can be implemented by creating a struct that conforms to the `ToastStyle` protocol.
@@ -535,6 +631,9 @@ struct CustomToastStyle: ToastStyle {
         
         @Environment(\.toastInteractiveDismissEnabled)
         private var toastInteractiveDismissEnabled
+
+        @Environment(\.toastAccessibilityOptions)
+        private var toastAccessibilityOptions
         
         let configuration: Configuration
         
@@ -609,6 +708,9 @@ The toast presented alignment is an *environment* value injected in the `toastPr
 #### Toast Interactive Dismiss Enabled
 
 The toast interactive dismiss enabled flag is an *environment* value injected in the `toastInteractiveDismissEnabled` KeyPath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style this flag could be checked before dismissing a toast when it is tapped.
+
+#### Toast Accessibility Options
+The toast accessibility options is an *environment* value injected in the `toastAccessibilityOptions` KeyPath and contains the accessibility options defined by the presenting environment. These options can be used to read and set specific accessibility identifiers and actions for a `Toast` layout.
 
 ## Alternative Presentation Contexts
 

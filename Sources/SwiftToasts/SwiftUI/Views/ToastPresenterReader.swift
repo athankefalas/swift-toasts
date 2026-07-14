@@ -46,7 +46,9 @@ public struct ToastPresenterReader<Content: View>: View {
     public var body: some View {
         ZStack {
             if innerToastPresenter.isPresentationEnabled || assignedPresenter {
-                content(innerToastPresenter)
+                VStack {
+                    content(innerToastPresenter)
+                }
             }
         }
         .assignToastPresenter(to: $toastPresenter)
@@ -69,7 +71,7 @@ public struct ToastPresenterReader<Content: View>: View {
 
 #if ENABLE_PREVIEWS
 
-#Preview {
+#Preview("Schedule Toast") {
     ToastPresenterReader { proxy in
         let transitionUnderTest = ToastTransition.scale
             .combined(with: .opacity)
@@ -99,4 +101,46 @@ public struct ToastPresenterReader<Content: View>: View {
 #endif
 }
 
+
+#Preview("Cancel Scheduled Toasts") {
+    ToastPresenterReader { proxy in
+        VStack {
+            Button("Schedule Toasts") {
+                for n in 0..<100 {
+                    proxy.schedulePresentation(
+                        toast: Toast("Hello Toast! \(n + 1)"),
+                        toastAlignment: .top,
+                        toastEnvironmentValues: ToastEnvironmentValues(
+                            toastTransition: .defaultTransition
+                        )
+                    )
+                }
+            }
+            
+            Button("Cancel Scheduled Presentations") {
+                proxy.cancelScheduledPresentations()
+            }
+        }
+    }
+}
+
 #endif
+
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+extension Scene {
+    
+    func toastPresentingScene() -> some Scene {
+        self
+    }
+}
+
+
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+struct ToastPresentingScene<Wrapped: Scene>: Scene {
+    let wrappedScene: Wrapped
+    
+    var body: some Scene {
+        wrappedScene
+            
+    }
+}

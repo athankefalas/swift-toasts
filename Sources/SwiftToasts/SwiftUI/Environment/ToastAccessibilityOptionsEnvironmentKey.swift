@@ -9,7 +9,7 @@ import SwiftUI
 
 
 private struct ToastAccessibilityOptionsEnvironmentKey: EnvironmentKey {
-    public static let defaultValue: ToastAccessibilityOptions = ToastAccessibilityOptions()
+    public static let defaultValue: ToastAccessibilityOptions = ToastAccessibilityOptions.hidden
 }
 
 public extension EnvironmentValues {
@@ -94,14 +94,14 @@ public extension View {
         }
     }
     
-    /// Controls the identifier a `Toast` will have in the accessibility system.
+    /// Controls the identifiers the content of a `Toast` will have in the accessibility system.
     /// - Parameters:
     ///   - identifiers: The identifiers to use for the Toast and its content.
     ///   - isEnabled: If true the accessibility hidden state is applied;
     ///     otherwise the accessibility hidden state is unchanged.
     /// - Returns: A modifed view.
     func toastContentAccessibilityIdentifiers(
-        _ identifiers: ToastAccessibilityOptions.ToastContentAccessibilityIdentifiers,
+        _ identifiers: ToastAccessibilityOptions.AccessibilityIdentifiers,
         isEnabled: Bool = true
     ) -> some View {
         self.transformEnvironment(\.toastAccessibilityOptions) { value in
