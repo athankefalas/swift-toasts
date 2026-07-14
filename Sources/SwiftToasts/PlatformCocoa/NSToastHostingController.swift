@@ -66,6 +66,7 @@ final class NSToastHostingController: NSViewController {
         
         addChild(hostingController)
         view.addSubview(hostingController.view, positioned: .above, relativeTo: nil)
+        hostingController.view.identifier = NSUserInterfaceItemIdentifier(SwiftToastsConfiguration.current.toastRootViewTag.hashValue.description)
         hostingController.view.wantsLayer = true
         hostingController.view.layerContentsRedrawPolicy = .onSetNeedsDisplay
         hostingController.view.layer?.backgroundColor = .clear

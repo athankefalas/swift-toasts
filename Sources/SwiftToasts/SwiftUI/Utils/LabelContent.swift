@@ -11,11 +11,6 @@ public struct LabelContent: ExpressibleByStringLiteral, Sendable {
     internal let text: Text
     internal let string: String
     
-    public init(_ text: Text) {
-        self.text = text
-        self.string = ""
-    }
-    
     public init(stringLiteral value: String) {
         self.text = Text(LocalizedStringKey(value))
         self.string = value

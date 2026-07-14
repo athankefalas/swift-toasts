@@ -35,8 +35,8 @@ struct StyledViewBody<ToastBackground: View>: View {
     @Environment(\.toastAccessibilityOptions)
     private var toastAccessibilityOptions
     
-//    @AccessibilityFocusState
-//    private var isAccessibilityElementFocused: Binding<Bool>
+    @State
+    private var isAccessibilityFocused: Bool = false
     
     @State
     private var isHovering = false
@@ -120,6 +120,7 @@ struct StyledViewBody<ToastBackground: View>: View {
 #endif
             .animation(.default, value: isHovering)
             .accessibilityElement(children: .contain)
+            .fallbackAccessibilitySortPriority(.greatestFiniteMagnitude)
             .fallbackAccessibilityAddTraits(toastAccessibilityOptions.accessibilityTraits)
             .fallbackAccessibilityIdentifier(toastAccessibilityOptions.accessibilityIdentifier)
             .accessibilityDismissAction(named: toastAccessibilityOptions.accessibilityDismissActionName) {
@@ -129,7 +130,7 @@ struct StyledViewBody<ToastBackground: View>: View {
             .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityHidden)
             .onAppear {
                 if toastAccessibilityOptions.accessibilityManageFocus {
-                    // Gain Focus
+                    isAccessibilityFocused = true
                 }
                 
                 guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
@@ -138,12 +139,12 @@ struct StyledViewBody<ToastBackground: View>: View {
                 
                 Task { @MainActor in
                     try? await Task.sleep(duration: .seconds(0.3))
-                    AccessibilityAnnouncement.announcement(appearedAnnouncementName.string).post()
+                    FallbackAccessibilityNotification.Announcement.post(appearedAnnouncementName.string)
                 }
             }
             .onDisappear {
                 if toastAccessibilityOptions.accessibilityManageFocus {
-                    // Lose Focus
+                    isAccessibilityFocused = false
                 }
                 
                 guard let disappearedAnnouncementName = toastAccessibilityOptions.accessibilityOnDisappearAnnouncement else {
@@ -152,7 +153,7 @@ struct StyledViewBody<ToastBackground: View>: View {
                 
                 Task { @MainActor in
                     try? await Task.sleep(duration: .seconds(0.3))
-                    AccessibilityAnnouncement.announcement(disappearedAnnouncementName.string).post()
+                    FallbackAccessibilityNotification.Announcement.post(disappearedAnnouncementName.string)
                 }
             }
     }
@@ -169,82 +170,56 @@ private extension View {
     }
 }
 
-#if canImport(UIKit) && !os(watchOS)
-import UIKit
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: String) {
-    UIAccessibility.post(notification: .announcement, argument: string)
-}
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
-    UIAccessibility.post(notification: .announcement, argument: string)
-}
-
-
-@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
-@MainActor
-func platformAccessibilityAnnouncement(_ string: AttributedString) {
-    UIAccessibility.post(notification: .announcement, argument: string)
-}
-
-#elseif canImport(AppKit)
-import AppKit
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: String) {
-    NSAccessibility.post(element: string, notification: .announcementRequested)
-}
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: NSAttributedString) {
-    NSAccessibility.post(element: string, notification: .announcementRequested)
-}
-
-@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
-@MainActor
-func platformAccessibilityAnnouncement(_ string: AttributedString) {
-    NSAccessibility.post(element: string, notification: .announcementRequested)
-}
-
-#else
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: String) {}
-
-@MainActor
-func platformAccessibilityAnnouncement(_ string: NSAttributedString) {}
-
-
-@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
-@MainActor
-func platformAccessibilityAnnouncement(_ string: AttributedString) {}
-
-#endif
-
-nonisolated struct AccessibilityAnnouncement {
-    private let _action: @MainActor () -> Void
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+struct AccessibilityFocusModifier: ViewModifier {
+    @Binding
+    private var isFocused: Bool
     
-    private init(
-        action: @escaping @MainActor () -> Void
-    ) {
-        self._action = action
+    @AccessibilityFocusState
+    private var isAccessibilityFocused: Bool
+    
+    init(isFocused: Binding<Bool>) {
+        self._isFocused = isFocused
     }
     
-    @MainActor
-    func callAsFunction() {
-        _action()
+    func body(content: Content) -> some View {
+        content.accessibilityFocused($isAccessibilityFocused)
+            .onChange(of: isAccessibilityFocused) { isAccessibilityFocused in
+                isFocused = isAccessibilityFocused
+            }
+            .onChange(of: isFocused) { isFocused in
+                isAccessibilityFocused = isFocused
+            }
+            .onAppear {
+                isAccessibilityFocused = isFocused
+            }
+    }
+}
+
+struct FallbackAccessibilityFocusModifier: ViewModifier {
+    @Binding
+    private var isFocused: Bool
+    
+    init(isFocused: Binding<Bool>) {
+        self._isFocused = isFocused
     }
     
-    @MainActor
-    func post() {
-        _action()
+    func body(content: Content) -> some View {
+        content.onAppear {
+            guard isFocused else { return }
+            FallbackAccessibilityNotification.LayoutChanged.post(.elementWithTag(0))
+        }
     }
+}
+
+extension View {
     
-    static func announcement(_ string: String) -> Self {
-        AccessibilityAnnouncement {
-            platformAccessibilityAnnouncement(string)
+    @ViewBuilder
+    func fallbackAccessibilityFocused(_ isFocused: Binding<Bool>) -> some View {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+            self.modifier(AccessibilityFocusModifier(isFocused: isFocused))
+        } else {
+            self.modifier(FallbackAccessibilityFocusModifier(isFocused: isFocused))
         }
     }
 }

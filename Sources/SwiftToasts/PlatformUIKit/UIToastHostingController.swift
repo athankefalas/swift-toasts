@@ -97,6 +97,7 @@ final class UIToastHostingController: UIViewController {
         
         addChild(hostingController)
         view.addSubview(hostingController.view)
+        hostingController.view.tag = SwiftToastsConfiguration.current.toastRootViewTag.hashValue
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         makeLayoutConstraints()

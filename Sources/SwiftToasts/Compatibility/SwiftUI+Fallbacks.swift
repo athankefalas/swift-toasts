@@ -40,6 +40,14 @@ extension View {
             self.accessibility(label: label)
         }
     }
+    
+    func fallbackAccessibilitySortPriority(_ priority: Double) -> some View {
+        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+            self.accessibilitySortPriority(priority)
+        } else {
+            self.accessibility(sortPriority: priority)
+        }
+    }
 }
 
 extension Font {
