@@ -65,9 +65,9 @@ final class NSTransientFloatingWindow: NSPanel {
         
         NotificationCenter.default
             .publisher(for: NSWindow.didBecomeKeyNotification)
-            .sink { [weak self] _ in
-                
-                guard self?.isShown == true else {
+            .compactMap({ $0.object as? NSWindow })
+            .sink { [weak parent, weak self] window in
+                guard window === parent, self?.isShown == true else {
                     return
                 }
                 
@@ -119,10 +119,8 @@ final class NSTransientFloatingWindow: NSPanel {
         
         NotificationCenter.default
             .publisher(for: NSApplication.willResignActiveNotification)
-            .compactMap({ $0.object as? NSWindow })
-            .sink { [weak parent, weak self] window in
-                
-                guard window === parent, self?.isShown == true else {
+            .sink { [weak self] _ in
+                guard self?.isShown == true else {
                     return
                 }
                 
