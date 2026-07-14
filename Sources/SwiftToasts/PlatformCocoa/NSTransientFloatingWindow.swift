@@ -144,6 +144,7 @@ final class NSTransientFloatingWindow: NSPanel {
         presentingParentWindow.addChildWindow(self, ordered: .above)
         
         self.isShown = true
+        self.makeKey()
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
     }
@@ -155,6 +156,7 @@ final class NSTransientFloatingWindow: NSPanel {
         
         parent?.removeChildWindow(self)
         self.orderOut(nil)
+        self.resignKey()
         self.isShown = false
     }
 }
