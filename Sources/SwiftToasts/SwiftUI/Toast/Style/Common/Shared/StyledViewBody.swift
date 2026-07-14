@@ -130,30 +130,32 @@ struct StyledViewBody<ToastBackground: View>: View {
             .fallbackAccessibilityLabel(toastAccessibilityOptions.accessibilityLabel.flatMap({ Text($0) }) ?? Text(""))
             .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityHidden)
             .onAppear {
-                if toastAccessibilityOptions.accessibilityManageFocus {
-                    isAccessibilityFocused = true
-                }
-                
-                guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
-                    return
-                }
-                
                 Task { @MainActor in
                     try? await Task.sleep(duration: .seconds(0.3))
+                    
+                    if toastAccessibilityOptions.accessibilityManageFocus {
+                        isAccessibilityFocused = true
+                    }
+                    
+                    guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
+                        return
+                    }
+                    
                     FallbackAccessibilityNotification.Announcement.post(appearedAnnouncementName.string)
                 }
             }
             .onDisappear {
-                if toastAccessibilityOptions.accessibilityManageFocus {
-                    isAccessibilityFocused = false
-                }
-                
-                guard let disappearedAnnouncementName = toastAccessibilityOptions.accessibilityOnDisappearAnnouncement else {
-                    return
-                }
-                
                 Task { @MainActor in
                     try? await Task.sleep(duration: .seconds(0.3))
+                    
+                    if toastAccessibilityOptions.accessibilityManageFocus {
+                        isAccessibilityFocused = false
+                    }
+                    
+                    guard let disappearedAnnouncementName = toastAccessibilityOptions.accessibilityOnDisappearAnnouncement else {
+                        return
+                    }
+                    
                     FallbackAccessibilityNotification.Announcement.post(disappearedAnnouncementName.string)
                 }
             }
