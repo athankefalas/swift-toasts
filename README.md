@@ -268,33 +268,17 @@ ToastButton("Submit") { schedule in
 
 ```
 
-### Toast Presenter Reader
+### Native Frameworks
 
-A `Toast` can also be manually scheduled from anywhere with a `ToastPresenterReader` view and using the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts as well as to cancel all scheduled toasts that are still awaiting presentation.
+In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used.
 
-``` Swift
-ToastPresenterReader { toastPresenterProxy in
-    VStack {
-        Spacer()
-        
-        Button("Schedule Toast") {
-            toastPresenterProxy.schedulePresentation(
-                toast: Toast("Hello Toast!"),
-                toastAlignment: .top,
-                toastEnvironmentValues: ToastEnvironmentValues(
-                    toastTransition: .defaultTransition
-                )
-            )
-        }
-        
-        Button("Cancel Scheduled Toasts") {
-            toastPresenterProxy.cancelScheduledPresentations()
-        }
-        
-        Spacer()
-    }
-}
-```
+#### UIKit
+
+TODO
+
+#### AppKit
+
+TODO
 
 ## Configuring a Toast Presentation
 
