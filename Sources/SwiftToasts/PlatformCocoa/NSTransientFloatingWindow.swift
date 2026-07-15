@@ -164,16 +164,16 @@ final class NSTransientFloatingWindow: NSPanel {
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
         
-//        NSApplication.shared.windows
-//            .filter({ $0.isKeyWindow })
-//            .forEach { window in
-//                print("## Class: \(type(of: window))")
-//            }
-//        
-//        guard let keyWindow = NSApp.keyWindow else {
-//            return
-//        }
-//        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
+        NSApplication.shared.windows
+            .filter({ $0.isKeyWindow })
+            .forEach { window in
+                print("## Class: \(type(of: window))")
+            }
+        
+        guard let keyWindow = NSApp.keyWindow else {
+            return
+        }
+        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
     }
     
     final func hide() {

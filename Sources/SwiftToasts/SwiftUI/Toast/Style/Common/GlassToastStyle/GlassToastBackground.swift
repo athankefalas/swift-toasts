@@ -29,7 +29,7 @@ struct GlassToastBackground: View {
         var glass = Glass.regular
         
         if useTintedGlass {
-            glass = glass.tint(accentColor.opacity(0.91))
+            glass = glass.tint(accentColor.opacity(0.1))
         }
         
         if useInteractiveGlass {
