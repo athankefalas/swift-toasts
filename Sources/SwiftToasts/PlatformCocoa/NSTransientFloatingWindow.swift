@@ -160,7 +160,11 @@ final class NSTransientFloatingWindow: NSPanel {
         
         
 //        self.becomeKey() // Workaround for visual effects that appear dimmed.
-        NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: self)
+//        NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: self)
+//        self?.contentView
+        
+        self.becomeKey()
+        self.resignKey()
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
         
