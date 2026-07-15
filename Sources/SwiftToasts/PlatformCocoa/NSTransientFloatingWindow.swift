@@ -167,6 +167,8 @@ final class NSTransientFloatingWindow: NSPanel {
             .forEach { window in
                 print("## Class: \(type(of: window))")
             }
+        
+        print("## Real key window: \(type(of: NSApp.keyWindow)) - \(NSApp.keyWindow as Any)")
     }
     
     final func hide() {
