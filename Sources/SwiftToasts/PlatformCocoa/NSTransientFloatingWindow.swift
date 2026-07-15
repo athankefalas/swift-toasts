@@ -34,7 +34,7 @@ final class NSTransientFloatingWindow: NSPanel {
     }
     
     private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
-        return false
+        return true
     }
     
     convenience init(
