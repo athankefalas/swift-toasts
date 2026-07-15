@@ -23,15 +23,15 @@ final class NSTransientFloatingWindow: NSPanel {
         false
     }
     
-    override var isKeyWindow: Bool {
-        get {
-            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
-                return true
-            }
-            
-            return super.isKeyWindow
-        }
-    }
+//    override var isKeyWindow: Bool {
+//        get {
+//            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
+//                return true
+//            }
+//            
+//            return super.isKeyWindow
+//        }
+//    }
     
     private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
         return true
