@@ -34,7 +34,10 @@ public struct MaterialToastStyle: ToastStyle {
     }
     
     public func makeBody(configuration: Configuration) -> some View {
-        StyledViewBody(configuration: configuration) { properties in
+        StyledViewBody(
+            cornerRadius: 12,
+            configuration: configuration
+        ) { properties in
             MaterialToastBackground(
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,

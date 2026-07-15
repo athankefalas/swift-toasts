@@ -41,13 +41,16 @@ struct StyledViewBody<ToastBackground: View>: View {
     @State
     private var isHovering = false
     
+    let cornerRadius: CGFloat
     let configuration: Configuration
     let toastBackground: (ToastBackgroundProperties) -> ToastBackground
     
     init(
+        cornerRadius: CGFloat,
         configuration: Configuration,
         toastBackground: @escaping (ToastBackgroundProperties) -> ToastBackground
     ) {
+        self.cornerRadius = cornerRadius
         self.configuration = configuration
         self.toastBackground = toastBackground
     }
@@ -89,8 +92,8 @@ struct StyledViewBody<ToastBackground: View>: View {
                 accentColor: accentColor
             )
             .foregroundColor(.primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
+            .padding(.horizontal, cornerRadius)
+            .padding(.vertical, cornerRadius)
             .frame(
                 minWidth: platformIdiom == .watch ? nil : 180,
                 maxWidth: platformIdiom == .watch ? .infinity : nil,
@@ -100,7 +103,7 @@ struct StyledViewBody<ToastBackground: View>: View {
                 toastBackground(
                     ToastBackgroundProperties(
                         accentColor: accentColor,
-                        cornerRadius: 12,
+                        cornerRadius: cornerRadius,
                         borderWidth: borderWidth,
                         isHovering: isHovering
                     )

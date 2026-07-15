@@ -17,7 +17,10 @@ public struct PlainToastStyle: ToastStyle {
     }
     
     public func makeBody(configuration: Configuration) -> some View {
-        StyledViewBody(configuration: configuration) { properties in
+        StyledViewBody(
+            cornerRadius: 8,
+            configuration: configuration
+        ) { properties in
             PlainToastBackground(
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,
