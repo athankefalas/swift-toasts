@@ -34,7 +34,7 @@ final class NSTransientFloatingWindow: NSPanel {
     }
     
     private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
-        return true
+        return false
     }
     
     convenience init(
@@ -166,18 +166,14 @@ final class NSTransientFloatingWindow: NSPanel {
         if supportsKeyWindowHackToForceNonDimmedMaterials {
             self.becomeKey() // Workaround for visual effects that appear dimmed.
         }
-        self.contentView?.needsLayout = true
         
-        NSApplication.shared.windows
-            .filter({ $0.isKeyWindow })
-            .forEach { window in
-                print("## Class: \(type(of: window))")
-            }
-        
-        guard let keyWindow = NSApp.keyWindow else {
+        viewsNeedDisplay = true
+        guard let contentView else {
             return
         }
-        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
+        
+        contentView.needsLayout = true
+        contentView.needsDisplay = true
     }
     
     final func hide() {
