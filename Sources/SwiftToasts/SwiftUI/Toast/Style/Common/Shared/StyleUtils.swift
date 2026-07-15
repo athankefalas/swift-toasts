@@ -18,7 +18,8 @@ import Cocoa
 extension View {
     
     func applyToastControlStyles(
-        accentColor: Color
+        accentColor: Color,
+        isCenterAligned: Bool
     ) -> some View {
         self.applyToastLabelStyle(
             accentColor: accentColor
@@ -27,7 +28,7 @@ extension View {
         .applyToastButtonStyle(
             accentColor: .accentColor
         )
-        .font(.fallbackTitle3)
+        .font(isCenterAligned ? .fallbackTitle3 : .headline)
     }
     
     @ViewBuilder

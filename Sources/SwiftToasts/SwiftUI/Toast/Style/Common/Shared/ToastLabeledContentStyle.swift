@@ -35,7 +35,7 @@ struct ToastLabeledContentStyle: LabeledContentStyle {
             ) {
                 configuration.label
                     .foregroundStyle(.primary)
-                    .font(isCenterAligned ? .title : .title3)
+                    .font(isCenterAligned ? .title3 : .headline)
                 
                 configuration.content
                     .foregroundStyle(.secondary)

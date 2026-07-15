@@ -858,6 +858,7 @@ public extension Toast {
                 }
             }
         }
+        .toastStyle(.plain)
         .toastStyle(.material)
         .glassToastStyle(orElse: .plain)
     }

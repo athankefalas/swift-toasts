@@ -54,7 +54,7 @@ struct ToastLabelStyle: LabelStyle {
                     
                     configuration.title
                         .foregroundColor(.primary)
-                        .font(.title)
+                        .font(.headline)
                         .accessibilityElement(children: .contain)
                 }
                 .padding(12)

@@ -55,6 +55,10 @@ struct StyledViewBody<ToastBackground: View>: View {
         self.toastBackground = toastBackground
     }
     
+    private var inset: CGFloat {
+        max(12, round(cornerRadius * 0.8))
+    }
+    
     private var accentColor: Color {
         switch configuration.role {
         case .plain:
@@ -89,11 +93,12 @@ struct StyledViewBody<ToastBackground: View>: View {
     var body: some View {
         configuration.content
             .applyToastControlStyles(
-                accentColor: accentColor
+                accentColor: accentColor,
+                isCenterAligned: isCenterAligned
             )
             .foregroundColor(.primary)
-            .padding(.horizontal, cornerRadius)
-            .padding(.vertical, cornerRadius)
+            .padding(.horizontal, inset)
+            .padding(.vertical, inset)
             .frame(
                 minWidth: platformIdiom == .watch ? nil : 180,
                 maxWidth: platformIdiom == .watch ? .infinity : nil,
