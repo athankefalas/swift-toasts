@@ -58,7 +58,7 @@ final class NSTransientFloatingWindow: NSPanel {
         self.isFloatingPanel = true
         self.styleMask = [.borderless, .nonactivatingPanel, .hudWindow]
         self.isExcludedFromWindowsMenu = true
-        self.becomesKeyOnlyIfNeeded = true
+//        self.becomesKeyOnlyIfNeeded = true
         self.isOpaque = false
         self.hasShadow = false
         self.backgroundColor = .clear
@@ -174,6 +174,16 @@ final class NSTransientFloatingWindow: NSPanel {
         
         contentView.needsLayout = true
         contentView.needsDisplay = true
+        
+        NSApplication.shared.windows
+            .filter({ $0.isKeyWindow })
+            .forEach { window in
+                print("## \(type(of: window)) \(window.title) \(window)")
+            }
+        
+        if let keyWindow = NSApp.keyWindow {
+            print("## \(type(of: keyWindow)) \(keyWindow.title) \(keyWindow)")
+        }
     }
     
     final func hide() {
