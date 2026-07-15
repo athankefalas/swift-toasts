@@ -25,12 +25,16 @@ final class NSTransientFloatingWindow: NSPanel {
     
     override var isKeyWindow: Bool {
         get {
-            if isShown {
+            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
                 return true
             }
             
             return super.isKeyWindow
         }
+    }
+    
+    private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
+        return true
     }
     
     convenience init(
@@ -158,14 +162,10 @@ final class NSTransientFloatingWindow: NSPanel {
         let presentingParentWindow = parent.attachedSheet ?? parent
         presentingParentWindow.addChildWindow(self, ordered: .above)
         
-        
-//        self.becomeKey() // Workaround for visual effects that appear dimmed.
-//        NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: self)
-//        self?.contentView
-        
-        self.becomeKey()
-        self.resignKey()
         self.orderFrontRegardless()
+        if supportsKeyWindowHackToForceNonDimmedMaterials {
+            self.becomeKey() // Workaround for visual effects that appear dimmed.
+        }
         self.contentView?.needsLayout = true
         
         NSApplication.shared.windows
@@ -185,8 +185,11 @@ final class NSTransientFloatingWindow: NSPanel {
             return
         }
         
-        parent?.removeChildWindow(self)
+        if supportsKeyWindowHackToForceNonDimmedMaterials {
+            self.resignKey()
+        }
         self.orderOut(nil)
+        parent?.removeChildWindow(self)
         self.isShown = false
     }
 }
