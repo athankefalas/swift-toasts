@@ -154,24 +154,26 @@ final class NSTransientFloatingWindow: NSPanel {
             return
         }
         
+        self.isShown = true
         let presentingParentWindow = parent.attachedSheet ?? parent
         presentingParentWindow.addChildWindow(self, ordered: .above)
         
-        self.isShown = true
-        self.becomeKey() // Workaround for visual effects that appear dimmed.
+        
+//        self.becomeKey() // Workaround for visual effects that appear dimmed.
+//        NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: self)
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
         
-        NSApplication.shared.windows
-            .filter({ $0.isKeyWindow })
-            .forEach { window in
-                print("## Class: \(type(of: window))")
-            }
-        
-        guard let keyWindow = NSApp.keyWindow else {
-            return
-        }
-        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
+//        NSApplication.shared.windows
+//            .filter({ $0.isKeyWindow })
+//            .forEach { window in
+//                print("## Class: \(type(of: window))")
+//            }
+//        
+//        guard let keyWindow = NSApp.keyWindow else {
+//            return
+//        }
+//        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
     }
     
     final func hide() {
@@ -179,9 +181,9 @@ final class NSTransientFloatingWindow: NSPanel {
             return
         }
         
+        self.isShown = false
         parent?.removeChildWindow(self)
         self.orderOut(nil)
-        self.isShown = false
     }
 }
 
