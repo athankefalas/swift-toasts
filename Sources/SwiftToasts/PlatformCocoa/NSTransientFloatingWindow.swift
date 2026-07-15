@@ -52,7 +52,7 @@ final class NSTransientFloatingWindow: NSPanel {
     private final func postInit(parent: NSWindow) {
         self.level = .floating
         self.isFloatingPanel = true
-        self.styleMask = [.borderless, .nonactivatingPanel]
+        self.styleMask = [.borderless, .nonactivatingPanel, .hudWindow]
         self.isExcludedFromWindowsMenu = true
         self.becomesKeyOnlyIfNeeded = true
         self.isOpaque = false
@@ -161,6 +161,12 @@ final class NSTransientFloatingWindow: NSPanel {
         self.becomeKey() // Workaround for visual effects that appear dimmed.
         self.orderFrontRegardless()
         self.contentView?.needsLayout = true
+        
+        NSApplication.shared.windows
+            .filter({ $0.isKeyWindow })
+            .forEach { window in
+                print("## Class: \(type(of: window))")
+            }
     }
     
     final func hide() {
