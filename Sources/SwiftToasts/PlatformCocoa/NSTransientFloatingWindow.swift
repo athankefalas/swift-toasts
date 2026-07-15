@@ -34,7 +34,7 @@ final class NSTransientFloatingWindow: NSPanel {
 //    }
     
     private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
-        return false
+        return true
     }
     
     convenience init(
@@ -165,10 +165,6 @@ final class NSTransientFloatingWindow: NSPanel {
         self.orderFrontRegardless()
         if supportsKeyWindowHackToForceNonDimmedMaterials {
             self.becomeKey() // Workaround for visual effects that appear dimmed.
-        }
-        
-        defer {
-            NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: self)
         }
         
         viewsNeedDisplay = true
