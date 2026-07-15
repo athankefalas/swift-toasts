@@ -168,7 +168,10 @@ final class NSTransientFloatingWindow: NSPanel {
                 print("## Class: \(type(of: window))")
             }
         
-        print("## Real key window: \(type(of: NSApp.keyWindow)) - \(NSApp.keyWindow as Any)")
+        guard let keyWindow = NSApp.keyWindow else {
+            return
+        }
+        print("## Real key window: \(type(of: keyWindow)) - \(keyWindow)")
     }
     
     final func hide() {
