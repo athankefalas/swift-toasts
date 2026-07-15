@@ -23,18 +23,22 @@ final class NSTransientFloatingWindow: NSPanel {
         false
     }
     
-//    override var isKeyWindow: Bool {
-//        get {
-//            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
-//                return true
-//            }
-//            
-//            return super.isKeyWindow
-//        }
-//    }
+    override var isKeyWindow: Bool {
+        get {
+            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
+                return true
+            }
+            
+            return super.isKeyWindow
+        }
+    }
     
     private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
-        return true
+        if #available(macOS 26.0, *) {
+            return true
+        }
+        
+        return false
     }
     
     convenience init(
@@ -58,7 +62,6 @@ final class NSTransientFloatingWindow: NSPanel {
         self.isFloatingPanel = true
         self.styleMask = [.borderless, .nonactivatingPanel, .hudWindow]
         self.isExcludedFromWindowsMenu = true
-//        self.becomesKeyOnlyIfNeeded = true
         self.isOpaque = false
         self.hasShadow = false
         self.backgroundColor = .clear
@@ -173,17 +176,6 @@ final class NSTransientFloatingWindow: NSPanel {
         }
         
         contentView.needsLayout = true
-        contentView.needsDisplay = true
-        
-        NSApplication.shared.windows
-            .filter({ $0.isKeyWindow })
-            .forEach { window in
-                print("## \(type(of: window)) \(window.title) \(window)")
-            }
-        
-        if let keyWindow = NSApp.keyWindow {
-            print("## \(type(of: keyWindow)) \(keyWindow.title) \(keyWindow)")
-        }
     }
     
     final func hide() {
@@ -198,6 +190,20 @@ final class NSTransientFloatingWindow: NSPanel {
         parent?.removeChildWindow(self)
         self.isShown = false
     }
+    
+#if ENABLE_PREVIEWS
+    private func debugPrintKeyWindows() {
+        NSApplication.shared.windows
+            .filter({ $0.isKeyWindow })
+            .forEach { window in
+                print("## \(type(of: window)) \(window.title) \(window)")
+            }
+        
+        if let keyWindow = NSApp.keyWindow {
+            print("## \(type(of: keyWindow)) \(keyWindow.title) \(keyWindow)")
+        }
+    }
+#endif
 }
 
 #endif
