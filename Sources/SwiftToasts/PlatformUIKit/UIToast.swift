@@ -24,24 +24,11 @@ public class UIToast: NSObject {
         public var toastAlignment: ToastAlignment
         public var toastTransition: ToastTransition
         public var toastInteractiveDismissEnabled: Bool
+        public var toastBackgroundInteractionEnabled: Bool
         public var toastAccessibilityOptions: ToastAccessibilityOptions
         
-        public init(
-            toastStyle: any ToastStyle = .automatic,
-            toastAlignment: ToastAlignment = .defaultAlignment,
-            toastTransition: ToastTransition = .defaultTransition,
-            toastInteractiveDismissEnabled: Bool = true,
-            toastAccessibilityOptions: ToastAccessibilityOptions = .hidden
-        ) {
-            self.toastStyle = toastStyle
-            self.toastAlignment = toastAlignment
-            self.toastTransition = toastTransition
-            self.toastInteractiveDismissEnabled = toastInteractiveDismissEnabled
-            self.toastAccessibilityOptions = toastAccessibilityOptions
-        }
-    }
-    
-    public struct ContentConfiguration {
+        public var role: ToastRole
+        public var duration: ToastDuration
         public var icon: UIImage?
         public var title: String?
         public var valueSubtitle: String?
@@ -50,10 +37,25 @@ public class UIToast: NSObject {
         public var backgroundView: UIView?
         
         public init(
-            icon: UIImage? = nil,
+            icon: UIImage?,
             title: String,
-            valueSubtitle: String? = nil
+            valueSubtitle: String?,
+            role: ToastRole,
+            duration: ToastDuration
         ) {
+            // Options
+            self.toastStyle = .automatic
+            self.toastAlignment = .defaultAlignment
+            self.toastTransition = .defaultTransition
+            self.toastInteractiveDismissEnabled = true
+            self.toastBackgroundInteractionEnabled = true
+            self.toastAccessibilityOptions = .hidden
+            
+            // Attributes
+            self.role = role
+            self.duration = duration
+            
+            // Content
             self.icon = icon
             self.title = title
             self.valueSubtitle = valueSubtitle
@@ -61,27 +63,58 @@ public class UIToast: NSObject {
         
         public init(
             contentView: UIView,
-            backgroundView: UIView? = nil
+            backgroundView: UIView?,
+            role: ToastRole,
+            duration: ToastDuration
         ) {
+            // Options
+            self.toastStyle = .automatic
+            self.toastAlignment = .defaultAlignment
+            self.toastTransition = .defaultTransition
+            self.toastInteractiveDismissEnabled = true
+            self.toastBackgroundInteractionEnabled = true
+            self.toastAccessibilityOptions = .hidden
+            
+            // Attributes
+            self.role = role
+            self.duration = duration
+            
+            // Content
             self.contentView = contentView
             self.backgroundView = backgroundView
         }
     }
     
-    public var role: ToastRole = .defaultRole
-    public var duration: ToastDuration = .defaultDuration
     public var configuration: Configuration
-    public var contentConfiguration: ContentConfiguration
-    
     public fileprivate(set) var isPresented: Bool = false
     fileprivate var presentationCanceller: ToastPresentationCanceller
     
+    public var role: ToastRole {
+        get {
+            configuration.role
+        }
+        
+        set {
+            configuration.role = newValue
+        }
+    }
+    
+    public var duration: ToastDuration {
+        get {
+            configuration.duration
+        }
+        
+        set {
+            configuration.duration = newValue
+        }
+    }
+    
     public var inferredContentType: InferredContentType {
-        if contentConfiguration.contentView != nil {
+        if configuration.contentView != nil {
             return .customContent
         }
         
-        if contentConfiguration.title != nil {
+        if configuration.title != nil {
             return .standardContent
         }
         
@@ -92,25 +125,24 @@ public class UIToast: NSObject {
         inferredContentType != .invalid
     }
     
-    public init(
-        configuration: Configuration,
-        contentConfiguration: ContentConfiguration
-    ) {
+    public init(configuration: Configuration) {
         self.configuration = configuration
-        self.contentConfiguration = contentConfiguration
         self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
         icon: UIImage? = nil,
         title: String,
-        valueSubtitle: String? = nil
+        valueSubtitle: String? = nil,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
     ) {
-        self.configuration = Configuration()
-        self.contentConfiguration = ContentConfiguration(
+        self.configuration = Configuration(
             icon: icon,
             title: title,
-            valueSubtitle: valueSubtitle
+            valueSubtitle: valueSubtitle,
+            role: role,
+            duration: duration
         )
         
         self.presentationCanceller = ToastPresentationCanceller()
@@ -118,12 +150,15 @@ public class UIToast: NSObject {
     
     public init(
         contentView: UIView,
-        backgroundView: UIView? = nil
+        backgroundView: UIView? = nil,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
     ) {
-        self.configuration = Configuration()
-        self.contentConfiguration = ContentConfiguration(
+        self.configuration = Configuration(
             contentView: contentView,
-            backgroundView: backgroundView
+            backgroundView: backgroundView,
+            role: role,
+            duration: duration
         )
         
         self.presentationCanceller = ToastPresentationCanceller()
@@ -156,6 +191,7 @@ struct UIKitBridgedToastStyle: ToastStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(
+            insetContent: false,
             cornerRadius: 0,
             configuration: configuration
         ) { props in
@@ -181,8 +217,9 @@ public extension UIViewController {
             return
         }
         
-        var toastStyle: AnyToastStyle = toast.configuration.toastStyle.erased()
-        if let backgroundView = toast.contentConfiguration.backgroundView {
+        let configuration = toast.configuration
+        var toastStyle: AnyToastStyle = configuration.toastStyle.erased()
+        if let backgroundView = configuration.backgroundView {
             toastStyle = UIKitBridgedToastStyle(
                 inheritedStyle: toastStyle,
                 backgroundView: backgroundView
@@ -191,16 +228,13 @@ public extension UIViewController {
         
         presenter.schedule(
             presentation: ToastPresentation(
-                toast: Toast(
-                    role: toast.role,
-                    duration: toast.duration,
-                    contentConfiguration: toast.contentConfiguration
-                ),
+                toast: Toast(contentConfiguration: configuration),
                 toastAlignment: toast.configuration.toastAlignment,
                 toastEnvironmentValues: ToastEnvironmentValues(
                     toastStyle: toastStyle,
                     toastTransition: toast.configuration.toastTransition,
                     toastInteractiveDismissEnabled: toast.configuration.toastInteractiveDismissEnabled,
+                    toastBackgroundInteractionEnabled: toast.configuration.toastBackgroundInteractionEnabled,
                     toastAccessibilityOptions: toast.configuration.toastAccessibilityOptions
                 ),
                 presentationCanceller: toast.presentationCanceller,
@@ -221,28 +255,24 @@ public extension UIViewController {
 
 extension Toast {
     
-    init(
-        role: ToastRole,
-        duration: ToastDuration,
-        contentConfiguration: UIToast.ContentConfiguration
-    ) {
-        if let contentView = contentConfiguration.contentView {
+    init(contentConfiguration configuration: UIToast.Configuration) {
+        if let contentView = configuration.contentView {
             self = .init(
-                role: role,
-                duration: duration
+                role: configuration.role,
+                duration: configuration.duration
             ) {
                 UIKitBridgedView(contentView)
             }
-        } else if let title = contentConfiguration.title {
+        } else if let title = configuration.title {
             self = .init(
-                icon: contentConfiguration.icon.flatMap({ Image(uiImage: $0) }),
+                icon: configuration.icon.flatMap({ Image(uiImage: $0) }),
                 title: Text(title),
-                valueSubtitle: contentConfiguration.valueSubtitle.flatMap({ Text($0) }),
-                role: role,
-                duration: duration
+                valueSubtitle: configuration.valueSubtitle.flatMap({ Text($0) }),
+                role: configuration.role,
+                duration: configuration.duration
             )
         } else {
-            self = .init("", role: role, duration: duration)
+            self = .init("", role: configuration.role, duration: configuration.duration)
         }
     }
 }
@@ -470,7 +500,7 @@ class UIPreviewViewController: UIViewController,
         toast.role = .informational
         toast.duration = .indefinite
         
-        toast.contentConfiguration.icon = UIImage(systemName: "star.fill")?
+        toast.configuration.icon = UIImage(systemName: "star.fill")?
             .withRenderingMode(.alwaysTemplate)
             .withTintColor(.red)
         
@@ -489,7 +519,7 @@ class UIPreviewViewController: UIViewController,
         let toast = UIToast(title: "Hello, World!")
         toast.role = .informational
         toast.duration = .indefinite
-        toast.contentConfiguration.valueSubtitle = "Some subtitle"
+        toast.configuration.valueSubtitle = "Some subtitle"
         
         schedulePresentation(of: toast) {
             print("UIToast Shown")
@@ -510,8 +540,8 @@ class UIPreviewViewController: UIViewController,
         let icon = UIImage(systemName: "star.fill")?
             .withRenderingMode(.alwaysTemplate)
             .withTintColor(.red)
-        toast.contentConfiguration.icon = icon
-        toast.contentConfiguration.valueSubtitle = "Some subtitle"
+        toast.configuration.icon = icon
+        toast.configuration.valueSubtitle = "Some subtitle"
         
         schedulePresentation(of: toast) {
             print("UIToast Shown")
@@ -665,6 +695,7 @@ extension UIPreviewViewController {
         toast.configuration.toastAlignment = .center
         toast.configuration.toastTransition = .opacity
         toast.configuration.toastInteractiveDismissEnabled = false
+        toast.configuration.toastBackgroundInteractionEnabled = false
         
         schedulePresentation(of: toast) {
             self.loadingTask = Task {

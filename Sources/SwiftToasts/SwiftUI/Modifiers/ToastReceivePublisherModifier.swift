@@ -115,6 +115,9 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
     @Environment(\.toastAccessibilityOptions)
     private var toastAccessibilityOptions
     
@@ -173,6 +176,7 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
                         toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
                         toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     presentationCanceller: presentationCanceller,

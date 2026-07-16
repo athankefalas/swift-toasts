@@ -27,6 +27,9 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
     @Environment(\.toastAccessibilityOptions)
     private var toastAccessibilityOptions
     
@@ -99,6 +102,7 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
                     toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                    toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
                     toastAccessibilityOptions: toastAccessibilityOptions
                 ),
                 presentationCanceller: presentationCanceller,

@@ -53,6 +53,9 @@ public struct ToastButton<Label: View>: View {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
     @Environment(\.toastAccessibilityOptions)
     private var toastAccessibilityOptions
     
@@ -116,6 +119,7 @@ public struct ToastButton<Label: View>: View {
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
                         toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
                         toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,
@@ -137,6 +141,7 @@ public struct ToastButton<Label: View>: View {
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
                         toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
                         toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,

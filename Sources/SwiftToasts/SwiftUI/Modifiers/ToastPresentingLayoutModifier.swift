@@ -162,11 +162,11 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
     }
     
     private var presenterBackgroundAllowsHitTesting: Bool {
-        guard toastPresenter.toastPresentation != nil else {
+        guard let toastPresentation = toastPresenter.toastPresentation else {
             return false
         }
         
-        let allowBackgroundInteraction = true // TODO: Read actual
+        let allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         return !allowBackgroundInteraction
     }
     
@@ -296,6 +296,7 @@ public extension View {
             } label: {
                 Text("Show Toast")
             }
+            .toastBackgroundInteractionDisabled(true)
             .toastTransition(
                 ToastTransition.scale
                     .curve(.easeInOut)

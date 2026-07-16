@@ -41,22 +41,29 @@ struct StyledViewBody<ToastBackground: View>: View {
     @State
     private var isHovering = false
     
+    let insetContent: Bool
     let cornerRadius: CGFloat
     let configuration: Configuration
     let toastBackground: (ToastBackgroundProperties) -> ToastBackground
     
     init(
+        insetContent: Bool = true,
         cornerRadius: CGFloat,
         configuration: Configuration,
         toastBackground: @escaping (ToastBackgroundProperties) -> ToastBackground
     ) {
+        self.insetContent = insetContent
         self.cornerRadius = cornerRadius
         self.configuration = configuration
         self.toastBackground = toastBackground
     }
     
     private var inset: CGFloat {
-        max(12, round(cornerRadius * 0.8))
+        guard insetContent else {
+            return 0
+        }
+        
+        return max(12, round(cornerRadius * 0.8))
     }
     
     private var accentColor: Color {

@@ -143,7 +143,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
-        allowBackgroundInteraction = true // TODO: Read actual
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
@@ -188,7 +188,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
-        allowBackgroundInteraction = true // TODO: Read actual
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation

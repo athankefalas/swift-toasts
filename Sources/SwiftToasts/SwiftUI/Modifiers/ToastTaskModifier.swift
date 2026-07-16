@@ -24,6 +24,9 @@ private struct ToastTaskModifier: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
     @Environment(\.toastAccessibilityOptions)
     private var toastAccessibilityOptions
     
@@ -50,6 +53,7 @@ private struct ToastTaskModifier: ViewModifier {
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
                         toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
                         toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,

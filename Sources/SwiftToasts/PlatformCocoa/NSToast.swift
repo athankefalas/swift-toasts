@@ -24,24 +24,11 @@ public class NSToast: NSObject {
         public var toastAlignment: ToastAlignment
         public var toastTransition: ToastTransition
         public var toastInteractiveDismissEnabled: Bool
+        public var toastBackgroundInteractionEnabled: Bool
         public var toastAccessibilityOptions: ToastAccessibilityOptions
         
-        public init(
-            toastStyle: any ToastStyle = .automatic,
-            toastAlignment: ToastAlignment = .defaultAlignment,
-            toastTransition: ToastTransition = .defaultTransition,
-            toastInteractiveDismissEnabled: Bool = true,
-            toastAccessibilityOptions: ToastAccessibilityOptions = .hidden
-        ) {
-            self.toastStyle = toastStyle
-            self.toastAlignment = toastAlignment
-            self.toastTransition = toastTransition
-            self.toastInteractiveDismissEnabled = toastInteractiveDismissEnabled
-            self.toastAccessibilityOptions = toastAccessibilityOptions
-        }
-    }
-    
-    public struct ContentConfiguration {
+        public var role: ToastRole
+        public var duration: ToastDuration
         public var icon: NSImage?
         public var title: String?
         public var valueSubtitle: String?
@@ -50,10 +37,25 @@ public class NSToast: NSObject {
         public var backgroundView: NSView?
         
         public init(
-            icon: NSImage? = nil,
+            icon: NSImage?,
             title: String,
-            valueSubtitle: String? = nil
+            valueSubtitle: String?,
+            role: ToastRole,
+            duration: ToastDuration
         ) {
+            // Options
+            self.toastStyle = .automatic
+            self.toastAlignment = .defaultAlignment
+            self.toastTransition = .defaultTransition
+            self.toastInteractiveDismissEnabled = true
+            self.toastBackgroundInteractionEnabled = true
+            self.toastAccessibilityOptions = .hidden
+            
+            // Attributes
+            self.role = role
+            self.duration = duration
+            
+            // Content
             self.icon = icon
             self.title = title
             self.valueSubtitle = valueSubtitle
@@ -61,27 +63,58 @@ public class NSToast: NSObject {
         
         public init(
             contentView: NSView,
-            backgroundView: NSView? = nil
+            backgroundView: NSView?,
+            role: ToastRole,
+            duration: ToastDuration
         ) {
+            // Options
+            self.toastStyle = .automatic
+            self.toastAlignment = .defaultAlignment
+            self.toastTransition = .defaultTransition
+            self.toastInteractiveDismissEnabled = true
+            self.toastBackgroundInteractionEnabled = true
+            self.toastAccessibilityOptions = .hidden
+            
+            // Attributes
+            self.role = role
+            self.duration = duration
+            
+            // Content
             self.contentView = contentView
             self.backgroundView = backgroundView
         }
     }
     
-    public var role: ToastRole = .defaultRole
-    public var duration: ToastDuration = .defaultDuration
     public var configuration: Configuration
-    public var contentConfiguration: ContentConfiguration
-    
     public fileprivate(set) var isPresented: Bool = false
     fileprivate var presentationCanceller: ToastPresentationCanceller
     
+    public var role: ToastRole {
+        get {
+            configuration.role
+        }
+        
+        set {
+            configuration.role = newValue
+        }
+    }
+    
+    public var duration: ToastDuration {
+        get {
+            configuration.duration
+        }
+        
+        set {
+            configuration.duration = newValue
+        }
+    }
+    
     public var inferredContentType: InferredContentType {
-        if contentConfiguration.contentView != nil {
+        if configuration.contentView != nil {
             return .customContent
         }
         
-        if contentConfiguration.title != nil {
+        if configuration.title != nil {
             return .standardContent
         }
         
@@ -92,25 +125,24 @@ public class NSToast: NSObject {
         inferredContentType != .invalid
     }
     
-    public init(
-        configuration: Configuration,
-        contentConfiguration: ContentConfiguration
-    ) {
+    public init(configuration: Configuration) {
         self.configuration = configuration
-        self.contentConfiguration = contentConfiguration
         self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
         icon: NSImage? = nil,
         title: String,
-        valueSubtitle: String? = nil
+        valueSubtitle: String? = nil,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
     ) {
-        self.configuration = Configuration()
-        self.contentConfiguration = ContentConfiguration(
+        self.configuration = Configuration(
             icon: icon,
             title: title,
-            valueSubtitle: valueSubtitle
+            valueSubtitle: valueSubtitle,
+            role: role,
+            duration: duration
         )
         
         self.presentationCanceller = ToastPresentationCanceller()
@@ -118,12 +150,15 @@ public class NSToast: NSObject {
     
     public init(
         contentView: NSView,
-        backgroundView: NSView? = nil
+        backgroundView: NSView? = nil,
+        role: ToastRole = .defaultRole,
+        duration: ToastDuration = .defaultDuration
     ) {
-        self.configuration = Configuration()
-        self.contentConfiguration = ContentConfiguration(
+        self.configuration = Configuration(
             contentView: contentView,
-            backgroundView: backgroundView
+            backgroundView: backgroundView,
+            role: role,
+            duration: duration
         )
         
         self.presentationCanceller = ToastPresentationCanceller()
@@ -138,10 +173,9 @@ public class NSToast: NSObject {
         guard presenter.isPresentationEnabled else {
             return
         }
-        
-        let toast = self
-        var toastStyle: AnyToastStyle = toast.configuration.toastStyle.erased()
-        if let backgroundView = toast.contentConfiguration.backgroundView {
+                
+        var toastStyle: AnyToastStyle = configuration.toastStyle.erased()
+        if let backgroundView = configuration.backgroundView {
             toastStyle = AppKitBridgedToastStyle(
                 inheritedStyle: toastStyle,
                 backgroundView: backgroundView
@@ -150,25 +184,22 @@ public class NSToast: NSObject {
         
         presenter.schedule(
             presentation: ToastPresentation(
-                toast: Toast(
-                    role: toast.role,
-                    duration: toast.duration,
-                    contentConfiguration: toast.contentConfiguration
-                ),
-                toastAlignment: toast.configuration.toastAlignment,
+                toast: Toast(contentConfiguration: configuration),
+                toastAlignment: configuration.toastAlignment,
                 toastEnvironmentValues: ToastEnvironmentValues(
                     toastStyle: toastStyle,
-                    toastTransition: toast.configuration.toastTransition,
-                    toastInteractiveDismissEnabled: toast.configuration.toastInteractiveDismissEnabled,
-                    toastAccessibilityOptions: toast.configuration.toastAccessibilityOptions
+                    toastTransition: configuration.toastTransition,
+                    toastInteractiveDismissEnabled: configuration.toastInteractiveDismissEnabled,
+                    toastBackgroundInteractionEnabled: configuration.toastBackgroundInteractionEnabled,
+                    toastAccessibilityOptions: configuration.toastAccessibilityOptions
                 ),
-                presentationCanceller: toast.presentationCanceller,
-                onPresent: { [weak toast] in
-                    toast?.isPresented = true
+                presentationCanceller: presentationCanceller,
+                onPresent: { [weak self] in
+                    self?.isPresented = true
                     onPresent?()
                 },
-                onDismiss: { [weak toast] in
-                    toast?.isPresented = false
+                onDismiss: { [weak self] in
+                    self?.isPresented = false
                     onDismiss?()
                 }
             )
@@ -202,6 +233,7 @@ struct AppKitBridgedToastStyle: ToastStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(
+            insetContent: false,
             cornerRadius: 0,
             configuration: configuration
         ) { props in
@@ -214,28 +246,24 @@ struct AppKitBridgedToastStyle: ToastStyle {
 
 extension Toast {
     
-    init(
-        role: ToastRole,
-        duration: ToastDuration,
-        contentConfiguration: NSToast.ContentConfiguration
-    ) {
-        if let contentView = contentConfiguration.contentView {
+    init(contentConfiguration configuration: NSToast.Configuration) {
+        if let contentView = configuration.contentView {
             self = .init(
-                role: role,
-                duration: duration
+                role: configuration.role,
+                duration: configuration.duration
             ) {
                 AppKitBridgedView(contentView)
             }
-        } else if let title = contentConfiguration.title {
+        } else if let title = configuration.title {
             self = .init(
-                icon: contentConfiguration.icon.flatMap({ Image(nsImage: $0) }),
+                icon: configuration.icon.flatMap({ Image(nsImage: $0) }),
                 title: Text(title),
-                valueSubtitle: contentConfiguration.valueSubtitle.flatMap({ Text($0) }),
-                role: role,
-                duration: duration
+                valueSubtitle: configuration.valueSubtitle.flatMap({ Text($0) }),
+                role: configuration.role,
+                duration: configuration.duration
             )
         } else {
-            self = .init("", role: role, duration: duration)
+            self = .init("", role: configuration.role, duration: configuration.duration)
         }
     }
 }
@@ -346,7 +374,7 @@ class NSPreviewViewController: NSViewController {
         let toast = NSToast(title: "Hello, World!")
         toast.role = .informational
         toast.duration = .indefinite
-        toast.contentConfiguration.icon = NSImage(
+        toast.configuration.icon = NSImage(
             systemSymbolName: "star.fill",
             accessibilityDescription: nil
         )
@@ -366,7 +394,7 @@ class NSPreviewViewController: NSViewController {
         let toast = NSToast(title: "Hello, World!")
         toast.role = .informational
         toast.duration = .indefinite
-        toast.contentConfiguration.valueSubtitle = "Subtitle"
+        toast.configuration.valueSubtitle = "Subtitle"
         
         toast.schedulePresentation(in: window) {
             print("NSToast Shown")
@@ -383,8 +411,8 @@ class NSPreviewViewController: NSViewController {
         let toast = NSToast(title: "Hello, World!")
         toast.role = .informational
         toast.duration = .indefinite
-        toast.contentConfiguration.valueSubtitle = "Subtitle"
-        toast.contentConfiguration.icon = NSImage(
+        toast.configuration.valueSubtitle = "Subtitle"
+        toast.configuration.icon = NSImage(
             systemSymbolName: "star.fill",
             accessibilityDescription: nil
         )
@@ -431,7 +459,7 @@ class NSPreviewViewController: NSViewController {
         let backgroundView = NSVisualEffectView()
         backgroundView.material = .hudWindow
         backgroundView.state = .active
-        toast.contentConfiguration.backgroundView = backgroundView
+        toast.configuration.backgroundView = backgroundView
         
         toast.schedulePresentation(in: window) {
             print("NSToast Shown")
@@ -446,7 +474,7 @@ class NSPreviewViewController: NSViewController {
 }
 
 @available(macOS 14.0, *)
-#Preview {
+#Preview(traits: .fixedLayout(width: 360, height: 580)) {
     NSPreviewViewController()
 }
 
