@@ -405,6 +405,8 @@ class UIPreviewViewController: UIViewController,
     
     @objc
     private func showToastButtonAction(_ sender: UIButton) {
+        return showLoadingHUD()
+        
         switch selection {
         case .title:
             showToastWithTitle()
@@ -564,6 +566,113 @@ class UIPreviewViewController: UIViewController,
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             toast.dismiss()
+        }
+    }
+    
+    // Stuff
+    
+    var loadingTask: Task<Void, Never>?
+    func someLongOperation() async {
+        if #available(iOS 16.0, *) {
+            try? await Task.sleep(for: .seconds(10))
+        } else { // Fallback on earlier versions
+            try? await Task.sleep(nanoseconds: 10 * 1_000_000_000)
+        }
+    }
+}
+
+extension UIPreviewViewController {
+//class SomeViewController: UIViewController {
+    
+    func handleShowToastAction(_ sender: Any?) {
+        // Create a Toast with default content
+        let toast = UIToast(title: "Logged In.")
+        toast.role = .plain
+        toast.duration = .short
+        
+        schedulePresentation(of: toast)
+    }
+    
+    func handleShowToastAction2(_ sender: Any?) {
+        // Create a Toast with default content
+        let toast = UIToast(title: "Logged In.")
+        toast.role = .plain
+        toast.duration = .short
+        
+        schedulePresentation(of: toast)
+    }
+    
+    func showAddedToFavoritesToast(itemName: String?) {
+        // Create a Toast with default content
+        let toast = UIToast(
+            icon: UIImage(systemName: "star.fill"),
+            title: "Added to Favorites",
+            valueSubtitle: itemName
+        )
+        
+        toast.role = .informational
+        toast.duration = .long
+        
+        schedulePresentation(of: toast)
+    }
+    
+    class HUDContentStackView: UIStackView {
+        var preferredContentSize: CGSize?
+        
+        override var intrinsicContentSize: CGSize {
+            if let preferredContentSize {
+                return preferredContentSize
+            }
+            
+            return super .intrinsicContentSize
+        }
+    }
+    
+    func showLoadingHUD() {
+        let hudContent = HUDContentStackView()
+        hudContent.axis = .vertical
+        hudContent.distribution = .fillProportionally
+        hudContent.spacing = 8
+        hudContent.alignment = .center
+        hudContent.preferredContentSize = CGSize(
+            width: view.frame.width * 0.33,
+            height: 100
+        )
+        
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.startAnimating()
+        activityIndicator.color = .white
+        hudContent.addArrangedSubview(activityIndicator)
+        
+        let label = UILabel()
+        label.text = "Loading"
+        label.textColor = .white
+        hudContent.addArrangedSubview(label)
+        
+        let hudBackgroundView = UIVisualEffectView(
+            effect: UIBlurEffect(style: .systemThinMaterialDark)
+        )
+        
+        hudBackgroundView.layer.cornerRadius = 24
+        hudBackgroundView.subviews.forEach({ $0.layer.cornerRadius = 24 })
+
+        let toast = UIToast(
+            contentView: hudContent,
+            backgroundView: hudBackgroundView
+        )
+        toast.role = .plain
+        toast.duration = .indefinite
+        toast.configuration.toastAlignment = .center
+        toast.configuration.toastTransition = .opacity
+        toast.configuration.toastInteractiveDismissEnabled = false
+        
+        schedulePresentation(of: toast) {
+            self.loadingTask = Task {
+                await self.someLongOperation()
+                toast.dismiss()
+            }
+        } onDismiss: {
+            self.loadingTask = nil
         }
     }
 }

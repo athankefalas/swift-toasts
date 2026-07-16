@@ -66,8 +66,6 @@ final class NSTransientFloatingWindow: NSPanel {
         self.hasShadow = false
         self.backgroundColor = .clear
         self.backingType = parent.backingType
-        self.contentView?.wantsLayer = true
-        self.contentView?.layer?.backgroundColor = .clear
         self.setContentSize(parent.frame.size)
         self.setFrameOrigin(parent.frame.origin)
         

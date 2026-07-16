@@ -270,7 +270,7 @@ ToastButton("Submit") { schedule in
 
 ### Toast Presenter Reader
 
-A `Toast` can also be manually scheduled from anywhere with a `ToastPresenterReader` view and using the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts as well as to cancel all scheduled toasts that are still awaiting presentation.
+A `Toast` can also be manually scheduled with a `ToastPresenterReader` view and using the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts as well as to cancel all scheduled toasts that are still awaiting presentation.
 
 ``` Swift
 ToastPresenterReader { toastPresenterProxy in
@@ -298,7 +298,7 @@ ToastPresenterReader { toastPresenterProxy in
 
 ### Native Platform Frameworks
 
-In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used.
+In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used. Please note, that the native framework APIs still use the same underlying infrastructure for scheduling and presentation. Depending on the configuration, this may also include the same SwiftUI environment or even a SwiftUI view hierarchy being displayed.
 
 #### UIKit
 
@@ -316,7 +316,9 @@ Most of the aspects of a Toast or its presentation can be configured using sever
 
 The style of a Toast can be configured similarly to most of the system provided SwiftUI components, by using the related `.toastStyle` modifier. The library ships with a few predefined styles that use a rounded rectangle shaped toast draped with various system materials and/or glass, but if further customization is required a custom style can easily be created by conforming to the `ToastStyle` protocol. The default style is `.automatic`.
 
-Please note, that based on the `Toast` initializer used, the generated content may resolve to a hierarchy of `Text`, `Label` or `LabeledContent`. Any custom toast styles may have to account for the default system styling of these views, and customize it if needed in order to create the appropriate layout needed.
+Please note, that based on the `Toast` initializer used, the generated content view *inside* may resolve to a `ToastContentView`. Any custom toast styles may have to account for the default layout / styling of this view, and customize it if needed in order to create the exact layout needed. The layout / styling of the toast content view can be customized by creating a custom `ToastContentStyle` and applying it from a custom `ToastStyle` by using the `.toastContentStyle` modifier. The default toast content style is `.standard`. 
+
+Furthermore, in addition to toast content view, specialized styles for `Label`, `LabeledContent` and `Button` views as well as predefined tint and font size are also automatically applied inside of toasts.
 
 ``` Swift
 // Showing a Toast with the default style.
@@ -527,7 +529,7 @@ Alternatively, if it is desired that the active toast presentation is never inva
 
 ### Interactive Dismissal
 
-A presented `Toast` using one of the standard styles, can be dismissed before its duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissEnabled` modifier. A common use case to prevent interactive dismissal, is when using a toast as a loading indicator.
+A presented `Toast`, when using one of the standard styles, can be dismissed before its duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissEnabled` modifier. A common use case to prevent interactive dismissal, is when using a toast as a loading indicator.
 
 ``` Swift
 // Showing a Toast as a loading indicator HUD.
@@ -637,6 +639,10 @@ struct CustomToastStyle: ToastStyle {
     struct StyledToastBody: View {
         @Environment(\.toastDismiss)
         private var toastDismiss
+
+        // An alias of `configuration.role` that is injected via the environment
+        @Environment(\.toastPresentedRole)
+        private var toastPresentedRole
         
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
@@ -679,8 +685,9 @@ struct CustomToastStyle: ToastStyle {
                         lineWidth: 1
                     )
                 }
-                .labelStyle(.automatic) // Apply a Label style
-                .labeledContentStyle(.automatic) // Apply a LabeledContent style
+                .labelStyle(.someStyle) // Apply a Label style
+                .labeledContentStyle(.someStyle) // Apply a LabeledContent style
+                .toastContentStyle(.someStyle) // Apply a ToastContentView style
                 .onTapGesture {
                     guard toastInteractiveDismissEnabled else { return }
                     toastDismiss?()
@@ -705,13 +712,16 @@ ToastButton("Show Toast") { schedule in
 
 ### Toast Environment Values
 
-A set of different *environment* values are injected into a presented toast for the purpose of enabling further customization of the visual content of a `Toast` or providing a programmatic dismissal action.
+A set of different *environment* values are injected into a presented toast for the purpose of enabling further customization of the visual content of a `Toast` or providing a programmatic dismissal action. These values will not be available in the environment that scheduled the toast presentation and are injected by the environment that actively displayed the `Toast` when it presents it.
 
 #### Toast Dismiss Action
 
 The toast dismiss action is an environment value injected in the `toastDismiss` KeyPath and contains an action that can be used to programmatically dismiss a toast depending on a specific user interaction.
 
 Please note, that the scheduler automatically handles the duration of a toast, so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
+
+#### Toast Presented Role
+The toast presented role is an *environment* value injected in the `toastPresenteRole` KeyPath and contains the role of the presented toast. This can be used by custom component styles such as custom `Label`, `LabeledContent` or `ToastContentView` styles to adjust their layout, visual properties and behavior.
 
 #### Toast Presented Alignment
 
@@ -722,7 +732,7 @@ The toast presented alignment is an *environment* value injected in the `toastPr
 The toast interactive dismiss enabled flag is an *environment* value injected in the `toastInteractiveDismissEnabled` KeyPath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style this flag could be checked before dismissing a toast when it is tapped.
 
 #### Toast Accessibility Options
-The toast accessibility options is an *environment* value injected in the `toastAccessibilityOptions` KeyPath and contains the accessibility options defined by the presenting environment. These options can be used to read and set specific accessibility identifiers and actions for a `Toast` layout.
+The toast accessibility options is an *environment* value injected in the `toastAccessibilityOptions` KeyPath and contains the accessibility options defined by the presenting environment. These options can be used to read and set specific accessibility identifiers and actions for a `Toast` layout. The value of the toastAccessibilityOptions environment key is a copy of the same value that existed in the presenting environment, at the moment it scheduled the presentation.
 
 ## Alternative Presentation Contexts
 

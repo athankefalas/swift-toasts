@@ -14,6 +14,7 @@ final class UIToastHostingController: UIViewController {
     
     private final class UIPassthroughBackdropView: UIView {
         weak var hostingView: UIView?
+        var allowBackgroundInteraction: Bool = true
         
         private var hostedContentFrame: CGRect {
             guard let hostingView else {
@@ -35,9 +36,8 @@ final class UIToastHostingController: UIViewController {
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
-            
             if target === self {
-                return nil
+                return allowBackgroundInteraction ? nil : target
             }
             
             return target
@@ -76,6 +76,16 @@ final class UIToastHostingController: UIViewController {
             _toastAlignment = newValue
             loadViewIfNeeded()
             makeLayoutConstraints()
+        }
+    }
+    
+    private(set) var allowBackgroundInteraction: Bool = false {
+        didSet {
+            guard let passthroughView = viewIfLoaded as? UIPassthroughBackdropView else {
+                return
+            }
+            
+            passthroughView.allowBackgroundInteraction = allowBackgroundInteraction
         }
     }
     
@@ -133,6 +143,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = true // TODO: Read actual
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
@@ -177,6 +188,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = true // TODO: Read actual
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
