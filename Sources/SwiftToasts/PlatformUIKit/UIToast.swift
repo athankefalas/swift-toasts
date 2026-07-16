@@ -286,21 +286,22 @@ class UIPreviewViewController: UIViewController,
         stackView.spacing = 16
         
         let textField = UITextField()
-        textField.placeholder = "Enter a message"
-        textField.borderStyle = .roundedRect
         textField.text = selection.rawValue
+        textField.borderStyle = .roundedRect
         textField.allowsEditingTextAttributes = false
+        textField.rightViewMode = .unlessEditing
+        textField.rightView = UIImageView(
+            image: UIImage(
+                systemName: "chevron.up.chevron.down"
+            )
+        )
+        
         textField.delegate = self
         stackView.addArrangedSubview(textField)
         
         let picker = UIPickerView()
         picker.delegate = self
         picker.dataSource = self
-        picker.frame.size = CGSize(
-            width: view.frame.width,
-            height: view.frame.height * 0.5
-        )
-        picker.sizeToFit()
         textField.inputView = picker
         
         let toolBar = UIToolbar()
@@ -309,16 +310,14 @@ class UIPreviewViewController: UIViewController,
             doenButtonStyle = .prominent
         }
         
-        let doneEditingButton = UIBarButtonItem(
-            title: "Done",
-            style: doenButtonStyle,
-            target: self,
-            action: #selector(self.tapAction)
-        )
-        
         toolBar.setItems(
             [
-                doneEditingButton,
+                UIBarButtonItem(
+                    title: "Done",
+                    style: doenButtonStyle,
+                    target: self,
+                    action: #selector(self.tapAction)
+                ),
                 UIBarButtonItem(
                     barButtonSystemItem: .flexibleSpace,
                     target: nil,
@@ -340,9 +339,8 @@ class UIPreviewViewController: UIViewController,
             animated: true
         )
         
-        toolBar.isUserInteractionEnabled = true
         toolBar.sizeToFit()
-        toolBar.frame.size.width = view.frame.width
+        toolBar.isUserInteractionEnabled = true
         textField.inputAccessoryView = toolBar
         
         let showToastButton = UIButton(
