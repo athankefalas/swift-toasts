@@ -21,14 +21,12 @@ extension View {
         accentColor: Color,
         isCenterAligned: Bool
     ) -> some View {
-        self.applyToastLabelStyle(
-            accentColor: accentColor
-        )
-        .applyToastLabeledContentStyle()
-        .applyToastButtonStyle(
-            accentColor: .accentColor
-        )
-        .font(isCenterAligned ? .fallbackTitle3 : .headline)
+        self
+            .toastContentStyle(.standard)
+            .applyToastLabelStyle(accentColor: accentColor)
+            .applyToastLabeledContentStyle()
+            .applyToastButtonStyle(accentColor: .accentColor)
+            .font(isCenterAligned ? .fallbackTitle3 : .headline)
     }
     
     @ViewBuilder
@@ -74,5 +72,20 @@ extension Color {
 #else
         return Color.clear
 #endif
+    }
+    
+    static func accentColor(for role: ToastRole) -> Color {
+        switch role {
+        case .plain:
+            return Color.primary
+        case .informational:
+            return Color.blue
+        case .success:
+            return Color.green
+        case .warning:
+            return Color.yellow
+        case .failure:
+            return Color.red
+        }
     }
 }

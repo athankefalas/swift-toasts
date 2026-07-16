@@ -14,6 +14,7 @@ struct ToastOrnamentPresentationEnvironmentKey: EnvironmentKey {
 public extension EnvironmentValues {
     
     /// A value that indicates whether the toast is presented in an ornament.
+    /// - Note: This environment value will be available only *inside* of a presented Toast.
     internal(set) var toastOrnamentPresentationEnabled: Bool {
         get { self[ToastOrnamentPresentationEnvironmentKey.self] }
         set { self[ToastOrnamentPresentationEnvironmentKey.self] = newValue }

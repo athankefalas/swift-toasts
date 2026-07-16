@@ -85,7 +85,7 @@ private func findElementWithTag(_ tag: Int, in view: UIView?) -> Any? {
     return nil
 }
 
-#elseif canImport(AppKit)
+#elseif canImport(Cocoa)
 import AppKit
 
 @MainActor

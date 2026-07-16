@@ -14,6 +14,7 @@ private struct ToastDismissEnvironmentKey: EnvironmentKey {
 public extension EnvironmentValues {
     
     /// An action that can be used to dismiss a presented toast.
+    /// - Note: This environment value will be available only *inside* of a presented Toast.
     internal(set) var toastDismiss: ToastDismissAction? {
         get { self[ToastDismissEnvironmentKey.self] }
         set { self[ToastDismissEnvironmentKey.self] = newValue }

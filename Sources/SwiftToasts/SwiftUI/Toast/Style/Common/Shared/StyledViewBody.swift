@@ -60,18 +60,7 @@ struct StyledViewBody<ToastBackground: View>: View {
     }
     
     private var accentColor: Color {
-        switch configuration.role {
-        case .plain:
-            return Color.primary
-        case .informational:
-            return Color.blue
-        case .success:
-            return Color.green
-        case .warning:
-            return Color.yellow
-        case .failure:
-            return Color.red
-        }
+        .accentColor(for: configuration.role)
     }
     
     private var borderWidth: CGFloat {

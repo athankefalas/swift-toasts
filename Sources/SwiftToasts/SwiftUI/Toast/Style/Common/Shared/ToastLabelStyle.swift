@@ -90,7 +90,7 @@ extension View {
     }
     
     @ViewBuilder
-    fileprivate func fallbackTintColor(_ color: Color) -> some View {
+    func fallbackTintColor(_ color: Color) -> some View {
         if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
             self.tint(color)
         } else {
