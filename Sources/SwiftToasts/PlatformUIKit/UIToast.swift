@@ -251,7 +251,7 @@ extension Toast {
 
 #if ENABLE_PREVIEWS
 
-public class UIPreviewViewController: UIViewController,
+class UIPreviewViewController: UIViewController,
                                UIPickerViewDelegate,
                                UIPickerViewDataSource,
                                UITextFieldDelegate {
@@ -277,7 +277,7 @@ public class UIPreviewViewController: UIViewController,
         }
     }
     
-    public override func loadView() {
+    override func loadView() {
         super.loadView()
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -301,13 +301,17 @@ public class UIPreviewViewController: UIViewController,
             height: view.frame.height * 0.5
         )
         picker.sizeToFit()
-        picker.backgroundColor = .red
         textField.inputView = picker
         
         let toolBar = UIToolbar()
+        var doenButtonStyle: UIBarButtonItem.Style = .done
+        if #available(iOS 26.0, *) {
+            doenButtonStyle = .prominent
+        }
+        
         let doneEditingButton = UIBarButtonItem(
             title: "Done",
-            style: .plain,
+            style: doenButtonStyle,
             target: self,
             action: #selector(self.tapAction)
         )
@@ -319,6 +323,18 @@ public class UIPreviewViewController: UIViewController,
                     barButtonSystemItem: .flexibleSpace,
                     target: nil,
                     action: nil
+                ),
+                UIBarButtonItem(
+                    image: UIImage(systemName: "chevron.up"),
+                    style: .plain,
+                    target: self,
+                    action: #selector(selectPreviousButtonAction)
+                ),
+                UIBarButtonItem(
+                    image: UIImage(systemName: "chevron.down"),
+                    style: .plain,
+                    target: self,
+                    action: #selector(selectNextButtonAction)
                 )
             ],
             animated: true
@@ -333,8 +349,8 @@ public class UIPreviewViewController: UIViewController,
             type: .system
         )
         
-        showToastButton.setTitle("Hit Me!", for: .normal)
-        showToastButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        showToastButton.setTitle("Show Toast", for: .normal)
+        showToastButton.addTarget(self, action: #selector(showToastButtonAction), for: .touchUpInside)
         stackView.addArrangedSubview(showToastButton)
         
         let height = textField.intrinsicContentSize.height + showToastButton.intrinsicContentSize.height
@@ -355,7 +371,8 @@ public class UIPreviewViewController: UIViewController,
         view.addGestureRecognizer(tapGesture)
     }
     
-    @objc func tapAction(_ sender: UITapGestureRecognizer?) {
+    @objc
+    private func tapAction(_ sender: UITapGestureRecognizer?) {
         guard let stackView = view.subviews.first as? UIStackView,
               let textField = stackView.arrangedSubviews.first as? UITextField else {
             return
@@ -364,31 +381,32 @@ public class UIPreviewViewController: UIViewController,
         textField.resignFirstResponder()
     }
     
-    // Picker Delegate
-    
-    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        1
+    @objc
+    private func selectPreviousButtonAction(_ sender: Any?) {
+        let selectionIndex = ToastType.allCases.firstIndex(of: selection) ?? 0
+        let previousIndex = selectionIndex - 1
+        
+        guard previousIndex >= 0 else {
+            return
+        }
+        
+        selection = ToastType.allCases[previousIndex]
     }
     
-    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        ToastType.allCases.count
+    @objc
+    private func selectNextButtonAction(_ sender: Any?) {
+        let selectionIndex = ToastType.allCases.firstIndex(of: selection) ?? 0
+        let nextIndex = selectionIndex + 1
+        
+        guard nextIndex < ToastType.allCases.count else {
+            return
+        }
+        
+        selection = ToastType.allCases[nextIndex]
     }
     
-    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        ToastType.allCases[row].rawValue
-    }
-    
-    public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selection = ToastType.allCases[row]
-    }
-    
-    // TextField Delegate
-    
-    public func textField(_ textField: UITextField, shouldChangeCharactersInRanges ranges: [NSValue], replacementString string: String) -> Bool {
-        return false
-    }
-    
-    @objc func buttonTapped(_ sender: UIButton) {
+    @objc
+    private func showToastButtonAction(_ sender: UIButton) {
         switch selection {
         case .title:
             showToastWithTitle()
@@ -404,6 +422,32 @@ public class UIPreviewViewController: UIViewController,
             showToastWithCustomContentAndBackground()
         }
     }
+    
+    // Picker Delegate
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        ToastType.allCases.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        ToastType.allCases[row].rawValue
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selection = ToastType.allCases[row]
+    }
+    
+    // TextField Delegate
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersInRanges ranges: [NSValue], replacementString string: String) -> Bool {
+        return false
+    }
+    
+    // Toasts
     
     private func showToastWithTitle() {
         let toast = UIToast(title: "Hello, World!")
