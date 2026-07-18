@@ -9,6 +9,7 @@
 
 import UIKit
 import SwiftUI
+import Combine
 
 @MainActor
 public class UIToast: NSObject {
@@ -86,8 +87,6 @@ public class UIToast: NSObject {
     }
     
     public var configuration: Configuration
-    public fileprivate(set) var isPresented: Bool = false
-    fileprivate var presentationCanceller: ToastPresentationCanceller
     
     public var role: ToastRole {
         get {
@@ -109,6 +108,65 @@ public class UIToast: NSObject {
         }
     }
     
+    public var icon: UIImage? {
+        get {
+            configuration.icon
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.icon = newValue
+        }
+    }
+    
+    public var title: String? {
+        get {
+            configuration.title
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.title = newValue
+        }
+    }
+    
+    public var valueSubtitle: String? {
+        get {
+            configuration.valueSubtitle
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.valueSubtitle = newValue
+        }
+    }
+    
+    public var contentView: UIView? {
+        get {
+            configuration.contentView
+        }
+        
+        set {
+            if newValue != nil {
+                configuration.icon = nil
+                configuration.title = nil
+                configuration.valueSubtitle = nil
+            }
+            
+            configuration.contentView = newValue
+        }
+    }
+    
+    public var backgroundView: UIView? {
+        get {
+            configuration.backgroundView
+        }
+        
+        set {
+            configuration.backgroundView = newValue
+        }
+    }
+    
     public var inferredContentType: InferredContentType {
         if configuration.contentView != nil {
             return .customContent
@@ -121,13 +179,20 @@ public class UIToast: NSObject {
         return .invalid
     }
     
+    public internal(set) var isPresented: Bool = false
+    internal var scheduledPresentationCanceller: AnyCancellable? = nil
+    internal var presentationCanceller: ToastPresentationCanceller = ToastPresentationCanceller()
+    
     public var canBePresented: Bool {
         inferredContentType != .invalid
     }
     
+    public var isScheduledForPresentation: Bool {
+        scheduledPresentationCanceller != nil
+    }
+    
     public init(configuration: Configuration) {
         self.configuration = configuration
-        self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
@@ -144,8 +209,6 @@ public class UIToast: NSObject {
             role: role,
             duration: duration
         )
-        
-        self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
@@ -160,8 +223,17 @@ public class UIToast: NSObject {
             role: role,
             duration: duration
         )
-        
-        self.presentationCanceller = ToastPresentationCanceller()
+    }
+    
+    internal func _resetPresentationState() {
+        isPresented = false
+        scheduledPresentationCanceller = nil
+        presentationCanceller = ToastPresentationCanceller()
+    }
+    
+    public func cancelScheduledPresentation() {
+        scheduledPresentationCanceller?.cancel()
+        scheduledPresentationCanceller = nil
     }
     
     public func dismiss() {
@@ -187,11 +259,12 @@ struct UIKitBridgedView: UIViewRepresentable {
 
 struct UIKitBridgedToastStyle: ToastStyle {
     let inheritedStyle: AnyToastStyle
+    let hasCustomContent: Bool
     let backgroundView: UIView
     
     func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(
-            insetContent: false,
+            insetContent: !hasCustomContent,
             cornerRadius: 0,
             configuration: configuration
         ) { props in
@@ -222,11 +295,12 @@ public extension UIViewController {
         if let backgroundView = configuration.backgroundView {
             toastStyle = UIKitBridgedToastStyle(
                 inheritedStyle: toastStyle,
+                hasCustomContent: configuration.contentView != nil,
                 backgroundView: backgroundView
             ).erased()
         }
         
-        presenter.schedule(
+        toast.scheduledPresentationCanceller = presenter.scheduleCancellable(
             presentation: ToastPresentation(
                 toast: Toast(contentConfiguration: configuration),
                 toastAlignment: toast.configuration.toastAlignment,
@@ -245,6 +319,7 @@ public extension UIViewController {
                 onDismiss: { [weak toast] in
                     toast?.isPresented = false
                     onDismiss?()
+                    toast?._resetPresentationState()
                 }
             )
         )
@@ -435,8 +510,6 @@ class UIPreviewViewController: UIViewController,
     
     @objc
     private func showToastButtonAction(_ sender: UIButton) {
-        return showLoadingHUD()
-        
         switch selection {
         case .title:
             showToastWithTitle()
@@ -598,113 +671,73 @@ class UIPreviewViewController: UIViewController,
             toast.dismiss()
         }
     }
-    
-    // Stuff
-    
-    var loadingTask: Task<Void, Never>?
-    func someLongOperation() async {
-        if #available(iOS 16.0, *) {
-            try? await Task.sleep(for: .seconds(10))
-        } else { // Fallback on earlier versions
-            try? await Task.sleep(nanoseconds: 10 * 1_000_000_000)
-        }
-    }
 }
 
-extension UIPreviewViewController {
-//class SomeViewController: UIViewController {
+public extension UIToast.Configuration {
     
-    func handleShowToastAction(_ sender: Any?) {
-        // Create a Toast with default content
-        let toast = UIToast(title: "Logged In.")
-        toast.role = .plain
-        toast.duration = .short
-        
-        schedulePresentation(of: toast)
-    }
-    
-    func handleShowToastAction2(_ sender: Any?) {
-        // Create a Toast with default content
-        let toast = UIToast(title: "Logged In.")
-        toast.role = .plain
-        toast.duration = .short
-        
-        schedulePresentation(of: toast)
-    }
-    
-    func showAddedToFavoritesToast(itemName: String?) {
-        // Create a Toast with default content
-        let toast = UIToast(
-            icon: UIImage(systemName: "star.fill"),
-            title: "Added to Favorites",
-            valueSubtitle: itemName
+    static func plain() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .plain,
+            duration: .short
         )
         
-        toast.role = .informational
-        toast.duration = .long
-        
-        schedulePresentation(of: toast)
+        configuration.title = nil
+        return configuration
     }
     
-    class HUDContentStackView: UIStackView {
-        var preferredContentSize: CGSize?
+    static func informational() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .informational,
+            duration: .short
+        )
         
-        override var intrinsicContentSize: CGSize {
-            if let preferredContentSize {
-                return preferredContentSize
-            }
-            
-            return super .intrinsicContentSize
-        }
+        configuration.title = nil
+        return configuration
     }
     
-    func showLoadingHUD() {
-        let hudContent = HUDContentStackView()
-        hudContent.axis = .vertical
-        hudContent.distribution = .fillProportionally
-        hudContent.spacing = 8
-        hudContent.alignment = .center
-        hudContent.preferredContentSize = CGSize(
-            width: view.frame.width * 0.33,
-            height: 100
+    static func success() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .success,
+            duration: .short
         )
         
-        let activityIndicator = UIActivityIndicatorView(style: .large)
-        activityIndicator.startAnimating()
-        activityIndicator.color = .white
-        hudContent.addArrangedSubview(activityIndicator)
-        
-        let label = UILabel()
-        label.text = "Loading"
-        label.textColor = .white
-        hudContent.addArrangedSubview(label)
-        
-        let hudBackgroundView = UIVisualEffectView(
-            effect: UIBlurEffect(style: .systemThinMaterialDark)
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func warning() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .warning,
+            duration: .long
         )
         
-        hudBackgroundView.layer.cornerRadius = 24
-        hudBackgroundView.subviews.forEach({ $0.layer.cornerRadius = 24 })
-
-        let toast = UIToast(
-            contentView: hudContent,
-            backgroundView: hudBackgroundView
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func failure() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .failure,
+            duration: .long
         )
-        toast.role = .plain
-        toast.duration = .indefinite
-        toast.configuration.toastAlignment = .center
-        toast.configuration.toastTransition = .opacity
-        toast.configuration.toastInteractiveDismissEnabled = false
-        toast.configuration.toastBackgroundInteractionEnabled = false
         
-        schedulePresentation(of: toast) {
-            self.loadingTask = Task {
-                await self.someLongOperation()
-                toast.dismiss()
-            }
-        } onDismiss: {
-            self.loadingTask = nil
-        }
+        configuration.title = nil
+        return configuration
     }
 }
 

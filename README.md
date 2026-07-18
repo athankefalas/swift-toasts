@@ -302,7 +302,119 @@ In addition to using SwiftUI to schedule the presentation of a `Toast`, the nati
 
 #### UIKit
 
-TODO
+A toast can be created on UIKit by using the `UIToast` component, which can be then scheduled for presentation by a `UIViewController`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration and content configuration of a toast.
+
+After an instance of `UIToast` has been created and configured, it can be then scheduled for presentation by using the `schedulePresentation` function of a `UIViewController`. An actively presented toast may be dismissed by using the `dismiss` function.
+
+Cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation`. If the instance of a toast
+
+    HERE <-----------------------
+
+``` Swift
+class SomeViewController: UIViewController {
+
+    func sayHi() {
+        // Create a UIToast
+        let toast = UIToast(title: "Hello, Toast.")
+        schedulePresentation(of: toast)
+    }
+    
+    func showToast(
+        favorited itemName: String,
+        subtitle: String? = nil
+    ) {
+        // Create a UIToast
+        let toast = UIToast(
+            icon: UIImage(systemName: "star.fill")?
+                .withRenderingMode(.alwaysTemplate),
+            title: "\(itemName) added to favorites",
+            valueSubtitle: subtitle
+        )
+        
+        // Configure the toast
+        toast.role = .informational
+        toast.duration = .longer
+
+        // Schedule it for presentation
+        schedulePresentation(of: toast)
+    }
+    
+    func showSuccessToast(subtitle: String? = nil) {
+        // Create a UIToast using a content configuration
+        let toast = UIToast(configuration: .success())
+        toast.configuration.title = "Success"
+        toast.configuration.valueSubtitle = subtitle
+        toast.configuration.icon = UIImage(systemName: "checkmark.circle")?
+            .withRenderingMode(.alwaysTemplate)
+        
+        schedulePresentation(of: toast)
+    }
+
+    func showBlockingHUDLoader() {
+        let hudContent = HUDContentStackView()
+        hudContent.axis = .vertical
+        hudContent.distribution = .fillProportionally
+        hudContent.spacing = 16
+        hudContent.alignment = .center
+        // Custom UIKit content is bridged to SwiftUI using
+        // UIViewRepresentable and therefore uses the view's
+        // intrinsic size for layout sizing.
+        hudContent.preferredIntrinsicContentSize = CGSize(
+            width: view.frame.width * 0.33,
+            height: 120
+        )
+        
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.startAnimating()
+        activityIndicator.color = .white
+        hudContent.addArrangedSubview(activityIndicator)
+        
+        let label = UILabel()
+        label.text = "Loading"
+        label.textColor = .white
+        hudContent.addArrangedSubview(label)
+        
+        let hudBackgroundView = UIVisualEffectView(
+            effect: UIBlurEffect(
+                style: .systemThinMaterialDark
+            )
+        )
+        
+        hudBackgroundView.layer.cornerRadius = 24
+        hudBackgroundView.subviews.forEach({ $0.layer.cornerRadius = 24 })
+
+        // Create a toast with custom contentView and (optionally)
+        // a custom backgroundView.
+        let toast = UIToast(
+            contentView: hudContent,
+            backgroundView: hudBackgroundView
+        )
+        
+        // Configure the toast
+        toast.configuration.role = .plain
+        toast.configuration.duration = .indefinite
+        toast.configuration.toastAlignment = .center
+        toast.configuration.toastTransition = .opacity
+        toast.configuration.toastInteractiveDismissEnabled = false
+        toast.configuration.toastBackgroundInteractionEnabled = false
+        
+        // Schedule the toast presentation
+        schedulePresentation(of: toast) {
+            // When the toast appears start the loading task
+            self.loadingTask = Task {
+                await self.someLongOperation()
+                // After the task has finished,
+                // dismiss the toast
+                toast.dismiss()
+            }
+        } onDismiss: {
+            // When the toast is dismissed clean up
+            self.loadingTask = nil
+        }
+    }
+}
+
+```
 
 #### AppKit
 
@@ -488,7 +600,7 @@ ToastButton("Submit") { schedule in
 
 ```
 
-Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling a large number of toasts when a value changes rapidly and frequently. In order to automatically cancel all scheduled toasts by a specific source, the `.always` cancellation policy is required.
+Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling numerous toasts when a value changes rapidly and frequently. In order to automatically cancel all scheduled toasts by a specific source, the `.always` cancellation policy is required.
 
 ``` Swift
 // A change of the volume value triggers a toast.
@@ -548,10 +660,36 @@ content
         }
     }
     .toastInteractiveDismissDisabled(true)
+    .toastBackgroundInteractionDisabled(true)
 
 ```
 
-#### Accessibility Options
+### Background Content Interaction
+
+While a `Toast` is presented interaction with the background contents can be turned on or off. The background content interaction mode can be configured by using the `toastBackgroundInteractionDisabled` modifier. In the same example of a loading indicator HUD, the background interaction can be disabled to avoid any interaction while the view is still loading. 
+
+``` Swift
+// Showing a Toast as a loading indicator HUD.
+content
+    .toast(
+        isPresented: $isLoading,
+        alignment: .center
+    ) {
+        Toast(role: .informational, duration: .indefinite) {
+            Label {
+                Text("Loading...")
+            } icon: {
+                ProgressView()
+                    .scaleEffect(2)
+            }
+        }
+    }
+    .toastInteractiveDismissDisabled(true)
+    .toastBackgroundInteractionDisabled(true)
+
+```
+
+### Accessibility Options
 
 A wide variety of accessibility options for a presented `Toast` can be configured by using the `toastAccessibilityOptions` and related environment based modifiers. These options can affect various aspects of the accessibility of a Toast including visibility, label, traits, identifiers, automatic focus and even announcements tied to the lifetime of the toast.
 

@@ -9,6 +9,7 @@
 
 import AppKit
 import SwiftUI
+import Combine
 
 @MainActor
 public class NSToast: NSObject {
@@ -86,8 +87,6 @@ public class NSToast: NSObject {
     }
     
     public var configuration: Configuration
-    public fileprivate(set) var isPresented: Bool = false
-    fileprivate var presentationCanceller: ToastPresentationCanceller
     
     public var role: ToastRole {
         get {
@@ -109,6 +108,65 @@ public class NSToast: NSObject {
         }
     }
     
+    public var icon: NSImage? {
+        get {
+            configuration.icon
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.icon = newValue
+        }
+    }
+    
+    public var title: String? {
+        get {
+            configuration.title
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.title = newValue
+        }
+    }
+    
+    public var valueSubtitle: String? {
+        get {
+            configuration.valueSubtitle
+        }
+        
+        set {
+            configuration.contentView = nil
+            configuration.valueSubtitle = newValue
+        }
+    }
+    
+    public var contentView: NSView? {
+        get {
+            configuration.contentView
+        }
+        
+        set {
+            if newValue != nil {
+                configuration.icon = nil
+                configuration.title = nil
+                configuration.valueSubtitle = nil
+            }
+            
+            configuration.contentView = newValue
+        }
+    }
+    
+    public var backgroundView: NSView? {
+        get {
+            configuration.backgroundView
+        }
+        
+        set {
+            configuration.backgroundView = newValue
+        }
+    }
+    
     public var inferredContentType: InferredContentType {
         if configuration.contentView != nil {
             return .customContent
@@ -121,13 +179,20 @@ public class NSToast: NSObject {
         return .invalid
     }
     
+    public internal(set) var isPresented: Bool = false
+    internal var scheduledPresentationCanceller: AnyCancellable? = nil
+    internal var presentationCanceller: ToastPresentationCanceller = ToastPresentationCanceller()
+    
     public var canBePresented: Bool {
         inferredContentType != .invalid
     }
     
+    public var isScheduledForPresentation: Bool {
+        scheduledPresentationCanceller != nil
+    }
+    
     public init(configuration: Configuration) {
         self.configuration = configuration
-        self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
@@ -144,8 +209,6 @@ public class NSToast: NSObject {
             role: role,
             duration: duration
         )
-        
-        self.presentationCanceller = ToastPresentationCanceller()
     }
     
     public init(
@@ -160,8 +223,12 @@ public class NSToast: NSObject {
             role: role,
             duration: duration
         )
-        
-        self.presentationCanceller = ToastPresentationCanceller()
+    }
+    
+    internal func _resetPresentationState() {
+        isPresented = false
+        scheduledPresentationCanceller = nil
+        presentationCanceller = ToastPresentationCanceller()
     }
     
     public func schedulePresentation(
@@ -178,11 +245,12 @@ public class NSToast: NSObject {
         if let backgroundView = configuration.backgroundView {
             toastStyle = AppKitBridgedToastStyle(
                 inheritedStyle: toastStyle,
+                hasCustomContent: configuration.contentView != nil,
                 backgroundView: backgroundView
             ).erased()
         }
         
-        presenter.schedule(
+        scheduledPresentationCanceller = presenter.scheduleCancellable(
             presentation: ToastPresentation(
                 toast: Toast(contentConfiguration: configuration),
                 toastAlignment: configuration.toastAlignment,
@@ -201,9 +269,15 @@ public class NSToast: NSObject {
                 onDismiss: { [weak self] in
                     self?.isPresented = false
                     onDismiss?()
+                    self?._resetPresentationState()
                 }
             )
         )
+    }
+    
+    public func cancelScheduledPresentation() {
+        scheduledPresentationCanceller?.cancel()
+        scheduledPresentationCanceller = nil
     }
     
     public func dismiss() {
@@ -229,11 +303,12 @@ struct AppKitBridgedView: NSViewRepresentable {
 
 struct AppKitBridgedToastStyle: ToastStyle {
     let inheritedStyle: AnyToastStyle
+    let hasCustomContent: Bool
     let backgroundView: NSView
     
     func makeBody(configuration: Configuration) -> some View {
         StyledViewBody(
-            insetContent: false,
+            insetContent: !hasCustomContent,
             cornerRadius: 0,
             configuration: configuration
         ) { props in
