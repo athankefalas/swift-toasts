@@ -11,32 +11,56 @@ import UIKit
 import SwiftUI
 import Combine
 
+// A Toast component used to present transient messages to the user.
 @MainActor
 public class UIToast: NSObject {
     
+    /// The type of content a toast is inferred to have.
     public enum InferredContentType {
-        case invalid
+        case empty
         case standardContent
         case customContent
     }
     
     public struct Configuration {
+        /// The style of the toast.
         public var toastStyle: any ToastStyle
+        /// The alignment of the toast.
         public var toastAlignment: ToastAlignment
+        /// The transition that will be used for the toast presentation.
         public var toastTransition: ToastTransition
+        /// A flag that controls whether the toast can be interactively dismissed.
         public var toastInteractiveDismissEnabled: Bool
+        /// A flag that controls whether the content behind a presented toast can be interacted with during a toast presentation.
         public var toastBackgroundInteractionEnabled: Bool
+        /// The accessibility options used for the toast content.
         public var toastAccessibilityOptions: ToastAccessibilityOptions
         
+        
+        /// The role of a toast.
         public var role: ToastRole
+        /// The duration of a toast.
         public var duration: ToastDuration
+        /// The icon of a toast.
         public var icon: UIImage?
+        /// The title of a toast.
         public var title: String?
+        /// The value subtitle of a toast.
         public var valueSubtitle: String?
         
+        
+        /// The custom content view of a toast.
         public var contentView: UIView?
+        /// The background view of a toast.
         public var backgroundView: UIView?
         
+        /// Create a new toast content configuration using a standard content configuration.
+        /// - Parameters:
+        ///   - icon: The icon of a toast.
+        ///   - title: The title of a toast.
+        ///   - valueSubtitle: The value subtitle of a toast.
+        ///   - role: The role of a toast.
+        ///   - duration: The duration of a toast.
         public init(
             icon: UIImage?,
             title: String,
@@ -62,6 +86,12 @@ public class UIToast: NSObject {
             self.valueSubtitle = valueSubtitle
         }
         
+        /// Create a new toast content configuration using a custom content configuration.
+        /// - Parameters:
+        ///   - contentView: The custom content view of a toast.
+        ///   - backgroundView: The background view of a toast.
+        ///   - role: The role of a toast.
+        ///   - duration: The duration of a toast.
         public init(
             contentView: UIView,
             backgroundView: UIView?,
@@ -86,8 +116,10 @@ public class UIToast: NSObject {
         }
     }
     
+    /// The configuration of a  `Toast` that controls it's behavior and appearance.
     public var configuration: Configuration
     
+    /// The role of a `Toast`.
     public var role: ToastRole {
         get {
             configuration.role
@@ -98,6 +130,7 @@ public class UIToast: NSObject {
         }
     }
     
+    /// The duration of a `Toast`.
     public var duration: ToastDuration {
         get {
             configuration.duration
@@ -108,39 +141,60 @@ public class UIToast: NSObject {
         }
     }
     
+    /// The icon of a `Toast` using the standard content configuration.
+    /// - Note: Setting this property with a non-nil value
+    /// will clear any custom content view set.
     public var icon: UIImage? {
         get {
             configuration.icon
         }
         
         set {
-            configuration.contentView = nil
+            if icon != nil {
+                configuration.contentView = nil
+            }
+            
             configuration.icon = newValue
         }
     }
     
+    /// The title of a `Toast` using the standard content configuration.
+    /// - Note: Setting this property with a non-nil value
+    /// will clear any custom content view set.
     public var title: String? {
         get {
             configuration.title
         }
         
         set {
-            configuration.contentView = nil
+            if title != nil {
+                configuration.contentView = nil
+            }
+            
             configuration.title = newValue
         }
     }
     
+    /// The value subtitle of a `Toast` using the standard content configuration.
+    /// - Note: Setting this property with a non-nil value
+    /// will clear any custom content view set.
     public var valueSubtitle: String? {
         get {
             configuration.valueSubtitle
         }
         
         set {
-            configuration.contentView = nil
+            if newValue != nil {
+                configuration.contentView = nil
+            }
+            
             configuration.valueSubtitle = newValue
         }
     }
     
+    /// The content view of a `Toast` using the custom content configuration.
+    /// - Note: Setting this property with a non-nil value
+    /// will clear any standard content such as icon, title and subtitles set.
     public var contentView: UIView? {
         get {
             configuration.contentView
@@ -157,6 +211,7 @@ public class UIToast: NSObject {
         }
     }
     
+    /// The background view of a `Toast`.
     public var backgroundView: UIView? {
         get {
             configuration.backgroundView
@@ -167,6 +222,7 @@ public class UIToast: NSObject {
         }
     }
     
+    /// The content type inferred by the current content configuration.
     public var inferredContentType: InferredContentType {
         if configuration.contentView != nil {
             return .customContent
@@ -176,25 +232,35 @@ public class UIToast: NSObject {
             return .standardContent
         }
         
-        return .invalid
+        return .empty
     }
     
+    /// A flag that indicates whether this `Toast` is currently presented.
     public internal(set) var isPresented: Bool = false
+    /// A flag that indicates whether the scheduled presentation of this `Toast`
+    /// will be automatically cancelled when this instance will be deallocated.
+    public var cancelationTracksLifetime: Bool = false
     internal var scheduledPresentationCanceller: AnyCancellable? = nil
     internal var presentationCanceller: ToastPresentationCanceller = ToastPresentationCanceller()
     
-    public var canBePresented: Bool {
-        inferredContentType != .invalid
-    }
-    
+    /// A flag that indicates if this `Toast` is scheduled for presentation.
     public var isScheduledForPresentation: Bool {
         scheduledPresentationCanceller != nil
     }
     
+    /// Creates a new `UIToast` with the given content configuration.
+    /// - Parameter configuration: The content configuration to use.
     public init(configuration: Configuration) {
         self.configuration = configuration
     }
     
+    /// Create a new `UIToast` with the standard content configuration.
+    /// - Parameters:
+    ///   - icon: An optional icon for the toast.
+    ///   - title: The title to use for the toast.
+    ///   - valueSubtitle: An optional value subtitle to use.
+    ///   - role: The role of the toast.
+    ///   - duration: The duration of the toast presentation.
     public init(
         icon: UIImage? = nil,
         title: String,
@@ -211,6 +277,12 @@ public class UIToast: NSObject {
         )
     }
     
+    /// Create a new `UIToast` with a custom content configuration.
+    /// - Parameters:
+    ///   - contentView: A custom content view to use for the toast.
+    ///   - backgroundView: An optional custom background view to use for the toast.
+    ///   - role: The role of the toast.
+    ///   - duration: The duration of the toast presentation.
     public init(
         contentView: UIView,
         backgroundView: UIView? = nil,
@@ -231,11 +303,24 @@ public class UIToast: NSObject {
         presentationCanceller = ToastPresentationCanceller()
     }
     
+    /// Cancel the scheduled presentation of this toast while it is still pending.
     public func cancelScheduledPresentation() {
         scheduledPresentationCanceller?.cancel()
         scheduledPresentationCanceller = nil
+        
+        let key = ObjectIdentifier(self)
+        let canceller = GlobalToastCancellationTokenStorage.shared
+            .storedCancellable(forKey: key)
+        
+        guard let externallyStoredCanceller = canceller else {
+            return
+        }
+        
+        externallyStoredCanceller.cancel()
+        GlobalToastCancellationTokenStorage.shared.remove(forKey: key)
     }
     
+    /// Dismiss this toast of it is currently presented.
     public func dismiss() {
         presentationCanceller.dismissPresentation()
     }
@@ -280,6 +365,11 @@ public extension UIViewController {
         ToastPresenterProxy(toastPresenter: _getDefaultToastPresenter())
     }
     
+    /// Schedule the given toast for presentation.
+    /// - Parameters:
+    ///   - toast: The toast to schedule for presentation.
+    ///   - onPresent: A callback invoked when the toast is presented.
+    ///   - onDismiss: A callback invoked when the toast is dismissed.
     func schedulePresentation(
         of toast: UIToast,
         onPresent: (@MainActor () -> Void)? = nil,
@@ -300,29 +390,47 @@ public extension UIViewController {
             ).erased()
         }
         
-        toast.scheduledPresentationCanceller = presenter.scheduleCancellable(
-            presentation: ToastPresentation(
-                toast: Toast(contentConfiguration: configuration),
-                toastAlignment: toast.configuration.toastAlignment,
-                toastEnvironmentValues: ToastEnvironmentValues(
-                    toastStyle: toastStyle,
-                    toastTransition: toast.configuration.toastTransition,
-                    toastInteractiveDismissEnabled: toast.configuration.toastInteractiveDismissEnabled,
-                    toastBackgroundInteractionEnabled: toast.configuration.toastBackgroundInteractionEnabled,
-                    toastAccessibilityOptions: toast.configuration.toastAccessibilityOptions
-                ),
-                presentationCanceller: toast.presentationCanceller,
-                onPresent: { [weak toast] in
-                    toast?.isPresented = true
-                    onPresent?()
-                },
-                onDismiss: { [weak toast] in
-                    toast?.isPresented = false
-                    onDismiss?()
-                    toast?._resetPresentationState()
-                }
-            )
+        let toastKey = ObjectIdentifier(self)
+        let presentation = ToastPresentation(
+            toast: Toast(contentConfiguration: configuration),
+            toastAlignment: toast.configuration.toastAlignment,
+            toastEnvironmentValues: ToastEnvironmentValues(
+                toastStyle: toastStyle,
+                toastTransition: toast.configuration.toastTransition,
+                toastInteractiveDismissEnabled: toast.configuration.toastInteractiveDismissEnabled,
+                toastBackgroundInteractionEnabled: toast.configuration.toastBackgroundInteractionEnabled,
+                toastAccessibilityOptions: toast.configuration.toastAccessibilityOptions
+            ),
+            presentationCanceller: toast.presentationCanceller,
+            onPresent: { [weak toast] in
+                toast?.isPresented = true
+                toast?.scheduledPresentationCanceller = nil
+                GlobalToastCancellationTokenStorage.shared.remove(forKey: toastKey)
+                onPresent?()
+            },
+            onDismiss: { [weak toast] in
+                toast?.isPresented = false
+                onDismiss?()
+                toast?._resetPresentationState()
+            }
         )
+        
+        if toast.cancelationTracksLifetime {
+            toast.scheduledPresentationCanceller = presenter.scheduleCancellable(
+                presentation: presentation
+            )
+        } else {
+            let cancellable = presenter.scheduleCancellable(
+                presentation: presentation
+            )
+            
+            GlobalToastCancellationTokenStorage.shared.store(
+                cancellable: cancellable,
+                forKey: toastKey
+            )
+            
+            toast.scheduledPresentationCanceller = AnyCancellable({})
+        }
     }
 }
 

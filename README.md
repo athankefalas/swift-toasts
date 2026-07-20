@@ -306,7 +306,7 @@ A toast can be created on UIKit by using the `UIToast` component, which can be t
 
 After an instance of `UIToast` has been created and configured, it can be then scheduled for presentation by using the `schedulePresentation` function of a `UIViewController`. An actively presented toast may be dismissed by using the `dismiss` function.
 
-Cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation`. If the instance of a toast
+Cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation` function and tracking the reference lifetime of a `UIToast` instance. If the instance of a toast is deallocated before it is presented, then the scheduled presentation is automatically cancelled.
 
     HERE <-----------------------
 
