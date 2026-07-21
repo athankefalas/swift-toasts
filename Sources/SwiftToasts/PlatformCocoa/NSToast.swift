@@ -15,8 +15,8 @@ import Combine
 @MainActor
 public class NSToast: NSObject {
     
-    /// The type of content a toast is inferred to have.
-    public enum InferredContentType {
+    /// The type of content mode a toast is inferred to have.
+    public enum InferredContentMode {
         case empty
         case standardContent
         case customContent
@@ -54,7 +54,7 @@ public class NSToast: NSObject {
         /// The background view of a toast.
         public var backgroundView: NSView?
         
-        /// Create a new toast content configuration using a standard content configuration.
+        /// Create a new toast content configuration using a standard content mode.
         /// - Parameters:
         ///   - icon: The icon of a toast.
         ///   - title: The title of a toast.
@@ -86,7 +86,7 @@ public class NSToast: NSObject {
             self.valueSubtitle = valueSubtitle
         }
         
-        /// Create a new toast content configuration using a custom content configuration.
+        /// Create a new toast content configuration using a custom content mode.
         /// - Parameters:
         ///   - contentView: The custom content view of a toast.
         ///   - backgroundView: The background view of a toast.
@@ -116,7 +116,7 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The configuration of a  `Toast` that controls it's behavior and appearance.
+    /// The configuration of a  `Toast` that controls it's content, behavior and appearance.
     public var configuration: Configuration
     
     /// The role of a `Toast`.
@@ -141,9 +141,9 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The icon of a `Toast` using the standard content configuration.
+    /// The icon of a `Toast` using the standard content mode.
     /// - Note: Setting this property with a non-nil value
-    /// will clear any custom content view set.
+    /// will clear any custom content mode properties set.
     public var icon: NSImage? {
         get {
             configuration.icon
@@ -158,9 +158,9 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The title of a `Toast` using the standard content configuration.
+    /// The title of a `Toast` using the standard content mode.
     /// - Note: Setting this property with a non-nil value
-    /// will clear any custom content view set.
+    /// will clear any custom content mode properties set.
     public var title: String? {
         get {
             configuration.title
@@ -175,9 +175,9 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The value subtitle of a `Toast` using the standard content configuration.
+    /// The value subtitle of a `Toast` using the standard content mode.
     /// - Note: Setting this property with a non-nil value
-    /// will clear any custom content view set.
+    /// will clear any custom content mode properties set.
     public var valueSubtitle: String? {
         get {
             configuration.valueSubtitle
@@ -192,9 +192,9 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The content view of a `Toast` using the custom content configuration.
+    /// The content view of a `Toast` using the custom content mode.
     /// - Note: Setting this property with a non-nil value
-    /// will clear any standard content such as icon, title and subtitles set.
+    /// will clear any standard content mode properties such as icon, title and subtitles set.
     public var contentView: NSView? {
         get {
             configuration.contentView
@@ -222,8 +222,8 @@ public class NSToast: NSObject {
         }
     }
     
-    /// The content type inferred by the current content configuration.
-    public var inferredContentType: InferredContentType {
+    /// The content mode the toast is inferred to have based on the current content configuration.
+    public var inferredContentMode: InferredContentMode {
         if configuration.contentView != nil {
             return .customContent
         }
@@ -235,11 +235,11 @@ public class NSToast: NSObject {
         return .empty
     }
     
-    /// A flag that indicates if this `Toast` is currently presented.
+    /// A flag that indicates whether this `Toast` is currently presented.
     public internal(set) var isPresented: Bool = false
     /// A flag that indicates whether the scheduled presentation of this `Toast`
     /// will be automatically cancelled when this instance will be deallocated.
-    public var cancelationTracksLifetime: Bool = false
+    public var cancellationTracksLifetime: Bool = false
     internal var scheduledPresentationCanceller: AnyCancellable? = nil
     internal var presentationCanceller: ToastPresentationCanceller = ToastPresentationCanceller()
     
@@ -248,13 +248,13 @@ public class NSToast: NSObject {
         scheduledPresentationCanceller != nil
     }
     
-    /// Creates a new `NSToast` with the given content configuration.
+    /// Creates a new `UIToast` with the given content configuration.
     /// - Parameter configuration: The content configuration to use.
     public init(configuration: Configuration) {
         self.configuration = configuration
     }
     
-    /// Create a new `NSToast` with the standard content configuration.
+    /// Create a new `UIToast` with the standard content mode.
     /// - Parameters:
     ///   - icon: An optional icon for the toast.
     ///   - title: The title to use for the toast.
@@ -277,7 +277,7 @@ public class NSToast: NSObject {
         )
     }
     
-    /// Create a new `NSToast` with a custom content configuration.
+    /// Create a new `UIToast` with a custom content mode.
     /// - Parameters:
     ///   - contentView: A custom content view to use for the toast.
     ///   - backgroundView: An optional custom background view to use for the toast.
@@ -352,7 +352,7 @@ public class NSToast: NSObject {
             }
         )
         
-        if self.cancelationTracksLifetime {
+        if self.cancellationTracksLifetime {
             self.scheduledPresentationCanceller = presenter.scheduleCancellable(
                 presentation: presentation
             )
@@ -448,6 +448,76 @@ extension Toast {
         } else {
             self = .init("", role: configuration.role, duration: configuration.duration)
         }
+    }
+}
+
+// MARK: NSToast.Configuration + common
+
+public extension NSToast.Configuration {
+    
+    static func plain() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .plain,
+            duration: .short
+        )
+        
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func informational() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .informational,
+            duration: .short
+        )
+        
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func success() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .success,
+            duration: .short
+        )
+        
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func warning() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .warning,
+            duration: .long
+        )
+        
+        configuration.title = nil
+        return configuration
+    }
+    
+    static func failure() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: nil,
+            title: "",
+            valueSubtitle: nil,
+            role: .failure,
+            duration: .long
+        )
+        
+        configuration.title = nil
+        return configuration
     }
 }
 

@@ -298,24 +298,73 @@ ToastPresenterReader { toastPresenterProxy in
 
 ### Native Platform Frameworks
 
-In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used. Please note, that the native framework APIs still use the same underlying infrastructure for scheduling and presentation. Depending on the configuration, this may also include the same SwiftUI environment or even a SwiftUI view hierarchy being displayed.
+In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used. Please note, that the native framework APIs still use the same underlying infrastructure for scheduling and presentation. Depending on the configuration, this may also include the same SwiftUI environment or even a pure SwiftUI view hierarchy being displayed.
 
 #### UIKit
 
-A toast can be created on UIKit by using the `UIToast` component, which can be then scheduled for presentation by a `UIViewController`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration and content configuration of a toast.
+A toast can be created on UIKit by using the `UIToast` component, which can then be scheduled for presentation by an instance of a `UIViewController`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `UIToast` instance by using computed properties such as `icon`, `title` or `contentView`.
 
-After an instance of `UIToast` has been created and configured, it can be then scheduled for presentation by using the `schedulePresentation` function of a `UIViewController`. An actively presented toast may be dismissed by using the `dismiss` function.
+``` Swift
+// Configure the UIToast content configuration
+let toast = UIToast(title: "Hello, toast!")
+toast.configuration.role = .success
+toast.configuration.duration = .long
+toast.configuration.style = .glass
+toast.configuration.toastAlignment = .bottom
+toast.configuration.toastTransition = .opacity
+toast.configuration.toastInteractiveDismissEnabled = true
+toast.configuration.toastBackgroundInteractionEnabled = false
 
-Cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation` function and tracking the reference lifetime of a `UIToast` instance. If the instance of a toast is deallocated before it is presented, then the scheduled presentation is automatically cancelled.
+// Or even create a new custom content configuration
+public extension UIToast.Configuration {
+    
+    static func savedChanges() -> Self {
+        var configuration = UIToast.Configuration(
+            icon: UIImage.successIcon,
+            title: "Saved changes",
+            valueSubtitle: nil,
+            role: .success,
+            duration: .short
+        )
 
-    HERE <-----------------------
+        configuration.style = .glass
+        return configuration
+    }
+}
+
+let toast = UIToast(configuration: .savedChanges())
+```
+
+A `UIToast` can either use a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast will use the same `ToastContentView` as a SwiftUI toast and will map the icon, title and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode the presented toast will use the configured custom `UIView`, which will be hosted using a `UIViewRepresentable` and using the default system layout sizing rules. In both modes, a custom background `UIView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
+
+
+``` Swift
+// Create a toast directly from a content configuration.
+let toast = UIToast(configuration: .plain())
+toast.configuration.style = .glass
+
+// Create a toast using the standard content mode.
+let toast = UIToast(title: "Hello toast!")
+toast.role = .informational
+toast.icon = UIImage.infoIcon
+toast.valueSubtitle = makeRandomMessageOrNil()
+
+// Create a toast using the custom content mode.
+let toast = UIToast(contentView: UICustomContentView())
+toast.backgroundView = UIBlurredMaterialView()
+```
+
+After an instance of `UIToast` has been created and configured, it can then be scheduled for presentation by using the `schedulePresentation` function of any active `UIViewController`. A toast that has been scheduled for presentation can be cancelled by using the `cancelScheduledPresentation` function of a `UIToast`. An actively presented toast may be dismissed by using the `dismiss` function of a `UIToast`.
+
+Please note, that cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of a `UIToast` instance, by enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not been yet presented is deallocated, then the scheduled presentation will be automatically cancelled.
 
 ``` Swift
 class SomeViewController: UIViewController {
 
     func sayHi() {
         // Create a UIToast
-        let toast = UIToast(title: "Hello, Toast.")
+        self.toast = UIToast(title: "Hello, Toast.")
+        toast.cancellationTracksLifetime = true
         schedulePresentation(of: toast)
     }
     
@@ -357,8 +406,10 @@ class SomeViewController: UIViewController {
         hudContent.spacing = 16
         hudContent.alignment = .center
         // Custom UIKit content is bridged to SwiftUI using
-        // UIViewRepresentable and therefore uses the view's
-        // intrinsic size for layout sizing.
+        // UIViewRepresentable and therefore uses the default
+        // system rules for layout sizing. If a custom layout size
+        // is needed, then it must be explicitly set as the 
+        // view's intrinsic content size or by some other means.
         hudContent.preferredIntrinsicContentSize = CGSize(
             width: view.frame.width * 0.33,
             height: 120
@@ -416,9 +467,174 @@ class SomeViewController: UIViewController {
 
 ```
 
-#### AppKit
+Essential information about the presentation state of a toast can be accessed by using the `isPresented` and `isScheduledForPresentation` properties. The `isScheduledForPresentation` property is true while a toast is scheduled for presentation but has not been presented yet. The `isPresented` property is true while the toast is actively being presented.
 
-TODO
+#### AppKit - Cocoa
+
+A toast can be created on AppKit by using the `NSToast` component, which can then be scheduled for presentation by using the `toast.schedulePresentation` function and passing an instance of a `NSWindow`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `NSToast` instance by using computed properties such as `icon`, `title` or `contentView`.
+
+``` Swift
+// Configure the NSToast content configuration
+let toast = NSToast(title: "Hello, toast!")
+toast.configuration.role = .success
+toast.configuration.duration = .long
+toast.configuration.style = .glass
+toast.configuration.toastAlignment = .bottom
+toast.configuration.toastTransition = .opacity
+toast.configuration.toastInteractiveDismissEnabled = true
+toast.configuration.toastBackgroundInteractionEnabled = false
+
+// Or even create a new custom content configuration
+public extension NSToast.Configuration {
+    
+    static func savedChanges() -> Self {
+        var configuration = NSToast.Configuration(
+            icon: NSImage.successIcon,
+            title: "Saved changes",
+            valueSubtitle: nil,
+            role: .success,
+            duration: .short
+        )
+
+        configuration.style = .glass
+        return configuration
+    }
+}
+
+let toast = NSToast(configuration: .savedChanges())
+```
+
+A `NSToast` can either use a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast will use the same `ToastContentView` as a SwiftUI toast and will map the icon, title and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode the presented toast will use the configured custom `NSView`, which will be hosted using a `NSViewRepresentable` and using the default system layout sizing rules. In both modes, a custom background `NSView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
+
+
+``` Swift
+// Create a toast directly from a content configuration.
+let toast = NSToast(configuration: .plain())
+toast.configuration.style = .glass
+
+// Create a toast using the standard content mode.
+let toast = NSToast(title: "Hello toast!")
+toast.role = .informational
+toast.icon = UIImage.infoIcon
+toast.valueSubtitle = makeRandomMessageOrNil()
+
+// Create a toast using the custom content mode.
+let toast = NSToast(contentView: NSCustomContentView())
+toast.backgroundView = NSBlurredMaterialView()
+```
+
+After an instance of `NSToast` has been created and configured, it can then be scheduled for presentation by using the `schedulePresentation` function and passing an active `NSWindow` as the presentation target. A toast that has been scheduled for presentation can be cancelled by using the `cancelScheduledPresentation` function of a `NSToast`. An actively presented toast may be dismissed by using the `dismiss` function of a `NSToast`.
+
+Please note, that cancellation and context invalidation of a `NSToast` is only supported manually by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of a `NSToast` instance, by enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not been yet presented is deallocated, then the scheduled presentation will be automatically cancelled.
+
+``` Swift
+class SomeViewController: NSViewController {
+    
+    func sayHi() {
+        // Create a NSToast
+        let toast = NSToast(title: "Hello, Toast.")
+        toast.cancellationTracksLifetime = true
+        toast.schedulePresentation(in: view.window!)
+    }
+    
+    func showToast(
+        favorited itemName: String,
+        subtitle: String? = nil
+    ) {
+        // Create a NSToast
+        let toast = NSToast(
+            icon: NSImage(
+                systemSymbolName: "star.fill",
+                accessibilityDescription: "Star"
+            ),
+            title: "\(itemName) added to favorites",
+            valueSubtitle: subtitle
+        )
+        
+        // Configure the toast
+        toast.role = .informational
+        toast.duration = .longer
+
+        // Schedule it for presentation
+        toast.schedulePresentation(in: view.window!)
+    }
+    
+    func showSuccessToast(subtitle: String? = nil) {
+        // Create a NSToast using a content configuration
+        let toast = NSToast(configuration: .success())
+        toast.configuration.title = "Success"
+        toast.configuration.valueSubtitle = subtitle
+        toast.configuration.icon = NSImage(
+            systemSymbolName: "checkmark.circle",
+            accessibilityDescription: "checkmark"
+        )
+        
+        toast.schedulePresentation(in: view.window!)
+    }
+    
+    func showBlockingHUDLoader() {
+        let hudContent = HUDContentStackView()
+        hudContent.orientation = .vertical
+        hudContent.distribution = .fillProportionally
+        hudContent.spacing = 16
+        hudContent.alignment = .centerY
+        // Custom NSView content is bridged to SwiftUI using
+        // NSViewRepresentable and therefore uses the default
+        // system rules for layout sizing. If a custom layout size
+        // is needed, then it must be explicitly set as the
+        // view's intrinsic content size or by some other means.
+        hudContent.preferredIntrinsicContentSize = CGSize(
+            width: view.frame.width * 0.33,
+            height: 120
+        )
+        
+        let activityIndicator = NSProgressIndicator()
+        activityIndicator.style = .spinning
+        hudContent.addArrangedSubview(activityIndicator)
+        
+        let label = NSTextField(labelWithString: "Loading")
+        label.textColor = .white
+        hudContent.addArrangedSubview(label)
+        
+        let hudBackgroundView = NSVisualEffectView()
+        hudBackgroundView.material = .hudWindow
+        hudBackgroundView.wantsLayer = true
+        hudBackgroundView.layer?.cornerRadius = 24
+        hudBackgroundView.subviews.forEach({ $0.layer?.cornerRadius = 24 })
+
+        // Create a toast with custom contentView and (optionally)
+        // a custom backgroundView.
+        let toast = NSToast(
+            contentView: hudContent,
+            backgroundView: hudBackgroundView
+        )
+        
+        // Configure the toast
+        toast.configuration.role = .plain
+        toast.configuration.duration = .indefinite
+        toast.configuration.toastAlignment = .center
+        toast.configuration.toastTransition = .opacity
+        toast.configuration.toastInteractiveDismissEnabled = false
+        toast.configuration.toastBackgroundInteractionEnabled = false
+        
+        // Schedule the toast presentation
+        toast.schedulePresentation(in: view.window!) {
+            // When the toast appears start the loading task
+            self.loadingTask = Task {
+                await self.someLongOperation()
+                // After the task has finished,
+                // dismiss the toast
+                toast.dismiss()
+            }
+        } onDismiss: {
+            // When the toast is dismissed clean up
+            self.loadingTask = nil
+        }
+    }
+}
+```
+
+Essential information about the presentation state of a toast can be accessed by using the `isPresented` and `isScheduledForPresentation` properties. The `isScheduledForPresentation` property is true while a toast is scheduled for presentation but has not been presented yet. The `isPresented` property is true while the toast is actively being presented.
 
 ## Configuring a Toast Presentation
 
