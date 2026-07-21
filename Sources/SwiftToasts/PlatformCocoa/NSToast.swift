@@ -150,7 +150,7 @@ public class NSToast: NSObject {
         }
         
         set {
-            if icon != nil {
+            if newValue != nil {
                 configuration.contentView = nil
             }
             
@@ -167,7 +167,7 @@ public class NSToast: NSObject {
         }
         
         set {
-            if title != nil {
+            if newValue != nil {
                 configuration.contentView = nil
             }
             
@@ -340,10 +340,12 @@ public class NSToast: NSObject {
             ),
             presentationCanceller: presentationCanceller,
             onPresent: { [weak self] in
-                self?.isPresented = true
-                self?.scheduledPresentationCanceller = nil
-                GlobalToastCancellationTokenStorage.shared.remove(forKey: toastKey)
-                onPresent?()
+                Task { @MainActor in
+                    self?.isPresented = true
+                    self?.scheduledPresentationCanceller = nil
+                    GlobalToastCancellationTokenStorage.shared.remove(forKey: toastKey)
+                    onPresent?()
+                }
             },
             onDismiss: { [weak self] in
                 self?.isPresented = false

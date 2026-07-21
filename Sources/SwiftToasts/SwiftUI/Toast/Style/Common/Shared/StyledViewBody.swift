@@ -137,20 +137,22 @@ struct StyledViewBody<ToastBackground: View>: View {
             }
             .fallbackAccessibilityLabel(toastAccessibilityOptions.accessibilityLabel.flatMap({ Text($0) }) ?? Text(""))
             .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityHidden)
-            .onAppear {
-                Task { @MainActor in
-                    try? await Task.sleep(duration: .seconds(0.12))
-                    
-                    if toastAccessibilityOptions.accessibilityManageFocus {
-                        isAccessibilityFocused = true
-                    }
-                    
-                    guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
-                        return
-                    }
-                    
-                    FallbackAccessibilityNotification.Announcement.post(appearedAnnouncementName.string)
+            .fallbackTask {
+                try? await Task.sleep(duration: .seconds(0.12))
+                
+                guard !Task.isCancelled else {
+                    return
                 }
+                
+                if toastAccessibilityOptions.accessibilityManageFocus {
+                    isAccessibilityFocused = true
+                }
+                
+                guard let appearedAnnouncementName = toastAccessibilityOptions.accessibilityOnAppearAnnouncement else {
+                    return
+                }
+                
+                FallbackAccessibilityNotification.Announcement.post(appearedAnnouncementName.string)
             }
             .onDisappear {
                 Task { @MainActor in

@@ -41,6 +41,13 @@ struct GlassToastBackground: View {
     
     var body: some View {
         ZStack {
+            if accessibilityReduceTransparency {
+                shape.fill(
+                    Color.fallbackSystemBackground
+                        .opacity(0.9)
+                )
+            }
+            
             Color(white: 1, opacity: 0.01)
                 .allowsHitTesting(true)
                 .contentShape(shape)

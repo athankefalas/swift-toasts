@@ -11,6 +11,13 @@ import SwiftUI
 
 extension NSWindow: ToastPresenting {
     
+    private var hasPreparedScheduler: Bool {
+        get {
+            let property = NSAssociatedProperty(\NSWindow._toastScheduler)
+            return self[property] != nil
+        }
+    }
+    
     private var _toastScheduler: ToastScheduler? {
         get {
             let property = NSAssociatedProperty(\NSWindow._toastScheduler)
@@ -91,7 +98,7 @@ extension NSWindow: ToastPresenting {
     
     @MainActor
     func prepareForToastPresentationIfNeeded() {
-        guard _toastScheduler == nil else {
+        guard !hasPreparedScheduler else {
             return
         }
         

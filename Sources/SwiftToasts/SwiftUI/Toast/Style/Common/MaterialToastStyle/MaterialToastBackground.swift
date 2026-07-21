@@ -54,6 +54,13 @@ struct MaterialToastBackground: View {
     var body: some View {
         ZStack {
             if !usesGlassBackgroundEffect {
+                if accessibilityReduceTransparency {
+                    shape.fill(
+                        Color.fallbackSystemBackground
+                            .opacity(0.9)
+                    )
+                }
+                
                 material
                     .clipShape(shape)
                 
