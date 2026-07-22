@@ -14,7 +14,7 @@ private struct ToastPresentedAlignmentEnvironmentKey: EnvironmentKey {
 public extension EnvironmentValues {
     
     /// The alignment of the presented toast.
-    internal(set) var toastPresentedAlignment: ToastAlignment? {
+    /*internal(set)*/ var toastPresentedAlignment: ToastAlignment? {
         get { self[ToastPresentedAlignmentEnvironmentKey.self] }
         set { self[ToastPresentedAlignmentEnvironmentKey.self] = newValue }
     }
