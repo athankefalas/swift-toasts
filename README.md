@@ -7,6 +7,8 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fathankefalas%2Fswift-toasts%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/athankefalas/swift-toasts)
 
 
+<!-- Image -->
+
 A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors without blocking user interaction with the main content. 
 
 SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and truly native.
@@ -24,6 +26,45 @@ Features:
 🍎 Compatible with multiple Apple platforms and all SwiftUI versions.
 
 🛠️ Variety of ways that can be used to present Toasts using SwiftUI inspired APIs.
+
+## Contents
+
+- [SwiftToasts](#swifttoasts)
+  - [Contents](#contents)
+  - [Compatibility](#compatibility)
+    - [Platform Compatibility](#platform-compatibility)
+      - [WatchOS](#watchos)
+  - [Installation](#installation)
+  - [Creating a Toast](#creating-a-toast)
+    - [Role](#role)
+    - [Duration](#duration)
+  - [Presenting a Toast](#presenting-a-toast)
+    - [Modifiers](#modifiers)
+      - [Toast](#toast)
+      - [Tasks](#tasks)
+    - [Buttons](#buttons)
+    - [Toast Presenter Reader](#toast-presenter-reader)
+    - [Native Platform Frameworks](#native-platform-frameworks)
+      - [UIKit](#uikit)
+      - [AppKit - Cocoa](#appkit---cocoa)
+  - [Configuring a Toast Presentation](#configuring-a-toast-presentation)
+    - [Style](#style)
+      - [Common Styles](#common-styles)
+    - [Transition](#transition)
+    - [Cancellation](#cancellation)
+    - [Presentation Invalidation](#presentation-invalidation)
+    - [Interactive Dismissal](#interactive-dismissal)
+    - [Background Content Interaction](#background-content-interaction)
+    - [Accessibility Options](#accessibility-options)
+  - [Toast Styling](#toast-styling)
+    - [Toast Environment Values](#toast-environment-values)
+      - [Toast Dismiss Action](#toast-dismiss-action)
+      - [Toast Presented Role](#toast-presented-role)
+      - [Toast Presented Alignment](#toast-presented-alignment)
+      - [Toast Interactive Dismiss Enabled](#toast-interactive-dismiss-enabled)
+      - [Toast Accessibility Options](#toast-accessibility-options)
+  - [Alternative Presentation Contexts](#alternative-presentation-contexts)
+
 
 ## Compatibility
 
@@ -54,23 +95,23 @@ You can install SwiftToasts as a Swift package dependency, by using the followin
 A `Toast` is defined a plain SwiftUI View and requires three properties to configure and create it, the role of the Toast, the duration and the displayed content view. Similar to common SwiftUI components, such as `Button` or `Label`, a number of initializers exist that allow the initialization of a Toast with commonly used content.
 
 ``` Swift
-/// Creating a plain Toast with Text content.
+/// Creating a plain Toast with a title.
 Toast("Hello Toast!")
 
-/// Creating a failure Toast with Text content.
+/// Creating a failure Toast with a title.
 Toast(
     "Something went wrong.",
     role: .failure
 )
 
-/// Creating a success Toast with Label content.
+/// Creating a success Toast a title and an icon.
 Toast(
     "Settings Saved",
     systemImage: "checkmark.circle",
     role: .success
 )
 
-/// Creating a warning Toast with a Label and LabeledContent with a title and subtitle.
+/// Creating a warning Toast with an icon, a title and a value subtitle.
 Toast(
     "Network Offline",
     value: "Please check your connection.",
@@ -78,7 +119,16 @@ Toast(
     role: .warning
 )
 
-/// Creating an informational Toast with custom content and long duration.
+/// Creating a success Toast with SwiftUI views.
+Toast(
+    icon: Image(uiImage: song.coverArt),
+    title: Text("Added to favorites"),
+    valueSubtitle: Text("\(song.name) has been added to your favorites."),
+    role: .success,
+    duration: .short
+)
+
+/// Creating an informational Toast with custom Label content and long duration.
 Toast(role: .informational, duration: .long) {
     Label {
         Text("User **@\(userName)** sent you a message.")
@@ -310,10 +360,10 @@ let toast = UIToast(title: "Hello, toast!")
 toast.configuration.role = .success
 toast.configuration.duration = .long
 toast.configuration.style = .glass
-toast.configuration.toastAlignment = .bottom
-toast.configuration.toastTransition = .opacity
-toast.configuration.toastInteractiveDismissEnabled = true
-toast.configuration.toastBackgroundInteractionEnabled = false
+toast.configuration.alignment = .bottom
+toast.configuration.transition = .opacity
+toast.configuration.interactiveDismissEnabled = true
+toast.configuration.backgroundInteractionEnabled = false
 
 // Or even create a new custom content configuration
 public extension UIToast.Configuration {
@@ -444,10 +494,10 @@ class SomeViewController: UIViewController {
         // Configure the toast
         toast.configuration.role = .plain
         toast.configuration.duration = .indefinite
-        toast.configuration.toastAlignment = .center
-        toast.configuration.toastTransition = .opacity
-        toast.configuration.toastInteractiveDismissEnabled = false
-        toast.configuration.toastBackgroundInteractionEnabled = false
+        toast.configuration.alignment = .center
+        toast.configuration.transition = .opacity
+        toast.configuration.interactiveDismissEnabled = false
+        toast.configuration.backgroundInteractionEnabled = false
         
         // Schedule the toast presentation
         schedulePresentation(of: toast) {
@@ -479,10 +529,10 @@ let toast = NSToast(title: "Hello, toast!")
 toast.configuration.role = .success
 toast.configuration.duration = .long
 toast.configuration.style = .glass
-toast.configuration.toastAlignment = .bottom
-toast.configuration.toastTransition = .opacity
-toast.configuration.toastInteractiveDismissEnabled = true
-toast.configuration.toastBackgroundInteractionEnabled = false
+toast.configuration.alignment = .bottom
+toast.configuration.transition = .opacity
+toast.configuration.interactiveDismissEnabled = true
+toast.configuration.backgroundInteractionEnabled = false
 
 // Or even create a new custom content configuration
 public extension NSToast.Configuration {
@@ -515,7 +565,7 @@ toast.configuration.style = .glass
 // Create a toast using the standard content mode.
 let toast = NSToast(title: "Hello toast!")
 toast.role = .informational
-toast.icon = UIImage.infoIcon
+toast.icon = NSImage.infoIcon
 toast.valueSubtitle = makeRandomMessageOrNil()
 
 // Create a toast using the custom content mode.
@@ -612,10 +662,10 @@ class SomeViewController: NSViewController {
         // Configure the toast
         toast.configuration.role = .plain
         toast.configuration.duration = .indefinite
-        toast.configuration.toastAlignment = .center
-        toast.configuration.toastTransition = .opacity
-        toast.configuration.toastInteractiveDismissEnabled = false
-        toast.configuration.toastBackgroundInteractionEnabled = false
+        toast.configuration.alignment = .center
+        toast.configuration.transition = .opacity
+        toast.configuration.interactiveDismissEnabled = false
+        toast.configuration.backgroundInteractionEnabled = false
         
         // Schedule the toast presentation
         toast.schedulePresentation(in: view.window!) {
@@ -1075,7 +1125,7 @@ The toast dismiss action is an environment value injected in the `toastDismiss` 
 Please note, that the scheduler automatically handles the duration of a toast, so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
 
 #### Toast Presented Role
-The toast presented role is an *environment* value injected in the `toastPresenteRole` KeyPath and contains the role of the presented toast. This can be used by custom component styles such as custom `Label`, `LabeledContent` or `ToastContentView` styles to adjust their layout, visual properties and behavior.
+The toast presented role is an *environment* value injected in the `toastPresentedRole` KeyPath and contains the role of the presented toast. This can be used by custom component styles such as custom `Label`, `LabeledContent` or `ToastContentView` styles to adjust their layout, visual properties and behavior.
 
 #### Toast Presented Alignment
 

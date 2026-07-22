@@ -24,17 +24,17 @@ public class NSToast: NSObject {
     
     public struct Configuration {
         /// The style of the toast.
-        public var toastStyle: any ToastStyle
+        public var style: any ToastStyle
         /// The alignment of the toast.
-        public var toastAlignment: ToastAlignment
+        public var alignment: ToastAlignment
         /// The transition that will be used for the toast presentation.
-        public var toastTransition: ToastTransition
+        public var transition: ToastTransition
         /// A flag that controls whether the toast can be interactively dismissed.
-        public var toastInteractiveDismissEnabled: Bool
+        public var interactiveDismissEnabled: Bool
         /// A flag that controls whether the content behind a presented toast can be interacted with during a toast presentation.
-        public var toastBackgroundInteractionEnabled: Bool
+        public var backgroundInteractionEnabled: Bool
         /// The accessibility options used for the toast content.
-        public var toastAccessibilityOptions: ToastAccessibilityOptions
+        public var accessibilityOptions: ToastAccessibilityOptions
         
         
         /// The role of a toast.
@@ -69,12 +69,12 @@ public class NSToast: NSObject {
             duration: ToastDuration
         ) {
             // Options
-            self.toastStyle = .automatic
-            self.toastAlignment = .defaultAlignment
-            self.toastTransition = .defaultTransition
-            self.toastInteractiveDismissEnabled = true
-            self.toastBackgroundInteractionEnabled = true
-            self.toastAccessibilityOptions = .hidden
+            self.style = .automatic
+            self.alignment = .defaultAlignment
+            self.transition = .defaultTransition
+            self.interactiveDismissEnabled = true
+            self.backgroundInteractionEnabled = true
+            self.accessibilityOptions = .hidden
             
             // Attributes
             self.role = role
@@ -99,12 +99,12 @@ public class NSToast: NSObject {
             duration: ToastDuration
         ) {
             // Options
-            self.toastStyle = .automatic
-            self.toastAlignment = .defaultAlignment
-            self.toastTransition = .defaultTransition
-            self.toastInteractiveDismissEnabled = true
-            self.toastBackgroundInteractionEnabled = true
-            self.toastAccessibilityOptions = .hidden
+            self.style = .automatic
+            self.alignment = .defaultAlignment
+            self.transition = .defaultTransition
+            self.interactiveDismissEnabled = true
+            self.backgroundInteractionEnabled = true
+            self.accessibilityOptions = .hidden
             
             // Attributes
             self.role = role
@@ -318,7 +318,7 @@ public class NSToast: NSObject {
             return
         }
                 
-        var toastStyle: AnyToastStyle = configuration.toastStyle.erased()
+        var toastStyle: AnyToastStyle = configuration.style.erased()
         if let backgroundView = configuration.backgroundView {
             toastStyle = AppKitBridgedToastStyle(
                 inheritedStyle: toastStyle,
@@ -330,13 +330,13 @@ public class NSToast: NSObject {
         let toastKey = ObjectIdentifier(self)
         let presentation = ToastPresentation(
             toast: Toast(contentConfiguration: configuration),
-            toastAlignment: configuration.toastAlignment,
+            toastAlignment: configuration.alignment,
             toastEnvironmentValues: ToastEnvironmentValues(
                 toastStyle: toastStyle,
-                toastTransition: configuration.toastTransition,
-                toastInteractiveDismissEnabled: configuration.toastInteractiveDismissEnabled,
-                toastBackgroundInteractionEnabled: configuration.toastBackgroundInteractionEnabled,
-                toastAccessibilityOptions: configuration.toastAccessibilityOptions
+                toastTransition: configuration.transition,
+                toastInteractiveDismissEnabled: configuration.interactiveDismissEnabled,
+                toastBackgroundInteractionEnabled: configuration.backgroundInteractionEnabled,
+                toastAccessibilityOptions: configuration.accessibilityOptions
             ),
             presentationCanceller: presentationCanceller,
             onPresent: { [weak self] in
