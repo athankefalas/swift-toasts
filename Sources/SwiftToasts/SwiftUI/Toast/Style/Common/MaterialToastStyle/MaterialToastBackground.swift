@@ -76,11 +76,6 @@ struct MaterialToastBackground: View {
                 .allowsHitTesting(true)
                 .contentShape(shape)
         }
-#if os(visionOS)
-        .glassBackgroundEffect(
-            displayMode: usesGlassBackgroundEffect ? .always : .never
-        )
-#endif
         .shadow(
             color: usesGlassBackgroundEffect ? .clear : shadowColor,
             radius: usesGlassBackgroundEffect ? 0 : shadowRadius

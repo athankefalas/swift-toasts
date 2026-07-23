@@ -57,14 +57,14 @@ public struct StandardToastContentStyle: ToastContentStyle {
                     titleAndSubtitle
                 }
                 .fallbackScaledMetric(24, relativeTo: .title, assingedTo: $smallIconSize)
-                .fallbackScaledMetric(54, relativeTo: .title, assingedTo: $largeIconSize)
+                .fallbackScaledMetric(64, relativeTo: .title, assingedTo: $largeIconSize)
             } else {
                 HStack(alignment: .center, spacing: 12) {
                     icon
                     titleAndSubtitle
                 }
                 .fallbackScaledMetric(24, relativeTo: .title, assingedTo: $smallIconSize)
-                .fallbackScaledMetric(54, relativeTo: .title, assingedTo: $largeIconSize)
+                .fallbackScaledMetric(64, relativeTo: .title, assingedTo: $largeIconSize)
             }
         }
         

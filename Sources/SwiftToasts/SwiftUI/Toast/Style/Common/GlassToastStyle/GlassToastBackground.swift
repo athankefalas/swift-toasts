@@ -38,8 +38,20 @@ struct GlassToastBackground: View {
         
         return glass
     }
-    
+
     var body: some View {
+        content
+#if os(visionOS)
+            .glassBackgroundEffect(
+                displayMode: toastOrnamentPresentationEnabled ? .never : .always
+            )
+#else
+            .glassEffect(glass, in: shape)
+#endif
+            .contentShape(shape)
+    }
+    
+    private var content: some View {
         ZStack {
             if accessibilityReduceTransparency {
                 shape.fill(
@@ -52,14 +64,6 @@ struct GlassToastBackground: View {
                 .allowsHitTesting(true)
                 .contentShape(shape)
         }
-#if os(visionOS)
-        .glassBackgroundEffect(
-            displayMode: .always
-        )
-#else
-        .glassEffect(glass, in: shape)
-#endif
-        .contentShape(shape)
     }
     
     private var shape: FallbackAnyShape {

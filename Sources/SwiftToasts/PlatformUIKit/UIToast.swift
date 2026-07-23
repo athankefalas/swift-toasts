@@ -390,7 +390,7 @@ public extension UIViewController {
             ).erased()
         }
         
-        let toastKey = ObjectIdentifier(self)
+        let toastKey = ObjectIdentifier(toast)
         let presentation = ToastPresentation(
             toast: Toast(contentConfiguration: configuration),
             toastAlignment: toast.configuration.alignment,

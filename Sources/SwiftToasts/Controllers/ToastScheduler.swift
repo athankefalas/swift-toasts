@@ -169,16 +169,19 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
         presenterID: ObjectIdentifier,
         presenterPhasePublisher: AnyPublisher<PresenterPhaseObserver.PresenterPhase, Never>?
     ) {
-        self.handlingTask = Task(priority: .low) { @MainActor in
+        let handler = self.handler
+        let toastStream = self.toastStream
+        self.handlingTask = Task(priority: .low) { @MainActor [weak self] in
             let scenePhaseObserver = ScenePhaseObserver(sceneID: presenterID)
             let presenterPhaseObserver = PresenterPhaseObserver(presenterPhasePublisher: presenterPhasePublisher)
             
             for await toastRequest in toastStream {
-                if Task.isCancelled {
+                guard let self,
+                      !Task.isCancelled else {
                     break
                 }
                 
-                if let cancellationToken {
+                if let cancellationToken = self.cancellationToken {
                     if cancellationToken === toastRequest {
                         self.cancellationToken = nil
                     }
