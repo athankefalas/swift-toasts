@@ -25,6 +25,7 @@ struct GlassToastBackground: View {
     let useTintedGlass: Bool
     let useInteractiveGlass: Bool
     
+#if !os(visionOS)
     private var glass: Glass {
         var glass = Glass.regular
         
@@ -38,6 +39,7 @@ struct GlassToastBackground: View {
         
         return glass
     }
+#endif
 
     var body: some View {
         content

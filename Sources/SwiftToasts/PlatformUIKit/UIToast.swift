@@ -591,7 +591,7 @@ class UIPreviewViewController: UIViewController,
         
         let toolBar = UIToolbar()
         var doenButtonStyle: UIBarButtonItem.Style = .done
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
             doenButtonStyle = .prominent
         }
         
@@ -626,7 +626,9 @@ class UIPreviewViewController: UIViewController,
         
         toolBar.sizeToFit()
         toolBar.isUserInteractionEnabled = true
+#if !os(visionOS)
         textField.inputAccessoryView = toolBar
+#endif
         
         let showToastButton = UIButton(
             type: .system
