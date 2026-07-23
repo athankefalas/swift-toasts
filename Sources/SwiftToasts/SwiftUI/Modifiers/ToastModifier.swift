@@ -88,12 +88,13 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
             return presentationCanceller.dismissPresentation()
         }
         
+        presentationCanceller.dismissPresentation()
+
         guard let toast = toast(newValue) else {
             return
         }
-        
+
         let onToastDismiss = onToastDismiss
-        presentationCanceller.dismissPresentation()
         toastPresenter._schedule(
             presentation: ToastPresentation(
                 toast: toast,

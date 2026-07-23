@@ -63,14 +63,14 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     
     func body(content: Content) -> some View {
         content.fallbackOnChange(of: trigger) { newValue in
-            guard let toast = toast(newValue) else {
-                return
-            }
-            
             if invalidationOptions.contains(.contextChanged) {
                 presentationCanceller.dismissPresentation()
             }
-            
+
+            guard let toast = toast(newValue) else {
+                return
+            }
+
             toastPresenter._schedule(
                 presentation: ToastPresentation(
                     toast: toast,
@@ -158,6 +158,8 @@ struct _ToastTriggerModifierPreview: View {
     
     var body: some View {
         VStack {
+            Button("Set to TRUE") { isOn = true }
+            Button("Set to FALSE") { isOn = false }
             Toggle("Some option", isOn: $isOn)
                 .toast(trigger: isOn) { newValue in
                     if newValue {
