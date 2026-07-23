@@ -41,28 +41,33 @@ extension Array where Element == AnyAnimationProperty {
             return animationProperties
         }
         
-        return animationProperties
-            .compactMap { element in
+        let opacityProperties = animationProperties
+            .compactMap { element -> OpacityProperty? in
                 guard let fromValue = element.fromValue as? CGFloat,
                       let toValue = element.toValue as? CGFloat else {
-                    return OpacityProperty?.none
+                    return nil
                 }
                 
-                return OpacityProperty(fromValue: fromValue, toValue: toValue)
+                return OpacityProperty(
+                    fromValue: fromValue,
+                    toValue: toValue
+                )
             }
-            .reduce(into: (CGFloat, CGFloat)?.none) { partialResult, animation in
-                guard var result = partialResult else {
-                    partialResult = (animation.fromValue, animation.toValue)
-                    return
-                }
-                
-                result.0 = (result.0 + animation.fromValue) * 0.5
-                result.1 = (result.1 + animation.toValue) * 0.5
-                partialResult = result
-            }
-            .map { (fromValue, toValue) in
-                [OpacityProperty(fromValue: fromValue, toValue: toValue).erased()]
-            } ?? []
+
+        guard !opacityProperties.isEmpty else {
+            return []
+        }
+
+        let count = CGFloat(opacityProperties.count)
+        let averageFromValue = opacityProperties.reduce(0) { $0 + $1.fromValue } / count
+        let averageToValue = opacityProperties.reduce(0) { $0 + $1.toValue } / count
+
+        return [
+            OpacityProperty(
+                fromValue: averageFromValue,
+                toValue: averageToValue
+            ).erased()
+        ]
     }
 
     private static func reduceTransformAnimations(
