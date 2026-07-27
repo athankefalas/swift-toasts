@@ -53,6 +53,11 @@ public struct MaterialToastStyle: ToastStyle {
 
 public extension ToastStyle where Self == MaterialToastStyle {
     
+    @available(*, deprecated, renamed: "material")
+    nonisolated static var plain: MaterialToastStyle {
+        MaterialToastStyle()
+    }
+    
     nonisolated static var material: MaterialToastStyle {
         MaterialToastStyle()
     }

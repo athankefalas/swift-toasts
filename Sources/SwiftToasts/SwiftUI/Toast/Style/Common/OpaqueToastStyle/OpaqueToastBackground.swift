@@ -1,5 +1,5 @@
 //
-//  PlainToastBackground.swift
+//  OpaqueToastBackground.swift
 //  SwiftToasts
 //
 //  Created by Sakis Kefalas on 7/11/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PlainToastBackground: View {
+struct OpaqueToastBackground: View {
     @Environment(\.platformIdiom)
     private var platformIdiom
     

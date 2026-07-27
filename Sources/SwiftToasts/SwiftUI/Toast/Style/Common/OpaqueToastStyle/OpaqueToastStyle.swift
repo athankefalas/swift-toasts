@@ -1,5 +1,5 @@
 //
-//  PlainToastStyle.swift
+//  OpaqueToastStyle.swift
 //  SwiftToasts
 //
 //  Created by Sakis Kefalas on 6/10/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct PlainToastStyle: ToastStyle {
+public struct OpaqueToastStyle: ToastStyle {
     private let useTintedBackground: Bool
     
     public nonisolated init(
@@ -21,7 +21,7 @@ public struct PlainToastStyle: ToastStyle {
             cornerRadius: 8,
             configuration: configuration
         ) { properties in
-            PlainToastBackground(
+            OpaqueToastBackground(
                 accentColor: properties.accentColor,
                 cornerRadius: properties.cornerRadius,
                 borderWidth: properties.borderWidth,
@@ -34,10 +34,10 @@ public struct PlainToastStyle: ToastStyle {
 
 // MARK: ToastStyle Extension
 
-public extension ToastStyle where Self == PlainToastStyle {
+public extension ToastStyle where Self == OpaqueToastStyle {
     
-    nonisolated static var plain: PlainToastStyle {
-        PlainToastStyle()
+    nonisolated static var opaque: OpaqueToastStyle {
+        OpaqueToastStyle()
     }
 }
 
