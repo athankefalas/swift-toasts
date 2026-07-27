@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 private struct ToastAccessibilityOptionsEnvironmentKey: EnvironmentKey {
     public static let defaultValue: ToastAccessibilityOptions = ToastAccessibilityOptions.hidden
 }
