@@ -736,7 +736,7 @@ ToastButton("Show Toast") { schedule in
 }
 .toastStyle(.glass)
 
-// Showing a Toast with the plain style.
+// Showing a Toast with the opaque style.
 ToastButton("Show Toast") { schedule in
     schedule(
         toast: Toast(
@@ -746,7 +746,7 @@ ToastButton("Show Toast") { schedule in
         )
     )
 }
-.toastStyle(.plain)
+.toastStyle(.opaque)
 
 // Showing a Toast with a custom style.
 ToastButton("Show Toast") { schedule in
@@ -769,7 +769,7 @@ ToastButton("Show Toast") { schedule in
 | -                    | `.automatic`      | A symbolic toast style which resolves to either `.material` or `.glass` based on the platform and / or version. |
 | `MaterialToastStyle`   | `.material`       | A toast style that uses system materials. The material thickness can be configured by creating a style using the full `MaterialToastStyle.init`. |
 | `GlassToastStyle`      | `.glass`          | A toast style that uses LiquidGlass materials. This style is only available on platforms that support LiquidGlass (iOS 26.0 and later, macOS 26.0 and later, tvOS 26.0 and later, watchOS 26.0 and later, visionOS 26.0 and later). The LiquidGlass attributes can be configured by creating a style using the full `GlassToastStyle.init`.  |
-| `PlainToastStyle`      | `.plain`          | A toast style that uses solid color. The solid color can be optionally tinted by creating a style using the full `PlainToastStyle.init`. |
+| `OpaqueToastStyle`     | `.opaque`         | A toast style that uses a solid, opaque color. The color can be optionally tinted by creating a style using the full `OpaqueToastStyle.init`. |
 
 ### Transition
 
