@@ -1,4 +1,4 @@
-#  SwiftToasts
+# SwiftToasts
 
 <!-- # Badges -->
 [![GitHub License](https://img.shields.io/github/license/athankefalas/swift-toasts)](https://github.com/athankefalas/swift-toasts/blob/main/LICENSE)
@@ -9,9 +9,9 @@
 
 <!-- Image -->
 
-A toast is a transient, relatively unobtrusive visual component that can be used to display short messages such as status updates or surface errors without blocking user interaction with the main content. 
+A toast is a transient, relatively unobtrusive visual component used to display short messages, such as status updates, or surface errors, without blocking user interaction with the main content. 
 
-SwiftToasts is a library for SwiftUI that enables easy, fast, flexible and configurable integration of toasts in Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive and truly native.
+SwiftToasts is a library for SwiftUI that enables easy, fast, flexible, and configurable integration of toasts on Apple platforms, at the scene level. Built to follow the API conventions of SwiftUI, using the library feels familiar, intuitive, and truly native.
 
 Features:
 
@@ -82,17 +82,17 @@ The SwiftToasts library is compatible with all versions of SwiftUI.
 
 #### WatchOS
 
-Because watchOS does not have a platform-native dynamic view hierarchy framework such as UIKit or AppKit, SwiftToasts requires that the `toastPresentingLayout` modifier be placed at the root content view to enable Toast Presentation on watchOS in a compatibility mode.
+Because watchOS does not have a platform-native dynamic view hierarchy framework such as UIKit or AppKit, SwiftToasts requires that the `toastPresentingLayout` modifier be placed at the root content view to enable toast presentation on watchOS in a compatibility mode.
 
 ## Installation
 
-You can install SwiftToasts as a Swift package dependency, by using the following url:
+You can install SwiftToasts as a Swift package dependency by using the following URL:
 
     https://github.com/athankefalas/swift-toasts.git
 
 ## Creating a Toast
 
-A `Toast` is defined a plain SwiftUI View and requires three properties to configure and create it, the role of the Toast, the duration and the displayed content view. Similar to common SwiftUI components, such as `Button` or `Label`, a number of initializers exist that allow the initialization of a Toast with commonly used content.
+A `Toast` is defined as a plain SwiftUI View and requires three properties to configure and create it: the role of the Toast, the duration, and the displayed content view. Similar to common SwiftUI components, such as `Button` or `Label`, a number of initializers exist that allow the initialization of a Toast with commonly used content.
 
 ``` Swift
 /// Creating a plain Toast with a title.
@@ -104,7 +104,7 @@ Toast(
     role: .failure
 )
 
-/// Creating a success Toast a title and an icon.
+/// Creating a success Toast with a title and an icon.
 Toast(
     "Settings Saved",
     systemImage: "checkmark.circle",
@@ -151,7 +151,7 @@ Toast(role: .informational, duration: .long) {
     }
 }
 
-/// Creating an informational Toast with custom content and an custom duration.
+/// Creating an informational Toast with custom content and a custom duration.
 Toast(role: .informational, duration: .seconds(8)) {
     Label {
         Text("Synchronizing data...")
@@ -163,7 +163,7 @@ Toast(role: .informational, duration: .seconds(8)) {
 
 ### Role
 
-The role property of a `Toast` defines the semantic purpose for the displayed content and can be used to conditionally modify the appearance of a Toast based on its role. The role of a Toast is defined using the `ToastRole` enum.
+The role property of a `Toast` defines the semantic purpose of the displayed content and can be used to conditionally modify the appearance of a Toast based on its role. The role of a Toast is defined using the `ToastRole` enum.
 
 The following roles are supported:
 
@@ -177,32 +177,33 @@ The following roles are supported:
 
 3. Success
    
-   A role that presents a success message to the user after a user initiated operation was completed.
+   A role that presents a success message to the user after a user-initiated operation completed successfully.
+   
 4. Warning
    
-   A role that presents a warning message to the user after a user initiated operation was completed but encountered a recoverable error or a system precept has changed.
+   A role that presents a warning message to the user after a user-initiated operation completed but encountered a recoverable error, or after a system precept has changed.
 
 5. Failure
    
-   A role that presents a failure message to the user after a user initiated operation has failed.
+   A role that presents a failure message to the user after a user-initiated operation has failed.
 
 ### Duration
 
 The duration of a `Toast` defines how long a Toast presentation will remain active. The duration of a Toast can be defined by using the `ToastDuration` type.
 
-Other than predefined defined duration instances that have a specific lifetime, a Toast may also be presented indefinitely, by using the `ToastDuration.indefinite` duration. Please note, that a Toast that is presented indefinitely must be explicitly dismissed either by user interaction or by any other means that control the presentation of a Toast.
+Other than the predefined duration instances that have a specific lifetime, a Toast may also be presented indefinitely by using the `ToastDuration.indefinite` duration. Please note that a Toast presented indefinitely must be explicitly dismissed, either by user interaction or by any other means that control the presentation of a Toast.
 
 ## Presenting a Toast
 
-After a `Toast` is created it can be scheduled for presentation on a __*separate*__, __*modal environment*__. An internal scheduler places scheduled toasts in a FIFO queue and ensures that Toasts will be presented one at a time in the order they were scheduled.
+After a `Toast` is created, it can be scheduled for presentation in a __*separate*__, __*modal environment*__. An internal scheduler places scheduled toasts in a FIFO queue and ensures that Toasts are presented one at a time, in the order they were scheduled.
 
 ### Modifiers
 
-The modifiers below can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change.
+The modifiers below can be used to present a `Toast` as a reaction to a trigger, an event, or a state change.
 
 #### Toast
 
-The `toast` modifier and its variants can be used to present a `Toast` as a reaction to a trigger, an occurred event or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback and a content builder closure that can be used to build the toast to present.
+The `toast` modifier and its variants can be used to present a `Toast` as a reaction to a trigger, an event, or a state change. Generally, the toast modifier allows for the optional configuration of the presentation alignment, an optional dismissal callback, and a content builder closure that can be used to build the toast to present.
 
 The content builder closure supports conditional and optional `Toast` building following the API style of the SwiftUI ViewBuilder.
 
@@ -234,19 +235,19 @@ content
         }
     }
 
-// Showing a Toast when some value changes
+// Showing a Toast when some value changes.
 content
     .toast(trigger: someValue) {
         Toast("Value changed")
     }
 
-// Showing a Toast when some value changes
+// Showing a Toast when some value changes from the top.
 content
     .toast(
         trigger: someValue,
         alignment: .top,
         onDismiss: { print("Toast Dismissed.") }
-    ) { newValue
+    ) { newValue in
         Toast("Value changed to \(newValue).")
     }
 
@@ -260,7 +261,7 @@ content
 
 #### Tasks
 
-The toast variants of the `task` modifier can be used to schedule the presentation of a `Toast` when the presentation is a direct result of an asynchronous operation. In order to schedule the toast the instance of `ScheduleToastAction` that is passed as an argument in the task operation must be used.
+The toast variants of the `task` modifier can be used to schedule the presentation of a `Toast` when the presentation is a direct result of an asynchronous operation. In order to schedule the toast, the instance of `ScheduleToastAction` that is passed as an argument in the task operation must be used.
 
 ``` swift
 // Showing a Toast as a result of a task.
@@ -301,7 +302,7 @@ content
 
 ### Buttons
 
-A `ToastButton` can be used to schedule the presentation of a `Toast` when the presentation is a direct result of a user interaction or user triggered operation. In order to schedule the toast the instance of `ScheduleToastAction` that is passed as an argument in the button action must be used.
+A `ToastButton` can be used to schedule the presentation of a `Toast` when the presentation is a direct result of a user interaction or user-triggered operation. In order to schedule the toast, the instance of `ScheduleToastAction` that is passed as an argument in the button action must be used.
 
 ``` Swift
 // Showing a Toast after a user presses a Button.
@@ -320,7 +321,7 @@ ToastButton("Submit") { schedule in
 
 ### Toast Presenter Reader
 
-A `Toast` can also be manually scheduled with a `ToastPresenterReader` view and using the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts as well as to cancel all scheduled toasts that are still awaiting presentation.
+A `Toast` can also be scheduled manually using a `ToastPresenterReader` view and the toast presenter proxy it reads from the environment. The `ToastPresenterProxy` instance can be used to schedule toasts, as well as to cancel all scheduled toasts that are still awaiting presentation.
 
 ``` Swift
 ToastPresenterReader { toastPresenterProxy in
@@ -348,11 +349,11 @@ ToastPresenterReader { toastPresenterProxy in
 
 ### Native Platform Frameworks
 
-In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used. Please note, that the native framework APIs still use the same underlying infrastructure for scheduling and presentation. Depending on the configuration, this may also include the same SwiftUI environment or even a pure SwiftUI view hierarchy being displayed.
+In addition to using SwiftUI to schedule the presentation of a `Toast`, the native platform frameworks may also be used. Please note that the native framework APIs still use the same underlying infrastructure for scheduling and presentation. Depending on the configuration, this may also include the same SwiftUI environment, or even a pure SwiftUI view hierarchy being displayed.
 
 #### UIKit
 
-A toast can be created on UIKit by using the `UIToast` component, which can then be scheduled for presentation by an instance of a `UIViewController`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `UIToast` instance by using computed properties such as `icon`, `title` or `contentView`.
+A toast can be created on UIKit by using the `UIToast` component, which can then be scheduled for presentation by an instance of a `UIViewController`. The backing storage for the configuration of a toast is handled by the `configuration` property, which contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `UIToast` instance by using computed properties such as `icon`, `title`, or `contentView`.
 
 ``` Swift
 // Configure the UIToast content configuration
@@ -385,7 +386,7 @@ public extension UIToast.Configuration {
 let toast = UIToast(configuration: .savedChanges())
 ```
 
-A `UIToast` can either use a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast will use the same `ToastContentView` as a SwiftUI toast and will map the icon, title and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode the presented toast will use the configured custom `UIView`, which will be hosted using a `UIViewRepresentable` and using the default system layout sizing rules. In both modes, a custom background `UIView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
+A `UIToast` can use either a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast uses the same `ToastContentView` as a SwiftUI toast and maps the icon, title, and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode, the presented toast uses the configured custom `UIView`, which is hosted using a `UIViewRepresentable` and the default system layout sizing rules. In both modes, a custom background `UIView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
 
 
 ``` Swift
@@ -406,7 +407,7 @@ toast.backgroundView = UIBlurredMaterialView()
 
 After an instance of `UIToast` has been created and configured, it can then be scheduled for presentation by using the `schedulePresentation` function of any active `UIViewController`. A toast that has been scheduled for presentation can be cancelled by using the `cancelScheduledPresentation` function of a `UIToast`. An actively presented toast may be dismissed by using the `dismiss` function of a `UIToast`.
 
-Please note, that cancellation and context invalidation of a `UIToast` is only supported manually by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of a `UIToast` instance, by enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not been yet presented is deallocated, then the scheduled presentation will be automatically cancelled.
+Please note that cancellation and context invalidation of a `UIToast` is only supported manually, either by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of a `UIToast` instance and enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not yet been presented is deallocated, the scheduled presentation is automatically cancelled.
 
 ``` Swift
 class SomeViewController: UIViewController {
@@ -521,7 +522,7 @@ Essential information about the presentation state of a toast can be accessed by
 
 #### AppKit - Cocoa
 
-A toast can be created on AppKit by using the `NSToast` component, which can then be scheduled for presentation by using the `toast.schedulePresentation` function and passing an instance of a `NSWindow`. The backing storage for the configuration of a toast is handled by the `configuration` property. This property contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `NSToast` instance by using computed properties such as `icon`, `title` or `contentView`.
+A toast can be created on AppKit by using the `NSToast` component, which can then be scheduled for presentation by using the `toast.schedulePresentation` function and passing an instance of an `NSWindow`. The backing storage for the configuration of a toast is handled by the `configuration` property, which contains the values for the environment configuration as well as the content configuration of a toast. The content of the toast can also be configured directly on the `NSToast` instance by using computed properties such as `icon`, `title`, or `contentView`.
 
 ``` Swift
 // Configure the NSToast content configuration
@@ -554,7 +555,7 @@ public extension NSToast.Configuration {
 let toast = NSToast(configuration: .savedChanges())
 ```
 
-A `NSToast` can either use a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast will use the same `ToastContentView` as a SwiftUI toast and will map the icon, title and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode the presented toast will use the configured custom `NSView`, which will be hosted using a `NSViewRepresentable` and using the default system layout sizing rules. In both modes, a custom background `NSView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
+An `NSToast` can use either a standard content mode or a custom content mode, depending on which content properties are set. When using the standard content mode, the underlying content of the toast uses the same `ToastContentView` as a SwiftUI toast and maps the icon, title, and value subtitle property values to the appropriate SwiftUI components. In contrast, when using the custom content mode, the presented toast uses the configured custom `NSView`, which is hosted using an `NSViewRepresentable` and the default system layout sizing rules. In both modes, a custom background `NSView` can be set by using the `backgroundView` property. The current content mode a toast is inferred to have can be accessed by using the `inferredContentMode` property.
 
 
 ``` Swift
@@ -573,15 +574,15 @@ let toast = NSToast(contentView: NSCustomContentView())
 toast.backgroundView = NSBlurredMaterialView()
 ```
 
-After an instance of `NSToast` has been created and configured, it can then be scheduled for presentation by using the `schedulePresentation` function and passing an active `NSWindow` as the presentation target. A toast that has been scheduled for presentation can be cancelled by using the `cancelScheduledPresentation` function of a `NSToast`. An actively presented toast may be dismissed by using the `dismiss` function of a `NSToast`.
+After an instance of `NSToast` has been created and configured, it can then be scheduled for presentation by using the `schedulePresentation` function and passing an active `NSWindow` as the presentation target. A toast that has been scheduled for presentation can be cancelled by using the `cancelScheduledPresentation` function of an `NSToast`. An actively presented toast may be dismissed by using the `dismiss` function of an `NSToast`.
 
-Please note, that cancellation and context invalidation of a `NSToast` is only supported manually by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of a `NSToast` instance, by enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not been yet presented is deallocated, then the scheduled presentation will be automatically cancelled.
+Please note that cancellation and context invalidation of an `NSToast` is only supported manually, either by using the `cancelScheduledPresentation` function or by tracking the reference lifetime of an `NSToast` instance and enabling the `cancellationTracksLifetime` flag. When the flag is enabled and the instance of a toast that has not yet been presented is deallocated, the scheduled presentation is automatically cancelled.
 
 ``` Swift
 class SomeViewController: NSViewController {
     
     func sayHi() {
-        // Create a NSToast
+        // Create an NSToast
         let toast = NSToast(title: "Hello, Toast.")
         toast.cancellationTracksLifetime = true
         toast.schedulePresentation(in: view.window!)
@@ -591,7 +592,7 @@ class SomeViewController: NSViewController {
         favorited itemName: String,
         subtitle: String? = nil
     ) {
-        // Create a NSToast
+        // Create an NSToast
         let toast = NSToast(
             icon: NSImage(
                 systemSymbolName: "star.fill",
@@ -610,7 +611,7 @@ class SomeViewController: NSViewController {
     }
     
     func showSuccessToast(subtitle: String? = nil) {
-        // Create a NSToast using a content configuration
+        // Create an NSToast using a content configuration
         let toast = NSToast(configuration: .success())
         toast.configuration.title = "Success"
         toast.configuration.valueSubtitle = subtitle
@@ -692,11 +693,11 @@ Most of the aspects of a Toast or its presentation can be configured using sever
 
 ### Style
 
-The style of a Toast can be configured similarly to most of the system provided SwiftUI components, by using the related `.toastStyle` modifier. The library ships with a few predefined styles that use a rounded rectangle shaped toast draped with various system materials and/or glass, but if further customization is required a custom style can easily be created by conforming to the `ToastStyle` protocol. The default style is `.automatic`.
+The style of a Toast can be configured similarly to most system-provided SwiftUI components by using the related `.toastStyle` modifier. The library ships with a few predefined styles that use a rounded-rectangle-shaped toast draped with various system materials and/or glass, but if further customization is required, a custom style can easily be created by conforming to the `ToastStyle` protocol. The default style is `.automatic`.
 
-Please note, that based on the `Toast` initializer used, the generated content view *inside* may resolve to a `ToastContentView`. Any custom toast styles may have to account for the default layout / styling of this view, and customize it if needed in order to create the exact layout needed. The layout / styling of the toast content view can be customized by creating a custom `ToastContentStyle` and applying it from a custom `ToastStyle` by using the `.toastContentStyle` modifier. The default toast content style is `.standard`. 
+Please note that, depending on the `Toast` initializer used, the generated content view *inside* may resolve to a `ToastContentView`. Any custom toast styles may have to account for the default layout/styling of this view and customize it as needed to achieve the exact layout required. The layout/styling of the toast content view can be customized by creating a custom `ToastContentStyle` and applying it from a custom `ToastStyle` by using the `.toastContentStyle` modifier. The default toast content style is `.standard`. 
 
-Furthermore, in addition to toast content view, specialized styles for `Label`, `LabeledContent` and `Button` views as well as predefined tint and font size are also automatically applied inside of toasts.
+In addition to the toast content view, specialized styles for `Label`, `LabeledContent`, and `Button` views, as well as a predefined tint and font size, are also automatically applied inside toasts.
 
 ``` Swift
 // Showing a Toast with the default style.
@@ -767,7 +768,7 @@ ToastButton("Show Toast") { schedule in
 |----------------------|-------------------|-------------|
 | -                    | `.automatic`      | A symbolic toast style which resolves to either `.material` or `.glass` based on the platform and / or version. |
 | `MaterialToastStyle`   | `.material`       | A toast style that uses system materials. The material thickness can be configured by creating a style using the full `MaterialToastStyle.init`. |
-| `GlassToastStyle`      | `.glass`          | A toast style that uses LiquidGlass materials. This style is only available in platforms that support LiquidGlass (iOS 26.0 and later, macOS 26.0 and later, tvOS 26.0 and later, watchOS 26.0 and later, visionOS 26.0 and later). The LiquidGlass attributes can be configured by creating a style using the full `GlassToastStyle.init`.  |
+| `GlassToastStyle`      | `.glass`          | A toast style that uses LiquidGlass materials. This style is only available on platforms that support LiquidGlass (iOS 26.0 and later, macOS 26.0 and later, tvOS 26.0 and later, watchOS 26.0 and later, visionOS 26.0 and later). The LiquidGlass attributes can be configured by creating a style using the full `GlassToastStyle.init`.  |
 | `PlainToastStyle`      | `.plain`          | A toast style that uses solid color. The solid color can be optionally tinted by creating a style using the full `PlainToastStyle.init`. |
 
 ### Transition
@@ -839,18 +840,18 @@ ToastButton("Show Toast") { schedule in
 
 ### Cancellation
 
-After a `Toast` is created, it is scheduled for presentation in a queue. A scheduled Toast may be cancelled *before* it is presented by the source it was scheduled from, depending on context and the active environment configuration. 
+After a `Toast` is created, it is scheduled for presentation in a queue. A scheduled Toast may be cancelled *before* it is presented, by the source it was scheduled from, depending on context and the active environment configuration. 
 
 By default, a scheduled toast will not be cancelled unless the scene containing its source is dismissed. The cancellation policy in the current environment can be configured by using the `toastCancellation` modifier.
 
-Please note, that cancellation only affects Toasts that have not yet been presented and are still waiting for presentation in the schedulers queue.
+Please note that cancellation only affects Toasts that have not yet been presented and are still waiting for presentation in the scheduler's queue.
 
-For example, when firing a form submission action using a `ToastButton` it might be desirable to *save* the updated values of the form and immediately dismiss the scene. In order for the scheduled presentation to not be cancelled, the `.never` cancellation policy will be required.
+For example, when firing a form submission action using a `ToastButton`, it might be desirable to *save* the updated values of the form and immediately dismiss the scene. In order for the scheduled presentation to not be cancelled, the `.never` cancellation policy is required.
 
 ``` Swift 
 // The button below saves the form, starts the dismissal of the active scene
 // and then schedules a Toast. By using the `.never` cancellation policy the
-// scheduled Tost will not be cancelled when the active scene is dismissed.
+// scheduled Toast will not be cancelled when the active scene is dismissed.
 ToastButton("Submit") { schedule in
     saveForm()
     dismiss()
@@ -866,7 +867,7 @@ ToastButton("Submit") { schedule in
 
 ```
 
-Alternatively, when a toast is scheduled by using a state change trigger it might be desirable to avoid scheduling numerous toasts when a value changes rapidly and frequently. In order to automatically cancel all scheduled toasts by a specific source, the `.always` cancellation policy is required.
+Alternatively, when a toast is scheduled by using a state change trigger, it might be desirable to avoid scheduling numerous toasts when a value changes rapidly and frequently. In order to automatically cancel all scheduled toasts from a specific source, the `.always` cancellation policy is required.
 
 ``` Swift
 // A change of the volume value triggers a toast.
@@ -884,7 +885,7 @@ Slider(value: $volume, in: 0...100) {
 
 ### Presentation Invalidation
 
-While toasts are usually a fire and forget component, there is a limited capability to dismiss already presented toasts. The `toast` modifier and it's variants specifically, use a trigger value as context to determine when to schedule a `Toast`. By default, whenever the value changes again an already displayed toast is automatically dismissed as the *context that triggered it* has changed. This behavior, can be easily configured by using the `toastPresentationInvalidation` modifier.
+While toasts are usually a fire-and-forget component, there is a limited capability to dismiss already presented toasts. Specifically, the `toast` modifier and its variants use a trigger value as context to determine when to schedule a `Toast`. By default, whenever the value changes again, an already displayed toast is automatically dismissed, since the *context that triggered it* has changed. This behavior can be easily configured by using the `toastPresentationInvalidation` modifier.
 
 For example, it might be desirable to configure a toast triggered by a value change to automatically dismiss when the value changes *and* when the source's scene is dismissed.
 
@@ -892,7 +893,7 @@ For example, it might be desirable to configure a toast triggered by a value cha
 // A change of the volume value triggers a toast.
 // By using the `.contextChanged, .presentationDismissed` presentation
 // invalidation options, an already presented Toast will be dismissed when
-// the slider's value changes and when it's container is dismissed.
+// the slider's value changes and when its container is dismissed.
 Slider(value: $volume, in: 0...100) {
     Text("Volume: \(volume)%")
 }
@@ -903,11 +904,11 @@ Slider(value: $volume, in: 0...100) {
 .toastPresentationInvalidation([.contextChanged, .presentationDismissed])
 ```
 
-Alternatively, if it is desired that the active toast presentation is never invalidated the `.never` presentation invalidation can be used instead.
+Alternatively, if it is desired that the active toast presentation never be invalidated, the `.never` presentation invalidation can be used instead.
 
 ### Interactive Dismissal
 
-A presented `Toast`, when using one of the standard styles, can be dismissed before its duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissEnabled` modifier. A common use case to prevent interactive dismissal, is when using a toast as a loading indicator.
+A presented `Toast`, when using one of the standard styles, can be dismissed before its duration has elapsed as a result of a user tapping the content of the toast. This behavior can be controlled by using the `toastInteractiveDismissDisabled` modifier. A common use case for preventing interactive dismissal is when using a toast as a loading indicator.
 
 ``` Swift
 // Showing a Toast as a loading indicator HUD.
@@ -932,7 +933,7 @@ content
 
 ### Background Content Interaction
 
-While a `Toast` is presented interaction with the background contents can be turned on or off. The background content interaction mode can be configured by using the `toastBackgroundInteractionDisabled` modifier. In the same example of a loading indicator HUD, the background interaction can be disabled to avoid any interaction while the view is still loading. 
+While a `Toast` is presented, interaction with the background content can be turned on or off. The background content interaction mode can be configured by using the `toastBackgroundInteractionDisabled` modifier. In the same loading-indicator HUD example, background interaction can be disabled to avoid any interaction while the view is still loading. 
 
 ``` Swift
 // Showing a Toast as a loading indicator HUD.
@@ -957,9 +958,9 @@ content
 
 ### Accessibility Options
 
-A wide variety of accessibility options for a presented `Toast` can be configured by using the `toastAccessibilityOptions` and related environment based modifiers. These options can affect various aspects of the accessibility of a Toast including visibility, label, traits, identifiers, automatic focus and even announcements tied to the lifetime of the toast.
+A wide variety of accessibility options for a presented `Toast` can be configured by using the `toastAccessibilityOptions` and related environment-based modifiers. These options can affect various aspects of the accessibility of a Toast, including visibility, label, traits, identifiers, automatic focus, and even announcements tied to the lifetime of the toast.
 
-Because toasts are components that are generally presented __*modally*__ and possibly rather __*frequently*__, having them fully visible to the accessibility system may overwhelm users that rely on VoiceOver to navigate in your app, therefore it is recommended to rely on accessibility announcements instead. For this reason a `Toast` will not be accessible by default, but it must be explicitly marked as so.
+Because toasts are generally presented __*modally*__ and possibly rather __*frequently*__, having them fully visible to the accessibility system may overwhelm users who rely on VoiceOver to navigate your app. For this reason, it is recommended to rely on accessibility announcements instead, and a `Toast` is not accessible by default — it must be explicitly marked as accessible.
 
 ``` Swift
 // Toasts scheduled by the environment inside content will be hidden.
@@ -1027,7 +1028,7 @@ content
 
 When a `Toast` is presented its appearance is retrieved by the source's environment. A custom style can be implemented by creating a struct that conforms to the `ToastStyle` protocol.
 
-By using the `configuration` parameter and leveraging several environment values, a custom toast style can provide a pretty detailed and adaptive visual representation of the contents of a toast.
+By using the `configuration` parameter and leveraging several environment values, a custom toast style can provide a detailed and adaptive visual representation of a toast's contents.
 
 ``` Swift
 import SwiftUI
@@ -1116,31 +1117,31 @@ ToastButton("Show Toast") { schedule in
 
 ### Toast Environment Values
 
-A set of different *environment* values are injected into a presented toast for the purpose of enabling further customization of the visual content of a `Toast` or providing a programmatic dismissal action. These values will not be available in the environment that scheduled the toast presentation and are injected by the environment that actively displayed the `Toast` when it presents it.
+A set of different *environment* values is injected into a presented toast to enable further customization of the visual content of a `Toast`, or to provide a programmatic dismissal action. These values are not available in the environment that scheduled the toast presentation; they are injected by the environment that actively displays the `Toast` when it presents it.
 
 #### Toast Dismiss Action
 
-The toast dismiss action is an environment value injected in the `toastDismiss` KeyPath and contains an action that can be used to programmatically dismiss a toast depending on a specific user interaction.
+The toast dismiss action is an environment value injected into the `toastDismiss` KeyPath and contains an action that can be used to programmatically dismiss a toast depending on a specific user interaction.
 
-Please note, that the scheduler automatically handles the duration of a toast, so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
+Please note that the scheduler automatically handles the duration of a toast, so there is no need for a custom toast style to handle automatic dismissal based on the duration of a presented `Toast`.
 
 #### Toast Presented Role
-The toast presented role is an *environment* value injected in the `toastPresentedRole` KeyPath and contains the role of the presented toast. This can be used by custom component styles such as custom `Label`, `LabeledContent` or `ToastContentView` styles to adjust their layout, visual properties and behavior.
+The toast presented role is an *environment* value injected into the `toastPresentedRole` KeyPath and contains the role of the presented toast. This can be used by custom component styles, such as custom `Label`, `LabeledContent`, or `ToastContentView` styles, to adjust their layout, visual properties, and behavior.
 
 #### Toast Presented Alignment
 
-The toast presented alignment is an *environment* value injected in the `toastPresentedAlignment` KeyPath and contains the alignment of a presented toast. This can be used to modify the appearance of a toast in specific alignments. For example, when a `Toast` is presented at the center alignment it might be preferable to use larger font and icon sizes.
+The toast presented alignment is an *environment* value injected into the `toastPresentedAlignment` KeyPath and contains the alignment of a presented toast. This can be used to modify the appearance of a toast for specific alignments. For example, when a `Toast` is presented at the center alignment, it might be preferable to use larger font and icon sizes.
 
 #### Toast Interactive Dismiss Enabled
 
-The toast interactive dismiss enabled flag is an *environment* value injected in the `toastInteractiveDismissEnabled` KeyPath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style this flag could be checked before dismissing a toast when it is tapped.
+The toast interactive dismiss enabled flag is an *environment* value injected into the `toastInteractiveDismissEnabled` KeyPath and controls whether a toast should be dismissed as a result of a user interaction. For example, when implementing a custom toast style, this flag could be checked before dismissing a toast when it is tapped.
 
 #### Toast Accessibility Options
-The toast accessibility options is an *environment* value injected in the `toastAccessibilityOptions` KeyPath and contains the accessibility options defined by the presenting environment. These options can be used to read and set specific accessibility identifiers and actions for a `Toast` layout. The value of the toastAccessibilityOptions environment key is a copy of the same value that existed in the presenting environment, at the moment it scheduled the presentation.
+The toast accessibility options value is an *environment* value injected into the `toastAccessibilityOptions` KeyPath and contains the accessibility options defined by the presenting environment. These options can be used to read and set specific accessibility identifiers and actions for a `Toast` layout. The value of the `toastAccessibilityOptions` environment key is a copy of the value that existed in the presenting environment at the moment it scheduled the presentation.
 
 ## Alternative Presentation Contexts
 
-By default, a Toast is presented in a separate, modal environment on the global scene context. If it is desired for a `Toast` to be presented as an overlay over a specific context such as showing a toast inside the context of a sheet presented at the `medium` presentation detent, the `toastPresentingLayout` modifier can be used.
+By default, a Toast is presented in a separate, modal environment at the global scene level. If it is desired for a `Toast` to be presented as an overlay over a specific context, such as showing a toast inside the context of a sheet presented at the `medium` presentation detent, the `toastPresentingLayout` modifier can be used.
 
 ```Swift
 // Present a sheet at the medium detent and show a Toast inside
@@ -1170,5 +1171,5 @@ content
 
 ```
 
-Furthermore, due to platform related limitations, on *watchOS* this modifier is __*required*__ to present a toast. In general, it is recommended that the view modified using the `toastPresentingLayout` modifier be as close as possible to the top level of the target view hierarchy.
+Furthermore, due to platform-related limitations, this modifier is __*required*__ on *watchOS* to present a toast. In general, it is recommended that the view modified using the `toastPresentingLayout` modifier be as close as possible to the top level of the target view hierarchy.
 
