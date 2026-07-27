@@ -51,6 +51,9 @@ public struct MaterialToastStyle: ToastStyle {
 
 // MARK: ToastStyle Extension
 
+@available(*, deprecated, renamed: "MaterialToastStyle")
+public typealias PlainToastStyle = MaterialToastStyle
+
 public extension ToastStyle where Self == MaterialToastStyle {
     
     @available(*, deprecated, renamed: "material")

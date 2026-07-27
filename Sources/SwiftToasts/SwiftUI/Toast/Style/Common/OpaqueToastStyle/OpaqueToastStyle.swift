@@ -45,10 +45,10 @@ public extension ToastStyle where Self == OpaqueToastStyle {
 
 #if ENABLE_PREVIEWS
 
-struct PlainToastStylePreview: View {
-    
+struct OpaqueToastStylePreview: View {
+
     let previewableToastRoles: [ToastRole] = [.informational]
-    
+
     var body: some View {
         VStack {
             ToastPresenterReader { proxy in
@@ -69,13 +69,13 @@ struct PlainToastStylePreview: View {
                         }
                     }
             }
-            .toastStyle(.plain)
+            .toastStyle(.opaque)
         }
     }
 }
 
 #Preview {
-    PlainToastStylePreview()
+    OpaqueToastStylePreview()
 }
 
 #endif

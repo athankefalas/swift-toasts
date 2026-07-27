@@ -865,9 +865,9 @@ public extension Toast {
                 }
             }
         }
-        .toastStyle(.plain)
+        .toastStyle(.opaque)
         .toastStyle(.material)
-        .glassToastStyle(orElse: .plain)
+        .glassToastStyle(orElse: .opaque)
     }
 }
 
