@@ -29,6 +29,9 @@ struct ToastLabelStyle: LabelStyle {
         @Environment(\.toastPresentedAlignment)
         private var toastPresentedAlignment
         
+        @Environment(\.toastAccessibilityOptions)
+        private var toastAccessibilityOptions
+        
         let accentColor: Color
         let configuration: Configuration
         
@@ -47,12 +50,11 @@ struct ToastLabelStyle: LabelStyle {
                         .foregroundColor(accentColor)
                         .fallbackTintColor(accentColor)
                         .font(.system(size: largeIconSize))
-                        .accessibilityIdentifier("ToastIcon")
+                        .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)
-                        .font(.title)
-                        .accessibilityIdentifier("ToastContent")
+                        .font(.headline)
                         .accessibilityElement(children: .contain)
                 }
                 .padding(12)
@@ -62,12 +64,11 @@ struct ToastLabelStyle: LabelStyle {
                         .foregroundColor(accentColor)
                         .fallbackTintColor(accentColor)
                         .font(.system(size: iconSize))
-                        .accessibilityIdentifier("ToastIcon")
+                        .fallbackAccessibilityHidden(toastAccessibilityOptions.accessibilityIconHidden)
                     
                     configuration.title
                         .foregroundColor(.primary)
                         .font(.title3)
-                        .accessibilityIdentifier("ToastContent")
                         .accessibilityElement(children: .contain)
                 }
             }
@@ -89,7 +90,7 @@ extension View {
     }
     
     @ViewBuilder
-    fileprivate func fallbackTintColor(_ color: Color) -> some View {
+    func fallbackTintColor(_ color: Color) -> some View {
         if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
             self.tint(color)
         } else {

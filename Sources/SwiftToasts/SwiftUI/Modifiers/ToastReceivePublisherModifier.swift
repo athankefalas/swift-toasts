@@ -115,6 +115,12 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
     
@@ -169,7 +175,9 @@ private struct ToastReceivePublisherModifier<Output: Equatable, Failure: Error>:
                     toastEnvironmentValues: ToastEnvironmentValues(
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
-                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                        toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     presentationCanceller: presentationCanceller,
                     onDismiss: onToastDismiss

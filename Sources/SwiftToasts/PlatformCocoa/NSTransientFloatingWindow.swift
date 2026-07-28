@@ -9,11 +9,37 @@
 import Cocoa
 import Combine
 
-final class NSTransientFloatingWindow: NSWindow {
+final class NSTransientFloatingWindow: NSPanel {
     private(set) weak var presentingWindow: NSWindow?
     private var subscriptions: Set<AnyCancellable> = []
     
     private(set) var isShown = false
+    
+    override var canBecomeMain: Bool {
+        false
+    }
+    
+    override var canBecomeKey: Bool {
+        false
+    }
+    
+    override var isKeyWindow: Bool {
+        get {
+            if supportsKeyWindowHackToForceNonDimmedMaterials, isShown {
+                return true
+            }
+            
+            return super.isKeyWindow
+        }
+    }
+    
+    private var supportsKeyWindowHackToForceNonDimmedMaterials: Bool {
+        if #available(macOS 26.0, *) {
+            return true
+        }
+        
+        return false
+    }
     
     convenience init(
         contentViewController: NSViewController,
@@ -33,14 +59,13 @@ final class NSTransientFloatingWindow: NSWindow {
     
     private final func postInit(parent: NSWindow) {
         self.level = .floating
-        self.styleMask = .hudWindow
+        self.isFloatingPanel = true
+        self.styleMask = [.borderless, .nonactivatingPanel, .hudWindow]
         self.isExcludedFromWindowsMenu = true
         self.isOpaque = false
         self.hasShadow = false
         self.backgroundColor = .clear
         self.backingType = parent.backingType
-        self.contentView?.wantsLayer = true
-        self.contentView?.layer?.backgroundColor = .clear
         self.setContentSize(parent.frame.size)
         self.setFrameOrigin(parent.frame.origin)
         
@@ -65,9 +90,9 @@ final class NSTransientFloatingWindow: NSWindow {
         
         NotificationCenter.default
             .publisher(for: NSWindow.didBecomeKeyNotification)
-            .sink { [weak self] _ in
-                
-                guard self?.isShown == true else {
+            .compactMap({ $0.object as? NSWindow })
+            .sink { [weak parent, weak self] window in
+                guard window === parent, self?.isShown == true else {
                     return
                 }
                 
@@ -106,10 +131,9 @@ final class NSTransientFloatingWindow: NSWindow {
         
         NotificationCenter.default
             .publisher(for: NSApplication.willHideNotification)
-            .compactMap({ $0.object as? NSWindow })
-            .sink { [weak parent, weak self] window in
+            .sink { [weak self] _ in
                 
-                guard window === parent, self?.isShown == true else {
+                guard self?.isShown == true else {
                     return
                 }
                 
@@ -119,10 +143,8 @@ final class NSTransientFloatingWindow: NSWindow {
         
         NotificationCenter.default
             .publisher(for: NSApplication.willResignActiveNotification)
-            .compactMap({ $0.object as? NSWindow })
-            .sink { [weak parent, weak self] window in
-                
-                guard window === parent, self?.isShown == true else {
+            .sink { [weak self] _ in
+                guard self?.isShown == true else {
                     return
                 }
                 
@@ -137,12 +159,21 @@ final class NSTransientFloatingWindow: NSWindow {
             return
         }
         
+        self.isShown = true
         let presentingParentWindow = parent.attachedSheet ?? parent
         presentingParentWindow.addChildWindow(self, ordered: .above)
         
-        self.isShown = true
         self.orderFrontRegardless()
-        self.contentView?.needsLayout = true
+        if supportsKeyWindowHackToForceNonDimmedMaterials {
+            self.becomeKey() // Workaround for visual effects that appear dimmed.
+        }
+        
+        viewsNeedDisplay = true
+        guard let contentView else {
+            return
+        }
+        
+        contentView.needsLayout = true
     }
     
     final func hide() {
@@ -150,9 +181,27 @@ final class NSTransientFloatingWindow: NSWindow {
             return
         }
         
+        if supportsKeyWindowHackToForceNonDimmedMaterials {
+            self.resignKey()
+        }
+        self.orderOut(nil)
         parent?.removeChildWindow(self)
         self.isShown = false
     }
+    
+#if ENABLE_PREVIEWS
+    private func debugPrintKeyWindows() {
+        NSApplication.shared.windows
+            .filter({ $0.isKeyWindow })
+            .forEach { window in
+                print("## \(type(of: window)) \(window.title) \(window)")
+            }
+        
+        if let keyWindow = NSApp.keyWindow {
+            print("## \(type(of: keyWindow)) \(keyWindow.title) \(keyWindow)")
+        }
+    }
+#endif
 }
 
 #endif

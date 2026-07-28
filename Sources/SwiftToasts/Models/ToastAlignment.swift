@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A type that represents the alignment of a toast.
-public struct ToastAlignment: Hashable, CustomStringConvertible, Sendable {
+public nonisolated struct ToastAlignment: Hashable, CustomStringConvertible, Sendable {
     let rawValue: Edge.Set
     
     public var description: String {

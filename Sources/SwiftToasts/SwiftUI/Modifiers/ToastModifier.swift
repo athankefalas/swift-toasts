@@ -27,6 +27,12 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
     
@@ -82,12 +88,13 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
             return presentationCanceller.dismissPresentation()
         }
         
+        presentationCanceller.dismissPresentation()
+
         guard let toast = toast(newValue) else {
             return
         }
-        
+
         let onToastDismiss = onToastDismiss
-        presentationCanceller.dismissPresentation()
         toastPresenter._schedule(
             presentation: ToastPresentation(
                 toast: toast,
@@ -95,7 +102,9 @@ private struct ToastModifier<Value: Equatable>: ViewModifier {
                 toastEnvironmentValues: ToastEnvironmentValues(
                     toastStyle: toastStyle,
                     toastTransition: toastTransition,
-                    toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                    toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                    toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                    toastAccessibilityOptions: toastAccessibilityOptions
                 ),
                 presentationCanceller: presentationCanceller,
                 onDismiss: {

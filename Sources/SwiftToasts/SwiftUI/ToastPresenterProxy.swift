@@ -46,6 +46,18 @@ public struct ToastPresenterProxy: Hashable, @unchecked Sendable, CustomReflecta
         self.toastPresenter = toastPresenter
     }
     
+    /// Cancels all scheduled `Toast` presentations.
+    /// - Note: This function cancels the scheduled toast presentations that are still pending.
+    ///         If a `Toast` is already presented at the time this function is invoked it will not be hidden.
+    @MainActor
+    public func cancelScheduledPresentations() {
+        guard let toastScheduler = toastPresenter?.toastScheduler else {
+            return
+        }
+        
+        toastScheduler.cancelScheduledPresentations()
+    }
+    
     /// Schedules the given `Toast` for presentation.
     /// - Parameters:
     ///   - toast: The Toast to present.

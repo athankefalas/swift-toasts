@@ -30,12 +30,14 @@ struct HostedToastContent: View {
         dismissAction: @escaping @MainActor () -> Void
     ) {
         self.init(id: id) {
-           toastPresentation.toast
-               .environment(\.toastPresentedAlignment, toastPresentation.toastAlignment)
-               .environment(\.toastDismiss, ToastDismissAction(id: id, action: dismissAction))
-               .toastStyle(toastPresentation.toastEnvironmentValues.toastStyle)
-               .toastInteractiveDismissDisabled(!toastPresentation.toastEnvironmentValues.toastInteractiveDismissEnabled)
-       }
+            toastPresentation.toast
+                .environment(\.toastPresentedRole, toastPresentation.toast.configuration.role)
+                .environment(\.toastPresentedAlignment, toastPresentation.toastAlignment)
+                .environment(\.toastDismiss, ToastDismissAction(id: id, action: dismissAction))
+                .toastStyle(toastPresentation.toastEnvironmentValues.toastStyle)
+                .toastInteractiveDismissDisabled(!toastPresentation.toastEnvironmentValues.toastInteractiveDismissEnabled)
+                .toastAccessibilityOptions(toastPresentation.toastEnvironmentValues.toastAccessibilityOptions)
+        }
     }
     
     var body: some View {

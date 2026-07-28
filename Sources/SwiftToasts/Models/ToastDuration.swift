@@ -8,8 +8,8 @@
 import SwiftUI
 
 /// A type that represents the duration of a toast presentation.
-public struct ToastDuration: Hashable, Sendable {
-    let rawValue: TimeInterval
+public nonisolated struct ToastDuration: Hashable, Sendable {
+    public let rawValue: TimeInterval
     
     private init(rawValue: TimeInterval) {
         self.rawValue = rawValue

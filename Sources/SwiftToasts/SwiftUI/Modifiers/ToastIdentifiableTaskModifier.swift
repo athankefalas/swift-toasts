@@ -24,6 +24,12 @@ private struct ToastIdentifiableTaskModifier<ID: Equatable>: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellablesBox = CancellablesBox()
     
@@ -49,7 +55,9 @@ private struct ToastIdentifiableTaskModifier<ID: Equatable>: ViewModifier {
                     toastEnvironmentValues: ToastEnvironmentValues(
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
-                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                        toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,

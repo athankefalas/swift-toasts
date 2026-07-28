@@ -5,13 +5,12 @@
 //  Created by Sakis Kefalas on 6/10/24.
 //
 
-
 import SwiftUI
 import Combine
 
 private struct ToastStyleEnvironmentKey: EnvironmentKey {
     @preconcurrency static var defaultValue: AnyToastStyle {
-        AnyToastStyle(PlainToastStyle())
+        AnyToastStyle(.automatic)
     }
 }
 

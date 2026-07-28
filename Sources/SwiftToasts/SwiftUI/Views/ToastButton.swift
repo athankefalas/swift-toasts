@@ -53,6 +53,12 @@ public struct ToastButton<Label: View>: View {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellablesBox = CancellablesBox()
     
@@ -112,7 +118,9 @@ public struct ToastButton<Label: View>: View {
                     toastEnvironmentValues: ToastEnvironmentValues(
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
-                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                        toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,
@@ -132,7 +140,9 @@ public struct ToastButton<Label: View>: View {
                     toastEnvironmentValues: ToastEnvironmentValues(
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
-                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                        toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     toastCancellation: toastCancellation,
                     preferredCancellation: .presentation,
@@ -441,7 +451,13 @@ public extension ToastButton where Label == SwiftUI.Label<Text, Image> {
 
 #Preview("Simple Button") {
     ToastButton { proxy in
-        proxy.schedule(toast: Toast("Toast", duration: .indefinite))
+        proxy.schedule(
+            toast: Toast(
+                "Toast",
+                role: .failure,
+                duration: .indefinite
+            )
+        )
     } label: {
         Text("Toast")
     }

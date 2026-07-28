@@ -32,6 +32,22 @@ extension View {
             self.accessibility(addTraits: traits)
         }
     }
+    
+    func fallbackAccessibilityLabel(_ label: Text) -> some View {
+        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+            self.accessibilityLabel(label)
+        } else {
+            self.accessibility(label: label)
+        }
+    }
+    
+    func fallbackAccessibilitySortPriority(_ priority: Double) -> some View {
+        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *) {
+            self.accessibilitySortPriority(priority)
+        } else {
+            self.accessibility(sortPriority: priority)
+        }
+    }
 }
 
 extension Font {
@@ -48,7 +64,13 @@ extension Font {
 extension EnvironmentValues {
     
     var fallbackIsPresented: Bool {
-        get { self.presentationMode.wrappedValue.isPresented }
+        get {
+            if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+                return self.isPresented
+            } else {
+                return self.presentationMode.wrappedValue.isPresented
+            }
+        }
     }
 }
 

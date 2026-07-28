@@ -28,6 +28,12 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     @Environment(\.toastInteractiveDismissEnabled)
     private var toastInteractiveDismissEnabled
     
+    @Environment(\.toastBackgroundInteractionEnabled)
+    private var toastBackgroundInteractionEnabled
+    
+    @Environment(\.toastAccessibilityOptions)
+    private var toastAccessibilityOptions
+    
     @PresentationBoundState
     private var cancellables: Set<AnyCancellable> = []
     
@@ -57,14 +63,14 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
     
     func body(content: Content) -> some View {
         content.fallbackOnChange(of: trigger) { newValue in
-            guard let toast = toast(newValue) else {
-                return
-            }
-            
             if invalidationOptions.contains(.contextChanged) {
                 presentationCanceller.dismissPresentation()
             }
-            
+
+            guard let toast = toast(newValue) else {
+                return
+            }
+
             toastPresenter._schedule(
                 presentation: ToastPresentation(
                     toast: toast,
@@ -72,7 +78,9 @@ private struct ToastTriggerModifier<Trigger: Equatable>: ViewModifier {
                     toastEnvironmentValues: ToastEnvironmentValues(
                         toastStyle: toastStyle,
                         toastTransition: toastTransition,
-                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled
+                        toastInteractiveDismissEnabled: toastInteractiveDismissEnabled,
+                        toastBackgroundInteractionEnabled: toastBackgroundInteractionEnabled,
+                        toastAccessibilityOptions: toastAccessibilityOptions
                     ),
                     presentationCanceller: presentationCanceller,
                     onDismiss: onToastDismiss
@@ -150,6 +158,8 @@ struct _ToastTriggerModifierPreview: View {
     
     var body: some View {
         VStack {
+            Button("Set to TRUE") { isOn = true }
+            Button("Set to FALSE") { isOn = false }
             Toggle("Some option", isOn: $isOn)
                 .toast(trigger: isOn) { newValue in
                     if newValue {
