@@ -104,7 +104,7 @@ extension CAAnimatable {
         // Animation
         willStartAnimation()
         CATransaction.begin()
-        CATransaction.setDisableActions(false)
+        CATransaction.setDisableActions(true)
         // Set animatable properties to their final value and add animation
         properties.forEach({ setValue(\.toValue, of: $0, to: animatableLayer) })
         animatableLayer.add(animationGroup, forKey: "toastTransition")
@@ -151,6 +151,7 @@ extension CAAnimatable {
         }
         
         let transitionCAAnimation: CAAnimation
+        let animationDuration: CFTimeInterval
         
         switch transition.curve(context) {
         case .spring(
@@ -173,20 +174,21 @@ extension CAAnimatable {
             }
             
             transitionCAAnimation = springAnimation
+            animationDuration = springAnimation.settlingDuration
         default:
             let basicAnimation = CABasicAnimation(keyPath: keyPath)
             basicAnimation.fromValue = fromValue
             basicAnimation.toValue = toValue
-            basicAnimation.duration = transition.duration(context)
             basicAnimation.timingFunction = CAMediaTimingFunction(
                 name: timingFunction(of: transition.curve(context))
             )
             
             transitionCAAnimation = basicAnimation
+            animationDuration = transition.duration(context)
         }
         
         transitionCAAnimation.beginTime = CACurrentMediaTime() + transition.delay(context)
-        transitionCAAnimation.duration = transition.duration(context)
+        transitionCAAnimation.duration = animationDuration
         transitionCAAnimation.fillMode = .both
         
         return transitionCAAnimation

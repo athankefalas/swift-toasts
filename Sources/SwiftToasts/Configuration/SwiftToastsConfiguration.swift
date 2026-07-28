@@ -41,6 +41,7 @@ public class SwiftToastsConfiguration: Sendable {
     let timeScale: TimeScale = 1
 #endif
     
+    internal let toastRootViewTag: AnyHashable = UUID()
     public var presentationContextSelector = ToastPresentationContextSelector.scenePresentation
     
     private init() {}

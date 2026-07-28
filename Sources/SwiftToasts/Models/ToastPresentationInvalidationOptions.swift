@@ -8,7 +8,7 @@
 import Foundation
 
 /// A type that represents the invalidation options of an already presented toast.
-public struct ToastPresentationInvalidationOptions: OptionSet, Sendable {
+public nonisolated struct ToastPresentationInvalidationOptions: OptionSet, Sendable {
     public let rawValue: Int
     
     public init() {

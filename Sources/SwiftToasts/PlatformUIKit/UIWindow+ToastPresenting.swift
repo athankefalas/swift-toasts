@@ -1,5 +1,5 @@
 //
-//  UIWindow+ToastPresenting .swift
+//  UIWindow+ToastPresenting.swift
 //  SwiftToasts
 //
 //  Created by Sakis Kefalas on 6/10/24.
@@ -10,6 +10,13 @@ import UIKit
 import SwiftUI
 
 extension UIWindow: ToastPresenting {
+    
+    private var hasPreparedScheduler: Bool {
+        get {
+            let property = NSAssociatedProperty(\UIWindow._toastScheduler)
+            return self[property] != nil
+        }
+    }
     
     private var _toastScheduler: ToastScheduler? {
         get {
@@ -136,7 +143,7 @@ extension UIWindow: ToastPresenting {
     
     @MainActor
     func prepareForToastPresentationIfNeeded() {
-        guard _toastScheduler == nil else {
+        guard !hasPreparedScheduler else {
             return
         }
         

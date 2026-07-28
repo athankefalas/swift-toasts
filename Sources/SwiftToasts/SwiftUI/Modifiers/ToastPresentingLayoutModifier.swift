@@ -161,6 +161,15 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
         return ToastPresenterProxy(toastPresenter: toastPresenter)
     }
     
+    private var presenterBackgroundAllowsHitTesting: Bool {
+        guard let toastPresentation = toastPresenter.toastPresentation else {
+            return false
+        }
+        
+        let allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
+        return !allowBackgroundInteraction
+    }
+    
     func body(content: Content) -> some View {
         ZStack {
             content
@@ -184,6 +193,8 @@ private struct ToastPresentingLayoutModifier: ViewModifier {
                 )
             ) {
                 Color.clear
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(presenterBackgroundAllowsHitTesting)
                 
                 if let toastPresentation = toastPresenter.toastPresentation {
                     HostedToastContent(
@@ -285,6 +296,7 @@ public extension View {
             } label: {
                 Text("Show Toast")
             }
+            .toastBackgroundInteractionDisabled(true)
             .toastTransition(
                 ToastTransition.scale
                     .curve(.easeInOut)

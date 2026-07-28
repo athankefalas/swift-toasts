@@ -14,23 +14,36 @@ final class UIToastHostingController: UIViewController {
     
     private final class UIPassthroughBackdropView: UIView {
         weak var hostingView: UIView?
+        var allowBackgroundInteraction: Bool = true
         
         private var hostedContentFrame: CGRect {
-            
             guard let hostingView else {
-                return .zero
+                return .null
             }
             
-            var frame = CGRect.zero
-            
+            var frame: CGRect?
             for subview in hostingView.subviews {
-                frame = frame.union(subview.frame)
+                guard let currentFrame = frame else {
+                    frame = subview.frame
+                    continue
+                }
+                
+                frame = currentFrame.union(subview.frame)
             }
             
-            return frame
+            return frame ?? hostingView.bounds
         }
         
         final override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            let target = super.hitTest(point, with: event)
+            if target === self {
+                return allowBackgroundInteraction ? nil : target
+            }
+            
+            return target
+        }
+        
+        private func _legacyHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             let target = super.hitTest(point, with: event)
             
             guard let hostingView = hostingView else {
@@ -38,7 +51,7 @@ final class UIToastHostingController: UIViewController {
             }
             
             let convertedPoint = convert(point, to: hostingView)
-            let containsPoint = hostedContentFrame.contains(convertedPoint)
+            let containsPoint = hostedContentFrame.contains(convertedPoint) || target?.isDescendant(of: hostingView) == true
             
             guard target !== self, containsPoint else {
                 return nil
@@ -66,6 +79,16 @@ final class UIToastHostingController: UIViewController {
         }
     }
     
+    private(set) var allowBackgroundInteraction: Bool = false {
+        didSet {
+            guard let passthroughView = viewIfLoaded as? UIPassthroughBackdropView else {
+                return
+            }
+            
+            passthroughView.allowBackgroundInteraction = allowBackgroundInteraction
+        }
+    }
+    
     convenience init(toastAlignment: ToastAlignment) {
         self.init(nibName: nil, bundle: nil)
         self._toastAlignment = toastAlignment
@@ -76,6 +99,7 @@ final class UIToastHostingController: UIViewController {
         
         let backdropView = UIPassthroughBackdropView()
         backdropView.backgroundColor = .clear
+        backdropView.isUserInteractionEnabled = true
         backdropView.autoresizingMask = view.autoresizingMask
         backdropView.frame = view.frame
         backdropView.hostingView = hostingController.view
@@ -83,6 +107,7 @@ final class UIToastHostingController: UIViewController {
         
         addChild(hostingController)
         view.addSubview(hostingController.view)
+        hostingController.view.tag = SwiftToastsConfiguration.current.toastRootViewTag.hashValue
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         makeLayoutConstraints()
@@ -118,6 +143,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
@@ -162,6 +188,7 @@ final class UIToastHostingController: UIViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation

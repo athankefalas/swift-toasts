@@ -19,7 +19,7 @@ struct ToastPresentation: Sendable {
     init(
         toast: Toast,
         toastAlignment: ToastAlignment,
-        toastEnvironmentValues: ToastEnvironmentValues = ToastEnvironmentValues(),
+        toastEnvironmentValues: ToastEnvironmentValues,
         presentationCanceller: ToastPresentationCanceller?,
         onPresent: (@MainActor () -> Void)? = nil,
         onDismiss: (@MainActor () -> Void)? = nil

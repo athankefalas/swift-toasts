@@ -117,12 +117,26 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
             
             return expirationTime.timeIntervalSince(now)
         }
+        
+        static func cancellationToken() -> ToastPresentationRequest {
+            return ToastPresentationRequest(
+                presentation: ToastPresentation(
+                    toast: Toast(""),
+                    toastAlignment: .bottom,
+                    toastEnvironmentValues: ToastEnvironmentValues(),
+                    presentationCanceller: nil
+                )
+            )
+        }
     }
     
     private let handler: @MainActor (ToastPresentation) async -> Void
     private let toastStream: AsyncStream<ToastPresentationRequest>
     private let toastStreamContinuation: AsyncStream<ToastPresentationRequest>.Continuation
     private var handlingTask: Task<Void, Never>?
+    
+    @MainActor
+    private var cancellationToken: ToastPresentationRequest?
     
     var customMirror: Mirror {
         Mirror(self, children: [], displayStyle: .class)
@@ -155,25 +169,66 @@ actor ToastScheduler: @preconcurrency CustomReflectable {
         presenterID: ObjectIdentifier,
         presenterPhasePublisher: AnyPublisher<PresenterPhaseObserver.PresenterPhase, Never>?
     ) {
-        self.handlingTask = Task(priority: .low) { @MainActor in
+        let handler = self.handler
+        let toastStream = self.toastStream
+        self.handlingTask = Task(priority: .low) { @MainActor [weak self] in
             let scenePhaseObserver = ScenePhaseObserver(sceneID: presenterID)
             let presenterPhaseObserver = PresenterPhaseObserver(presenterPhasePublisher: presenterPhasePublisher)
             
             for await toastRequest in toastStream {
+                guard let self,
+                      !Task.isCancelled else {
+                    break
+                }
+                
+                if let cancellationToken = self.cancellationToken {
+                    if cancellationToken === toastRequest {
+                        self.cancellationToken = nil
+                    }
+                    
+                    toastRequest.canceller().cancel()
+                    continue
+                }
+                
                 await scenePhaseObserver.appIsActive()
                 await presenterPhaseObserver.presenterIsActive()
-                                
+                
+                if Task.isCancelled {
+                    break
+                }
+                
                 guard !toastRequest.isCancelled else {
                     continue
                 }
                 
                 await handler(toastRequest.presentation)
                 await toastRequest.handled()
+                
+                if Task.isCancelled {
+                    break
+                }
             }
             
-            assert(Task.isCancelled, "Handling task loop should never finish without task cancelleation.")
+            assert(
+                Task.isCancelled,
+                "Handling task loop should never finish without prior task cancellation."
+            )
         }
     }
+    
+    @MainActor
+    @discardableResult
+    func cancelScheduledPresentations() -> Bool {
+        guard cancellationToken == nil else {
+            return false
+        }
+        
+        let semanticCancellationToken = ToastPresentationRequest.cancellationToken()
+        cancellationToken = semanticCancellationToken
+        toastStreamContinuation.yield(semanticCancellationToken)
+        return true
+    }
+    
     
     @MainActor
     func schedulePresentation(

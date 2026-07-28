@@ -46,6 +46,18 @@ final class NSToastHostingController: NSViewController {
         }
     }
     
+    private(set) var allowBackgroundInteraction: Bool = false {
+        didSet {
+            guard isViewLoaded else {
+                return
+            }
+            
+            view.layer?.backgroundColor = allowBackgroundInteraction
+                ? .clear
+                : NSColor(white: 1, alpha: 0.001).cgColor
+        }
+    }
+    
     convenience init(toastAlignment: ToastAlignment) {
         self.init(nibName: nil, bundle: nil)
         self._toastAlignment = toastAlignment
@@ -66,6 +78,7 @@ final class NSToastHostingController: NSViewController {
         
         addChild(hostingController)
         view.addSubview(hostingController.view, positioned: .above, relativeTo: nil)
+        hostingController.view.identifier = NSUserInterfaceItemIdentifier(SwiftToastsConfiguration.current.toastRootViewTag.hashValue.description)
         hostingController.view.wantsLayer = true
         hostingController.view.layerContentsRedrawPolicy = .onSetNeedsDisplay
         hostingController.view.layer?.backgroundColor = .clear
@@ -117,6 +130,7 @@ final class NSToastHostingController: NSViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
@@ -166,6 +180,7 @@ final class NSToastHostingController: NSViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation
@@ -210,6 +225,7 @@ final class NSToastHostingController: NSViewController {
         presentationTask?.cancel()
         toastPresentation.onPresent?()
         toastAlignment = toastPresentation.toastAlignment
+        allowBackgroundInteraction = toastPresentation.toastEnvironmentValues.toastBackgroundInteractionEnabled
         hostingController.rootView = HostedToastContent(
             id: ObjectIdentifier(self),
             hosting: toastPresentation

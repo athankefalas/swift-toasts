@@ -97,7 +97,7 @@ extension UIWindow {
             host.view.topAnchor.constraint(
                 greaterThanOrEqualTo: hostContainer.topAnchor
             ),
-            hostContainer.trailingAnchor.constraint(
+            host.view.trailingAnchor.constraint(
                 greaterThanOrEqualTo: hostContainer.trailingAnchor
             ),
             host.view.bottomAnchor.constraint(

@@ -12,6 +12,7 @@ import SwiftUI
 /// - Note: In order to be compatible with view based presentation contexts, that are
 /// assumed to be weak references and used as such by this library, this type is *self-referencial*.
 /// Once it is used the `release` function **must** be invoked to avoid memory leaks.
+@MainActor
 @available(visionOS 1.0, *)
 @available(iOS, unavailable)
 @available(macOS, unavailable)

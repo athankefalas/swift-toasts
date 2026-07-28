@@ -107,7 +107,7 @@ public struct ScheduleToastAction: CustomReflectable {
     }
     
     @MainActor
-    func callAsFunction(
+    public func callAsFunction(
         toast: Toast,
         alignment toastAlignment: ToastAlignment = .defaultAlignment,
         onPresent: (@MainActor () -> Void)? = nil,

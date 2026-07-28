@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A type that represents the cancellation policy of a scheduled toast.
-public enum ToastCancellation: Hashable, CaseIterable, Sendable {
+public nonisolated enum ToastCancellation: Hashable, CaseIterable, Sendable {
     /// The scheduled toast will never be cancelled.
     case never
     
